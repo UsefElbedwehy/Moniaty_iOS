@@ -96,7 +96,7 @@
 "pay.title" = "Payment";
 "pay.amount" = "Amount due";
 "pay.reference" = "Booking number";
-"pay.referenceHint" = "Write the booking number in the transfer description.";
+"pay.referenceHint" = "Write this number in the transfer note";
 "pay.methods" = "Transfer to one of these accounts";
 "pay.beneficiary" = "Name: %@";
 "pay.receipt" = "Transfer receipt";
@@ -161,3 +161,5 @@
 "error.invalid_iban" = "The IBAN is invalid.";
 "error.invalid_mobile" = "The mobile number is invalid.";
 "error.demo" = "The demo booking can't be reported.";
+"pay.amountFrom" = "Amount due · %@";
+"pay.deadline" = "Pay by %@, or the request is cancelled automatically.";

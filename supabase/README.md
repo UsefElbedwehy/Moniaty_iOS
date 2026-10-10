@@ -96,6 +96,12 @@ alter table storage.objects enable row level security;
 grant usage on schema public, auth, storage to anon, authenticated, service_role;
 alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
 alter default privileges in schema public grant all on functions to anon, authenticated, service_role;
+-- Storage path helpers that Supabase provides (used by the storage policies).
+create function storage.foldername(name text) returns text[] language sql immutable as $$ select (string_to_array(name, '/'))[1:array_length(string_to_array(name, '/'), 1) - 1] $$;
+create function storage.filename(name text) returns text language sql immutable as $$ select (string_to_array(name, '/'))[array_length(string_to_array(name, '/'), 1)] $$;
+create function storage.extension(name text) returns text language sql immutable as $$ select lower(split_part(storage.filename(name), '.', -1)) $$;
 ```
+On macOS, start a throwaway cluster with a short socket path (Unix sockets max out at 103 bytes):
+`initdb -D /tmp/pg -U postgres --auth=trust --locale=C && pg_ctl -D /tmp/pg -o "-p 55432 -k /tmp" start`.
 Then apply the migrations in order and impersonate users with
 `set role authenticated; select set_config('request.jwt.claim.sub', '<uuid>', false);`.

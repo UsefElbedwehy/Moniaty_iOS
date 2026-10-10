@@ -137,13 +137,27 @@ struct StudioHomeScreen: View {
         }
         .dsScreenBackground()
         .navigationTitle(StudioL10n.string("studio.title"))
+        // With a business name the greeting header (mockup 7) replaces the large title.
+        .navigationBarTitleDisplayMode(businessName == nil ? .large : .inline)
         .task { await store.load() }
         .refreshable { await store.load() }
         .trackScreen("studio_home")
     }
 
+    private var businessName: String? {
+        store.business?.businessName.flatMap { $0.isEmpty ? nil : $0 }
+    }
+
     @ViewBuilder
     private func content(_ business: MyBusiness) -> some View {
+        if let businessName {
+            VStack(alignment: .leading, spacing: 2) {
+                StudioL10n.text("studio.greeting").font(.dsSubhead).foregroundStyle(Color.dsTextSecondary)
+                Text(verbatim: businessName).font(.dsLargeTitle).foregroundStyle(Color.dsTextPrimary)
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityAddTraits(.isHeader)
+        }
         statusCard(business)
         if let subscription = store.subscription, subscription.entitlement.state != .pending {
             SubscriptionCard(subscription: subscription)

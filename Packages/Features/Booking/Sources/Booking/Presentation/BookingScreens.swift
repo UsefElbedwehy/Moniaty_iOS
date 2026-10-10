@@ -13,6 +13,8 @@ struct BookingsListScreen: View {
     let role: BookingRole
     @State private var showActive = true
     @State private var state: ViewState<[BookingSummary]> = .loading
+    /// A booking paid straight from its card (mockup 5), without opening the detail first.
+    @State private var paying: PayingBooking?
 
     var body: some View {
         List {
@@ -30,9 +32,19 @@ struct BookingsListScreen: View {
             case .error(let error):
                 ErrorStateView(error: error) { Task { await load() } }.listRowBackground(Color.clear)
             case .loaded(let list), .refreshing(let list):
+                // One card per booking; a booking waiting on the bride's payment carries its main
+                // action on the card, as in mockup 5.
                 ForEach(list) { booking in
-                    NavigationLink(value: BookingRoute.detail(id: booking.id)) {
-                        BookingRow(booking: booking, role: role)
+                    Section {
+                        NavigationLink(value: BookingRoute.detail(id: booking.id)) {
+                            BookingRow(booking: booking, role: role)
+                        }
+                        if role == .bride, booking.status == .awaitingPayment, !booking.isDemo {
+                            PrimaryButton(BookingL10n.key("action.pay"), systemImage: "creditcard") {
+                                paying = PayingBooking(id: booking.id)
+                            }
+                            .listRowSeparator(.hidden)
+                        }
                     }
                 }
             case .offline:
@@ -50,6 +62,11 @@ struct BookingsListScreen: View {
         .refreshable { await load() }
         .onAppear { Task { await load() } }
         .trackScreen(role == .bride ? "my_bookings" : "provider_bookings")
+        .sheet(item: $paying) { booking in
+            NavigationStack {
+                PaymentSheetLoader(feature: feature, bookingId: booking.id) { Task { await load() } }
+            }
+        }
     }
 
     private func load() async {
@@ -59,6 +76,37 @@ struct BookingsListScreen: View {
         } catch {
             if state.value == nil { state = .error(appError(error)) }
         }
+    }
+}
+
+struct PayingBooking: Identifiable { let id: String }
+
+/// Loads the full booking (its payment methods) before showing the payment form.
+struct PaymentSheetLoader: View {
+    let feature: BookingFeature
+    let bookingId: String
+    let onDone: () -> Void
+    @State private var detail: BookingDetail?
+    @State private var failed = false
+
+    var body: some View {
+        Group {
+            if let detail {
+                PaymentScreen(feature: feature, detail: detail, onDone: onDone)
+            } else if failed {
+                ErrorStateView(error: .unknown(message: nil)) { Task { await load() } }
+            } else {
+                ProgressView().frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .dsScreenBackground()
+        .task { await load() }
+    }
+
+    private func load() async {
+        failed = false
+        do { detail = try await feature.repository.booking(id: bookingId); failed = detail == nil }
+        catch { failed = true }
     }
 }
 
@@ -432,18 +480,9 @@ struct PaymentScreen: View {
     var body: some View {
         Form {
             Section {
-                LabeledContent(BookingL10n.string("pay.amount"), value: formatSAR(detail.summary.price))
-                HStack {
-                    VStack(alignment: .leading) {
-                        BookingL10n.text("pay.reference").font(.dsCaption).foregroundStyle(Color.dsTextSecondary)
-                        Text(verbatim: detail.summary.referenceCode).font(.dsTitle2).foregroundStyle(Color.dsPrimary)
-                            .environment(\.layoutDirection, .leftToRight)
-                    }
-                    Spacer()
-                    CopyButton(value: detail.summary.referenceCode)
-                }
-            } footer: {
-                BookingL10n.text("pay.referenceHint")
+                PaymentSummaryCard(summary: detail.summary)
+                    .listRowInsets(EdgeInsets())
+                    .listRowBackground(Color.clear)
             }
 
             Section(BookingL10n.string("pay.methods")) {
@@ -545,6 +584,64 @@ struct CopyButton: View {
         }
         .buttonStyle(.borderless)
         .accessibilityLabel(BookingL10n.string(copied ? "common.copied" : "common.copy"))
+    }
+}
+
+/// The burgundy summary at the top of the payment screen (mockup 6): what to pay, the booking
+/// number to write in the transfer note, and the deadline.
+struct PaymentSummaryCard: View {
+    let summary: BookingSummary
+    @State private var copied = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.md) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: BookingL10n.format("pay.amountFrom", summary.provider.name ?? ""))
+                    .font(.dsFootnote)
+                    .opacity(0.85)
+                Text(verbatim: formatSAR(summary.price))
+                    .font(.dsLargeTitle)
+            }
+            .accessibilityElement(children: .combine)
+
+            HStack(spacing: DSSpacing.sm) {
+                VStack(alignment: .leading, spacing: 4) {
+                    BookingL10n.text("pay.referenceHint").font(.dsFootnote).opacity(0.85)
+                        .fixedSize(horizontal: false, vertical: true)
+                    // Gold is fine here: large text on burgundy, not small text on ivory.
+                    Text(verbatim: summary.referenceCode)
+                        .font(.dsTitle2.monospaced())
+                        .foregroundStyle(Color.dsPremiumGold)
+                        .environment(\.layoutDirection, .leftToRight)
+                }
+                .accessibilityElement(children: .combine)
+                Spacer(minLength: 0)
+                Button {
+                    UIPasteboard.general.string = summary.referenceCode
+                    copied = true
+                } label: {
+                    Text(BookingL10n.string(copied ? "common.copied" : "common.copy"))
+                        .font(.dsSubhead.weight(.semibold))
+                        .foregroundStyle(Color.dsPrimary)
+                        .padding(.horizontal, DSSpacing.md)
+                        .frame(minHeight: 44)
+                        .background(Capsule().fill(Color.dsBackground))
+                }
+                .buttonStyle(.plain)
+            }
+            .padding(DSSpacing.md)
+            .background(RoundedRectangle(cornerRadius: 16).fill(Color.white.opacity(0.12)))
+
+            if let due = summary.paymentDueAt {
+                Text(verbatim: BookingL10n.format("pay.deadline", bookingDateText(due)))
+                    .font(.dsFootnote)
+                    .opacity(0.85)
+            }
+        }
+        .foregroundStyle(Color.white)
+        .padding(DSSpacing.lg)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(RoundedRectangle(cornerRadius: DSRadius.card).fill(DSGradient.primary))
     }
 }
 

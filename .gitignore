@@ -83,3 +83,6 @@ supabase/.temp/
 
 # XcodeGen output (regenerate with `xcodegen generate`)
 *.xcodeproj/
+
+# Per-project Firebase config (download from the Firebase console)
+App/Resources/GoogleService-Info.plist

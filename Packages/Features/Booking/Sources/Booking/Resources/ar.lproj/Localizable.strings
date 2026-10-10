@@ -96,7 +96,7 @@
 "pay.title" = "الدفع";
 "pay.amount" = "المبلغ المطلوب";
 "pay.reference" = "رقم الحجز";
-"pay.referenceHint" = "اكتبي رقم الحجز في وصف التحويل.";
+"pay.referenceHint" = "اكتبي هذا الرقم في ملاحظة التحويل";
 "pay.methods" = "حوّلي المبلغ إلى أحد هذه الحسابات";
 "pay.beneficiary" = "باسم: %@";
 "pay.receipt" = "إيصال التحويل";
@@ -161,3 +161,5 @@
 "error.invalid_iban" = "رقم الآيبان غير صحيح.";
 "error.invalid_mobile" = "رقم الجوال غير صحيح.";
 "error.demo" = "لا يمكن الإبلاغ عن الحجز التجريبي.";
+"pay.amountFrom" = "المبلغ المطلوب · %@";
+"pay.deadline" = "ادفعي قبل %@، وإلا يُلغى الطلب تلقائياً.";
