@@ -33,6 +33,9 @@ upload the receipt. Repo name is `Moniaty_iOS`, but the brand is **Munyati / Ù…Ù
   App fills. Each has a Remote and a Mock repository; the App picks one in `AppEnvironment`.
 - `App/` is the composition root: `AppEnvironment` builds repositories and is the **only**
   place that imports Firebase or knows Supabase. Features receive protocols and closures.
+- `dashboard/` is the admin web app (Next.js 15, Arabic RTL, `@supabase/ssr`). It uses only the
+  anon key: reads rely on admin RLS policies and writes on `admin_*` RPCs. It **can** be built and
+  type-checked here (`npm install && npm run build`).
 - The app talks to Supabase over plain HTTPS (PostgREST RPCs + edge functions); it does
   **not** use the Supabase SDK.
 

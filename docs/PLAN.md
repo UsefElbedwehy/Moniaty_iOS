@@ -347,6 +347,10 @@ Bilingual static site in the Munyati brand:
   support screen with tickets (also from a booking); zero-tolerance line at sign-up; admin RPCs
   for moderation, reports, bans and ticket replies (`supabase/migrations/20261014000000_trust.sql`,
   `Packages/Features/Trust`). Settings: `reviews_premoderation`, `review_window_days`, `banned_words`.
+- **Phase 6 — done (dashboard):** Next.js admin in `dashboard/` (kept in this repo for now; the
+  `munyati_dashboard` repo didn't exist yet). All modules from §8 except SMS marketing campaigns,
+  which wait for the `Munyati-AD` sender and opt-in flow. Admin actions in
+  `supabase/migrations/20261015000000_admin.sql`; anon key only, permissions enforced in Postgres.
 
 ## 13. Design approach (answer to "premium app or Claude Design?")
 - **I can design it here.** The brand already has a palette (burgundy `#8A0D3A`, gold `#DFC389`, cream `#F2E5D2`, ivory `#FAFAEC`) and a logo.
