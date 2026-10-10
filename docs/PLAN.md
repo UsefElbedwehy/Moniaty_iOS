@@ -1,6 +1,6 @@
 # Munyati (منيتي) — Product & Technical Plan
 
-> Status: **draft v1 for owner review** · Owner decisions still open are marked **[DECIDE]** and collected in §16.
+> Status: **v1.1 — owner decisions recorded (§16)**. Items once marked [DECIDE] are resolved there.
 > Evidence for each recommendation is in `docs/research/*.md`.
 
 ## 1. Product in one paragraph
@@ -18,7 +18,7 @@ Munyati ("my wish") is an Arabic-first iOS app where **brides** in Saudi Arabia 
 | D3 | Push | **FCM**, sent from a Supabase Edge Function (reuse Kolna `send-push`), with a deep link in every payload | Free and already built |
 | D4 | Analytics | 3 layers: **Postgres** (business events, audit log, error log, shown in the dashboard) + **Firebase Analytics** (every tap and screen, free) + **Crashlytics** (crashes) | Covers "analytics for everything" at about $0 extra |
 | D5 | Map | **Apple MapKit** + PostGIS | Free, already in Kolna |
-| D6 | **Provider subscriptions** | **Apple in-app purchase (StoreKit 2)**, not Tap, inside the iOS app. Tap can optionally sell the same plans on munyati.co. **[DECIDE]** | Plans that unlock listing features in the app must use IAP (guideline 3.1.1). Tap-only is a very likely rejection. Apple's fee is 15% under the Small Business Program (`research/app-store-policy.md` §1). |
+| D6 | **Provider subscriptions** | **Tap** for now (owner decision, §16). Built so that adding Apple in-app purchase later is additive. | Apple recommends IAP (guideline 3.1.1) and Tap-only carries rejection risk; the entitlement layer is independent of the payment source (`research/app-store-policy.md` §1) |
 | D7 | Bride → provider payment | Manual transfer + receipt upload, as you described. Munyati never touches the money. | Allowed by Apple (3.1.3(e)); wording must say "pay the provider directly" |
 | D8 | OTP & marketing SMS | **OurSMS**, reusing Kolna's `send-otp` / `verify-otp`: hashed codes, rate limits, Saudi numbers only | Already in production. **Start sender-name registration now; it takes 2–3 weeks and needs your CR.** |
 | D9 | Remote content | Strings, category icons, banners, onboarding images, CMS pages and config all come from the database and storage, with bundled fallbacks | Allowed by Apple because it's data, not code. Kolna already has most of it. |
@@ -81,7 +81,7 @@ declined / cancelled_by_bride / cancelled_by_provider / expired           comple
   - Admins see a provider risk score.
 - **Disputes:** either side can open one within X days, with evidence. It freezes the booking and the reviews. An admin resolves it and every action is audited.
 - **Refunds** use the same flow in reverse (provider → bride), with a receipt.
-- **Deposit vs full payment:** a provider setting (full amount, or a deposit %). **[DECIDE]**
+- **Full amount only** for now; `deposit_amount` is reserved in the data model for later (§16).
 
 ### 4.4 Budget (requirement 13)
 - The bride sets her total budget during onboarding (skippable). It can be edited from Home or Profile.
@@ -91,7 +91,7 @@ declined / cancelled_by_bride / cancelled_by_provider / expired           comple
 
 ### 4.5 One booking per category (requirement 20)
 - A database rule: a bride can have **only one active booking per category** (requested → payment_confirmed, or disputed) until it is completed or cancelled. It applies across all providers.
-- Per-category flag `allows_parallel_bookings`, editable in the dashboard, exempts categories where this would hurt real use. Examples: henna for the henna night *and* the wedding, several sweets orders, spa visits. **[DECIDE]** which categories.
+- Per-category flag `allows_parallel_bookings`, editable in the dashboard, can exempt a category later if needed (e.g. henna night + wedding). It defaults to false: only the same category is blocked (§16).
 - The app disables "Book" and explains which booking is blocking it.
 
 ### 4.6 Demo booking for new providers (requirement 24)
@@ -106,7 +106,7 @@ declined / cancelled_by_bride / cancelled_by_provider / expired           comple
 - The **2-month free trial** is an Apple introductory offer (2 months is a supported length). It's also tracked per provider account on our side to stop trial abuse.
 - **The dashboard can edit:** plan names, descriptions, feature lists, **max services per plan**, max stores, badges, order and visibility.
 - **Only App Store Connect can change:** iOS prices and trial length. The app always shows Apple's live price.
-- **Suggested plans [DECIDE]:**
+- **Plans (approved, editable):**
 
 | | Normal | Plus | Diamond |
 |---|---|---|---|
@@ -134,7 +134,7 @@ declined / cancelled_by_bride / cancelled_by_provider / expired           comple
 - **Cities** are a dashboard-managed table (Arabic and English names, map center, active flag, order).
   - The bride picks one or more cities, or «الكل» ("All"). Every list, search and map query filters by that choice.
   - Providers pick the cities they serve.
-  - **[DECIDE]** The initial cities: did you mean **Dammam, Khobar and Qatif** (neighboring Eastern Province cities), or **Dammam, Khaybar and Taif** (3 regions about 1,000 km apart)?
+  - Launch cities: **Dammam, Khobar, Qatif** (editable).
 - **Categories** are a dashboard-managed table: Arabic and English names, **icon from storage (changeable anytime)**, cover image, order, active flag, the parallel-bookings flag and the store flag.
   - Seed list: 14 launch categories plus 11 inactive ones (`research/saudi-market-and-legal.md` §1.2).
 
@@ -356,15 +356,17 @@ SMS, not the server, becomes the biggest cost. Keep login sessions long so users
 - **Legal:** Munyati needs its own CR, business.sa verification, a PDPL privacy policy and E-Commerce Law disclosures. Get a short local legal review before launch.
 - **Portfolio photos of brides** need the provider's consent checkbox and a report option.
 
-## 16. Decisions needed from you **[DECIDE]**
-1. **Cities:** Dammam + **Khobar** + **Qatif**? Or Dammam + Khaybar + Taif? (Or Khafji?)
-2. **Provider subscriptions via Apple IAP** (recommended; Apple takes 15%) vs Tap only (high rejection risk)? Optional Tap on the website too?
-3. **Plan contents and prices** (suggested table in §4.7).
-4. **Payment:** full amount, or deposit allowed (per provider)?
-5. **Which categories allow parallel bookings** (henna, sweets, spa, gifts…)?
-6. **Provider verification:** CR or freelance certificate required at launch, or optional with a "verified" badge?
-7. **"Female staff only" filter:** do you want it?
-8. **Timeouts:** request 48 h, proposal 24 h, payment 48 h, receipt confirmation 48 h. OK?
-9. **Guest browsing** without login, with login only to book? (recommended)
-10. **Spelling "Munyati"** everywhere (app name «منيتي - Munyati»)?
-11. **Design:** I design it here with mockups first (recommended), or do you want to use Claude Design?
+## 16. Owner decisions (recorded)
+| # | Topic | Decision |
+|---|---|---|
+| 1 | Cities | **Dammam, Khobar, Qatif** at launch. Fully editable from the dashboard. |
+| 2 | Provider subscriptions | **Tap** for now (owner's choice; revisit later). ⚠️ The App Store may reject Tap-paid plans that unlock in-app features (guideline 3.1.1). To keep the switch cheap, entitlements live in `provider_subscriptions` with a `source` column (`tap` / `app_store` / `admin_comp`), and the app reads only the entitlement, never the payment method. Adding StoreKit later is then additive. |
+| 3 | Plans | As suggested in §4.7 (Normal 1 / Plus 3 / Diamond 10 services); editable from the dashboard |
+| 4 | Payment | **Full amount only** for now. `bookings` keeps a nullable `deposit_amount` so deposits can be enabled later. |
+| 5 | Category rule | Only the **same category** is blocked until completion; different categories run in parallel. `allows_parallel_bookings` exists but defaults to false for every category. |
+| 6 | Provider verification | **Application + admin approval**: a provider fills in a join form (business info, categories, cities, CR or freelance-certificate number, documents). The status is `pending` until an admin reviews, contacts them and approves; only then are their services publicly listed. The demo booking arrives at registration, so they can explore while pending. Verified providers get a badge. |
+| 7 | Female staff only | An **optional filter** the bride can switch on (services carry a `female_staff_only` flag); never forced |
+| 8 | Timeouts | Request 48 h, proposal 24 h, payment 48 h, receipt confirmation 48 h (dashboard-editable). Receipts are visible to the bride, the provider and admins in the booking timeline. **Key booking events also go out by OurSMS** (transactional sender) as a fallback when push is off: approval with payment due, receipt uploaded, payment confirmed, appointment reminder. Configurable per event in the dashboard. |
+| 9 | Guest browsing | Yes; login is needed only to book, favorite, review or report |
+| 10 | Name | **منيتي - Munyati** everywhere |
+| 11 | Design | Designed here: HTML mockups first, then the SwiftUI design system |
