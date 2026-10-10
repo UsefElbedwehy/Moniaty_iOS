@@ -10,6 +10,7 @@
 "common.ok" = "OK";
 "badge.verified" = "Verified";
 "badge.featured" = "Featured";
+"rating.a11y" = "Rated %@ out of 5";
 "favorite.add" = "Add to favorites";
 "favorite.remove" = "Remove from favorites";
 "share" = "Share";

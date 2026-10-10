@@ -1,0 +1,74 @@
+/* Trust strings (Phase 5): reviews, report, block, support. */
+
+"common.cancel" = "إلغاء";
+"common.ok" = "حسناً";
+"common.send" = "إرسال";
+"more" = "المزيد";
+
+"reviews.title" = "التقييمات";
+"reviews.seeAll" = "عرض الكل";
+"reviews.none" = "لا توجد تقييمات بعد.";
+"reviews.count" = "%d تقييم";
+"reviews.stars" = "%d من ٥ نجوم";
+"reviews.reply" = "رد مقدّمة الخدمة";
+
+"review.title" = "تقييم التجربة";
+"review.write" = "اكتبي تقييمك";
+"review.prompt.bride" = "كيف كانت تجربتك؟ تقييمك يساعد العرائس الأخريات.";
+"review.prompt.provider" = "قيّمي تجربتك مع العروس (ملاحظة خاصة لا تظهر لها).";
+"review.mine.bride" = "تقييمك";
+"review.mine.provider" = "ملاحظتك الخاصة";
+"review.pending" = "تقييمك قيد المراجعة وسيُنشر قريباً.";
+"review.text.bride" = "اكتبي عن تجربتك (اختياري)";
+"review.text.provider" = "ملاحظة خاصة (اختياري)";
+"review.footer.bride" = "يظهر اسمك مختصراً (مثل «نو**** مح****»). تُراجع التقييمات قبل نشرها.";
+"review.footer.provider" = "لا تظهر هذه الملاحظة للعروس ولا للعامة، يطّلع عليها فريق منيتي فقط.";
+"review.photos" = "صور (اختياري)";
+"review.addPhotos" = "إضافة صور";
+
+"report.action" = "إبلاغ";
+"report.title" = "إبلاغ";
+"report.reason" = "السبب";
+"report.reason.spam" = "محتوى مزعج أو إعلاني";
+"report.reason.inappropriate" = "محتوى غير لائق";
+"report.reason.fake" = "معلومات مزيفة";
+"report.reason.harassment" = "إساءة أو تحرش";
+"report.reason.fraud" = "احتيال";
+"report.reason.other" = "سبب آخر";
+"report.details" = "التفاصيل (اختياري)";
+"report.footer" = "يراجع فريق منيتي البلاغات خلال ٢٤ ساعة. لن يعرف الطرف الآخر من قدّم البلاغ.";
+"report.thanks" = "شكراً، وصلنا بلاغك وسنراجعه خلال ٢٤ ساعة.";
+
+"block.action" = "حظر";
+"block.confirm.title" = "حظر هذا الحساب؟";
+"block.confirm.message" = "لن تظهر لك خدماته وتقييماته، ولن يتمكن أحدكما من الحجز لدى الآخر. يمكنك إلغاء الحظر من حسابي.";
+"block.done" = "تم الحظر.";
+"block.unblock" = "إلغاء الحظر";
+"block.list.title" = "الحسابات المحظورة";
+"block.empty.title" = "لا توجد حسابات محظورة";
+"block.empty.message" = "يمكنك حظر أي حساب من قائمة «المزيد» في صفحته.";
+
+"support.title" = "الدعم والمساعدة";
+"support.faq" = "الأسئلة الشائعة";
+"support.contact.email" = "البريد الإلكتروني";
+"support.contact.whatsapp" = "واتساب";
+"support.contact.phone" = "اتصال";
+"support.footer" = "منيتي منصة تربط العرائس بمقدّمات الخدمة، والدفع يتم مباشرة بين الطرفين.";
+"support.tickets" = "طلبات الدعم";
+"support.newTicket" = "طلب دعم جديد";
+"support.subject" = "الموضوع";
+"support.message" = "اكتبي رسالتك";
+"support.aboutBooking" = "سيُرفق رقم الحجز مع طلبك.";
+"support.status.open" = "مفتوح";
+"support.status.answered" = "تم الرد";
+"support.status.closed" = "مغلق";
+
+"error.generic" = "حدث خطأ، حاولي مرة أخرى.";
+"error.not_completed" = "يمكن التقييم بعد اكتمال الخدمة.";
+"error.window_closed" = "انتهت مدة التقييم لهذا الحجز.";
+"error.banned" = "لا يمكنك إضافة تقييمات حالياً.";
+"error.invalid_rating" = "اختاري عدد النجوم.";
+"error.already_reviewed" = "قيّمتِ هذا الحجز من قبل.";
+"error.invalid_photo" = "تعذّر إرفاق الصورة، جرّبي صورة أخرى.";
+"error.sign_in_required" = "سجّلي الدخول أولاً.";
+"error.too_many" = "محاولات كثيرة، حاولي لاحقاً.";

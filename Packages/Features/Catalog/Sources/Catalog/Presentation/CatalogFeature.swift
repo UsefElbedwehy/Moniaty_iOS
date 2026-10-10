@@ -37,6 +37,8 @@ public final class CatalogFeature {
     let requireSignIn: () -> Void
     /// The "Book" action on a service. Phase 3 wires the booking flow; nil shows "coming soon".
     var onBook: ((ServiceCard) -> Void)?
+    /// Reviews and report/block menus from the Trust feature (Phase 5).
+    var trustViews: CatalogTrustViews?
 
     public init(
         repository: CatalogRepository,
@@ -88,6 +90,11 @@ public final class CatalogFeature {
     /// Reloads the budget after bookings change what is reserved.
     public func refreshBudget() {
         Task { await budget.load(isGuest: context.isGuest) }
+    }
+
+    /// Sets the reviews section and the report/block menu (Phase 5).
+    public func setTrustViews(_ views: CatalogTrustViews) {
+        trustViews = views
     }
 
     /// Sets the booking entry point (Phase 3).
@@ -159,4 +166,20 @@ public final class BudgetStore {
 /// Maps any thrown error to an `AppError` for `ViewState`.
 func appError(_ error: Error) -> AppError {
     (error as? AppError) ?? .unknown(message: error.localizedDescription)
+}
+
+/// Content a catalog screen can report.
+public enum CatalogContentRef: Hashable, Sendable {
+    case provider(String), service(String), store(String)
+}
+
+/// Views supplied by the App from the Trust feature, so Catalog doesn't depend on it.
+public struct CatalogTrustViews {
+    let reviews: (String) -> AnyView
+    let moreMenu: (CatalogContentRef) -> AnyView
+
+    public init(reviews: @escaping (String) -> AnyView, moreMenu: @escaping (CatalogContentRef) -> AnyView) {
+        self.reviews = reviews
+        self.moreMenu = moreMenu
+    }
 }

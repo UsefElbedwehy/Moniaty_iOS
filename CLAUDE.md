@@ -28,8 +28,9 @@ upload the receipt. Repo name is `Moniaty_iOS`, but the brand is **Munyati / Ù…Ù
   (provider's Home tab: join form, services, stores, photo upload, plans and Tap checkout,
   insights; `StudioRoute` destinations) and `Booking` (requests,
   the booking lifecycle for both roles, receipts, disputes, working hours, payout methods;
-  `BookingRoute` destinations). Each has a Remote and a Mock repository; the App picks one in
-  `AppEnvironment`. Next: reviews and trust.
+  `BookingRoute` destinations) and `Trust` (reviews, report, block, support). Catalog and Booking
+  don't import Trust: they expose view hooks (`CatalogTrustViews`, `BookingTrustViews`) that the
+  App fills. Each has a Remote and a Mock repository; the App picks one in `AppEnvironment`.
 - `App/` is the composition root: `AppEnvironment` builds repositories and is the **only**
   place that imports Firebase or knows Supabase. Features receive protocols and closures.
 - The app talks to Supabase over plain HTTPS (PostgREST RPCs + edge functions); it does

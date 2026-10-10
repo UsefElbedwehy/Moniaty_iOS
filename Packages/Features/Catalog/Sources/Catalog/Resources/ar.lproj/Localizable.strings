@@ -10,6 +10,7 @@
 "common.ok" = "حسناً";
 "badge.verified" = "موثّقة";
 "badge.featured" = "مميّزة";
+"rating.a11y" = "التقييم %@ من ٥";
 "favorite.add" = "إضافة إلى المفضلة";
 "favorite.remove" = "إزالة من المفضلة";
 "share" = "مشاركة";

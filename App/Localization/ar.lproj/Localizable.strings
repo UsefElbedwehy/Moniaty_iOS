@@ -32,7 +32,8 @@
 "profile.terms" = "الشروط والأحكام";
 "profile.privacy" = "سياسة الخصوصية";
 "profile.about" = "عن منيتي";
-"profile.contact" = "تواصلي معنا";
+"profile.support" = "الدعم والمساعدة";
+"profile.blocked" = "الحسابات المحظورة";
 "profile.signOut" = "تسجيل الخروج";
 "profile.deleteAccount" = "حذف الحساب";
 "profile.deleteAccount.confirmTitle" = "حذف الحساب نهائياً؟";

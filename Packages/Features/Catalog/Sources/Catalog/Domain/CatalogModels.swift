@@ -57,6 +57,9 @@ public struct ServiceCard: Identifiable, Hashable, Sendable, Decodable {
     public let isVerified: Bool
     /// Diamond plan: "featured" badge (Phase 4; absent from older responses).
     public let isFeatured: Bool?
+    /// Approved bride reviews (Phase 5; absent from older responses).
+    public let ratingAvg: Decimal?
+    public let ratingCount: Int?
     public let femaleStaffOnly: Bool
     public let isFavorite: Bool
 }
@@ -68,6 +71,8 @@ public struct ProviderSummary: Identifiable, Hashable, Sendable, Decodable {
     public let isVerified: Bool
     public let femaleStaffOnly: Bool
     public let cityIds: [String]
+    public let ratingAvg: Decimal?
+    public let ratingCount: Int?
 }
 
 public struct StoreSummary: Identifiable, Hashable, Sendable, Decodable {

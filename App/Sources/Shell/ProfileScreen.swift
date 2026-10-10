@@ -2,6 +2,7 @@ import SwiftUI
 import DesignSystem
 import Shared
 import Catalog
+import Trust
 
 /// Profile & settings, shared by both roles. Phase 1: identity, cities, legal pages, support,
 /// sign out and in-app account deletion (App Store guideline 5.1.1(v)).
@@ -72,8 +73,13 @@ struct ProfileScreen: View {
                 NavigationLink {
                     CMSPageScreen(slug: "about", repository: environment.cmsPageRepository)
                 } label: { Label(L10n.string("profile.about"), systemImage: "info.circle") }
-                Link(destination: URL(string: "mailto:contact@munyati.co")!) {
-                    Label(L10n.string("profile.contact"), systemImage: "envelope")
+                NavigationLink {
+                    environment.trust.supportScreen(contacts: supportContacts, faqURL: environment.remoteConfig.config?.support.helpCenterURL)
+                } label: { Label(L10n.string("profile.support"), systemImage: "questionmark.circle") }
+                if session.hasAccount {
+                    NavigationLink {
+                        environment.trust.blockedUsersScreen()
+                    } label: { Label(L10n.string("profile.blocked"), systemImage: "hand.raised") }
                 }
             }
 
@@ -119,6 +125,13 @@ struct ProfileScreen: View {
             Button(L10n.string("common.ok"), role: .cancel) {}
         }
         .trackScreen("profile")
+    }
+
+    /// Contact channels from remote config, with the published email as a fallback.
+    private var supportContacts: [SupportContact] {
+        let methods = environment.remoteConfig.config?.support.contactMethods ?? []
+        let contacts = methods.compactMap { m in SupportContact.Kind(rawValue: m.type).map { SupportContact(kind: $0, value: m.value) } }
+        return contacts.isEmpty ? [SupportContact(kind: .email, value: "contact@munyati.co")] : contacts
     }
 }
 

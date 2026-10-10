@@ -30,6 +30,7 @@ struct ServiceDetailScreen: View {
                     }
                     .simultaneousGesture(TapGesture().onEnded { analytics(.shareTap, detail.card.id, context: "service") })
                     .accessibilityLabel(CatalogL10n.string("share"))
+                    feature.trustViews?.moreMenu(.service(detail.card.id))
                 }
             }
         }
@@ -189,6 +190,7 @@ struct ProviderScreen: View {
                     }
                     CatalogL10n.text("detail.services").font(.dsTitle2)
                     ServiceGrid(cards: profile.services, feature: feature)
+                    feature.trustViews?.reviews(providerId)
                 }
                 .padding(DSSpacing.lg)
             }
@@ -197,10 +199,11 @@ struct ProviderScreen: View {
         .navigationTitle(state.value?.summary.name ?? "")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
                 ShareLink(item: MunyatiLinks.provider(providerId)) { Image(systemName: "square.and.arrow.up") }
                     .accessibilityLabel(CatalogL10n.string("share"))
                     .simultaneousGesture(TapGesture().onEnded { analytics(.shareTap, providerId, context: "provider") })
+                feature.trustViews?.moreMenu(.provider(providerId))
             }
         }
         .task { await load() }
@@ -258,7 +261,8 @@ struct StoreScreen: View {
         .dsScreenBackground()
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                feature.trustViews?.moreMenu(.store(storeId))
                 ShareLink(item: MunyatiLinks.store(storeId)) { Image(systemName: "square.and.arrow.up") }
                     .accessibilityLabel(CatalogL10n.string("share"))
             }
@@ -321,6 +325,9 @@ struct ProviderRow: View {
                         Image(systemName: "checkmark.seal.fill").foregroundStyle(Color.dsPrimary)
                             .accessibilityLabel(CatalogL10n.string("badge.verified"))
                     }
+                }
+                if let avg = provider.ratingAvg, let count = provider.ratingCount, count > 0 {
+                    RatingLabel(avg: avg, count: count)
                 }
                 if provider.femaleStaffOnly {
                     CatalogL10n.text("detail.femaleOnly").font(.dsCaption).foregroundStyle(Color.dsTextSecondary)

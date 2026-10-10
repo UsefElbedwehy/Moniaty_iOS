@@ -20,7 +20,7 @@
 "auth.phone.subtitle" = "We will send a 6-digit code to verify it. Saudi mobile numbers only.";
 "auth.phone.countryAccessibility" = "Country code, Saudi Arabia, plus 966";
 "auth.phone.numberAccessibility" = "Phone number";
-"auth.phone.terms" = "By continuing you agree to Munyati's Terms and Privacy Policy.";
+"auth.phone.terms" = "By continuing you agree to Munyati's Terms and Privacy Policy. There's no tolerance for abusive content or users.";
 "auth.phone.sendCode" = "Send code";
 
 /* OTP */

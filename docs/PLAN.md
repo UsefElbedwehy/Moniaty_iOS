@@ -341,6 +341,12 @@ Bilingual static site in the Munyati brand:
   (`supabase/migrations/20261013000000_subscriptions.sql`, `functions/tap-*`, `ProviderStudio`).
   Plans don't renew automatically (no saved cards); providers pay again, prompted by reminders.
   Seeded prices (99 / 249 / 499 SAR a month) are placeholders for the owner to set.
+- **Phase 5 — done (trust):** two-way reviews after completion (bride → provider public after
+  moderation, provider → bride private), names masked on the server, ratings on cards and
+  provider pages, provider replies; report anything; block (both sides hidden, no bookings);
+  support screen with tickets (also from a booking); zero-tolerance line at sign-up; admin RPCs
+  for moderation, reports, bans and ticket replies (`supabase/migrations/20261014000000_trust.sql`,
+  `Packages/Features/Trust`). Settings: `reviews_premoderation`, `review_window_days`, `banned_words`.
 
 ## 13. Design approach (answer to "premium app or Claude Design?")
 - **I can design it here.** The brand already has a palette (burgundy `#8A0D3A`, gold `#DFC389`, cream `#F2E5D2`, ivory `#FAFAEC`) and a logo.

@@ -37,6 +37,8 @@ public final class BookingFeature {
     let remainingBudget: () -> Decimal?
     /// Called after anything that changes the budget (approval, cancellation…).
     let onBookingsChanged: () -> Void
+    /// Review, report/block and help from the Trust feature (Phase 5).
+    var trustViews: BookingTrustViews?
 
     public init(repository: BookingRepository, receipts: ReceiptStorage,
                 remainingBudget: @escaping () -> Decimal?, onBookingsChanged: @escaping () -> Void) {
@@ -44,6 +46,10 @@ public final class BookingFeature {
         self.receipts = receipts
         self.remainingBudget = remainingBudget
         self.onBookingsChanged = onBookingsChanged
+    }
+
+    public func setTrustViews(_ views: BookingTrustViews) {
+        trustViews = views
     }
 
     /// The bride's "My bookings" or the provider's bookings inbox.
@@ -63,6 +69,20 @@ public final class BookingFeature {
         case .availability: AvailabilityScreen(feature: self)
         case .paymentMethods: PaymentMethodsScreen(feature: self)
         }
+    }
+}
+
+/// Views supplied by the App from the Trust feature, so Booking doesn't depend on it.
+public struct BookingTrustViews {
+    let review: (String, BookingRole) -> AnyView
+    let moreMenu: (String) -> AnyView
+    let helpSheet: (String) -> AnyView
+
+    public init(review: @escaping (String, BookingRole) -> AnyView, moreMenu: @escaping (String) -> AnyView,
+                helpSheet: @escaping (String) -> AnyView) {
+        self.review = review
+        self.moreMenu = moreMenu
+        self.helpSheet = helpSheet
     }
 }
 

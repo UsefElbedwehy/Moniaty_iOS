@@ -117,6 +117,7 @@ struct BookingDetailScreen: View {
     @State private var message: String?
     @State private var sheet: Sheet?
     @State private var confirmCancel = false
+    @State private var showHelp = false
 
     enum Sheet: Identifiable {
         case pay, propose, decline, rejectPayment, dispute, receipt(BookingReceipt)
@@ -149,6 +150,14 @@ struct BookingDetailScreen: View {
         .dsScreenBackground()
         .navigationTitle(state.value?.summary.referenceCode ?? "")
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            if let trust = feature.trustViews, state.value?.summary.isDemo == false {
+                ToolbarItem(placement: .topBarTrailing) { trust.moreMenu(bookingId) }
+            }
+        }
+        .sheet(isPresented: $showHelp) {
+            feature.trustViews?.helpSheet(bookingId)
+        }
         .refreshable { await load() }
         .task { await load() }
         .sheet(item: $sheet) { sheet in
@@ -233,6 +242,18 @@ struct BookingDetailScreen: View {
                         .buttonStyle(.plain)
                     }
                 }
+            }
+
+            if b.status == .completed, !b.isDemo, let trust = feature.trustViews {
+                trust.review(bookingId, role)
+            }
+
+            if !b.isDemo, feature.trustViews != nil {
+                Button { showHelp = true } label: {
+                    Label(BookingL10n.string("action.help"), systemImage: "questionmark.bubble")
+                        .font(.dsSubhead)
+                }
+                .tint(Color.dsPrimary)
             }
 
             if !detail.events.isEmpty {

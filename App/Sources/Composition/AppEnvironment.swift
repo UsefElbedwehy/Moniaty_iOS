@@ -10,6 +10,7 @@ import Shared
 import Catalog
 import ProviderStudio
 import Booking
+import Trust
 
 /// The composition root: builds every repository once, owns the app-wide stores, and is the
 /// only place that knows about Supabase and Firebase. Features get plain values and closures.
@@ -29,6 +30,8 @@ final class AppEnvironment {
     let studio: StudioFeature
     /// Requests, the booking lifecycle and receipts for both roles (Phase 3).
     private(set) var booking: BookingFeature!
+    /// Reviews, report, block and support (Phase 5).
+    private(set) var trust: TrustFeature!
 
     private static var useRemoteBackend: Bool {
         ProcessInfo.processInfo.environment["UITEST_MOCK_BACKEND"] != "1"
@@ -45,6 +48,8 @@ final class AppEnvironment {
     init() {
         let bookingRepository: BookingRepository
         let receiptStorage: ReceiptStorage
+        let trustRepository: TrustRepository
+        let mediaUploader: MediaUploading
         if Self.useRemoteBackend, let values = BackendConfiguration.load(),
            let config = BackendConfiguration.makeNetworkConfiguration() {
             let auth = SupabaseAuthRepository(client: URLSessionAPIClient(configuration: config))
@@ -58,14 +63,16 @@ final class AppEnvironment {
             contentRepository = SupabaseContentRepository(client: dataClient)
             cmsPageRepository = SupabaseCMSPageRepository(client: dataClient)
             catalogRepository = RemoteCatalogRepository(client: dataClient)
+            mediaUploader = SupabaseMediaUploader(
+                baseURL: values.baseURL,
+                anonKey: values.anonKey,
+                accessToken: { await auth.currentAccessToken() },
+                currentUserId: { await auth.currentUserId }
+            )
+            trustRepository = RemoteTrustRepository(client: dataClient)
             studio = StudioFeature(
                 repository: RemoteStudioRepository(client: dataClient),
-                uploader: SupabaseMediaUploader(
-                    baseURL: values.baseURL,
-                    anonKey: values.anonKey,
-                    accessToken: { await auth.currentAccessToken() },
-                    currentUserId: { await auth.currentUserId }
-                ),
+                uploader: mediaUploader,
                 checkout: TapPlanCheckout(
                     baseURL: values.baseURL,
                     anonKey: values.anonKey,
@@ -103,7 +110,9 @@ final class AppEnvironment {
             cmsPageRepository = MockCMSPageRepository()
             catalogRepository = MockCatalogRepository()
             let studioRepository = MockStudioRepository()
-            studio = StudioFeature(repository: studioRepository, uploader: MockMediaUploader(),
+            mediaUploader = MockMediaUploader()
+            trustRepository = MockTrustRepository()
+            studio = StudioFeature(repository: studioRepository, uploader: mediaUploader,
                                    checkout: MockPlanCheckout(repository: studioRepository))
             // One mock for both shells: a request sent as a bride shows up in the provider inbox.
             bookingRepository = MockBookingRepository()
@@ -124,6 +133,30 @@ final class AppEnvironment {
             onBookingsChanged: { [weak self] in self?.catalog.refreshBudget() }
         )
         catalog.setBookingHandler { [weak self] card in self?.requestBooking(card) }
+
+        trust = TrustFeature(
+            repository: trustRepository,
+            uploader: mediaUploader,
+            isSignedIn: { [weak self] in self?.session.hasAccount ?? false },
+            requireSignIn: { [weak self] in self?.session.isPresentingAuth = true }
+        )
+        let trustFeature = self.trust!
+        catalog.setTrustViews(CatalogTrustViews(
+            reviews: { AnyView(trustFeature.reviewsSection(providerId: $0)) },
+            moreMenu: { ref in
+                switch ref {
+                // A provider's id is also their account id, so it can be blocked directly.
+                case .provider(let id): AnyView(trustFeature.moreMenu(.provider(id), blockUserId: id))
+                case .service(let id): AnyView(trustFeature.moreMenu(.service(id)))
+                case .store(let id): AnyView(trustFeature.moreMenu(.store(id)))
+                }
+            }
+        ))
+        booking.setTrustViews(BookingTrustViews(
+            review: { id, role in AnyView(trustFeature.bookingReviewSection(bookingId: id, role: role == .bride ? .bride : .provider)) },
+            moreMenu: { id in AnyView(trustFeature.moreMenu(.booking(id), blockBookingId: id)) },
+            helpSheet: { id in AnyView(trustFeature.ticketSheet(bookingId: id)) }
+        ))
         let bookingFeature = self.booking!
         studio.setSettingsDestination { link in
             switch link {

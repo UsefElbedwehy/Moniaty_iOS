@@ -71,9 +71,15 @@ struct ServiceCardView: View {
                 }
                 .font(.dsFootnote)
                 .foregroundStyle(Color.dsTextSecondary)
-                Text(verbatim: formatSAR(card.price))
-                    .font(.dsSubhead)
-                    .foregroundStyle(Color.dsPrimary)
+                HStack {
+                    Text(verbatim: formatSAR(card.price))
+                        .font(.dsSubhead)
+                        .foregroundStyle(Color.dsPrimary)
+                    Spacer(minLength: 0)
+                    if let avg = card.ratingAvg, let count = card.ratingCount, count > 0 {
+                        RatingLabel(avg: avg, count: nil)
+                    }
+                }
             }
             .frame(width: width)
             .contentShape(Rectangle())
@@ -231,5 +237,23 @@ struct ServiceGrid: View {
                 ServiceCardView(card: card, feature: feature)
             }
         }
+    }
+}
+
+/// "★ 4.8 (12)" from approved bride reviews.
+struct RatingLabel: View {
+    let avg: Decimal
+    let count: Int?
+
+    var body: some View {
+        let value = NSDecimalNumber(decimal: avg).doubleValue.formatted(.number.precision(.fractionLength(1)))
+        HStack(spacing: 2) {
+            Image(systemName: "star.fill").foregroundStyle(Color.dsPremiumGold)
+            Text(verbatim: count.map { "\(value) (\($0))" } ?? value)
+        }
+        .font(.dsCaption)
+        .foregroundStyle(Color.dsTextSecondary)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(CatalogL10n.format("rating.a11y", value))
     }
 }

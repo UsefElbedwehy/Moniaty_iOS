@@ -1,0 +1,74 @@
+/* Trust strings (Phase 5): reviews, report, block, support. */
+
+"common.cancel" = "Cancel";
+"common.ok" = "OK";
+"common.send" = "Send";
+"more" = "More";
+
+"reviews.title" = "Reviews";
+"reviews.seeAll" = "See all";
+"reviews.none" = "No reviews yet.";
+"reviews.count" = "%d reviews";
+"reviews.stars" = "%d out of 5 stars";
+"reviews.reply" = "Provider's reply";
+
+"review.title" = "Rate your experience";
+"review.write" = "Write a review";
+"review.prompt.bride" = "How did it go? Your review helps other brides.";
+"review.prompt.provider" = "Rate your experience with the bride (a private note she won't see).";
+"review.mine.bride" = "Your review";
+"review.mine.provider" = "Your private note";
+"review.pending" = "Your review is being checked and will be published soon.";
+"review.text.bride" = "Tell us about it (optional)";
+"review.text.provider" = "Private note (optional)";
+"review.footer.bride" = "Your name is shown shortened (like “No**** Mo****”). Reviews are checked before they're published.";
+"review.footer.provider" = "The bride and the public never see this note; only the Munyati team does.";
+"review.photos" = "Photos (optional)";
+"review.addPhotos" = "Add photos";
+
+"report.action" = "Report";
+"report.title" = "Report";
+"report.reason" = "Reason";
+"report.reason.spam" = "Spam or advertising";
+"report.reason.inappropriate" = "Inappropriate content";
+"report.reason.fake" = "Fake information";
+"report.reason.harassment" = "Abuse or harassment";
+"report.reason.fraud" = "Fraud";
+"report.reason.other" = "Something else";
+"report.details" = "Details (optional)";
+"report.footer" = "The Munyati team reviews reports within 24 hours. The other person won't know who reported.";
+"report.thanks" = "Thanks. We received your report and will review it within 24 hours.";
+
+"block.action" = "Block";
+"block.confirm.title" = "Block this account?";
+"block.confirm.message" = "You won't see their services or reviews, and neither of you can book the other. You can unblock from Profile.";
+"block.done" = "Blocked.";
+"block.unblock" = "Unblock";
+"block.list.title" = "Blocked accounts";
+"block.empty.title" = "No blocked accounts";
+"block.empty.message" = "You can block any account from the “More” menu on its page.";
+
+"support.title" = "Help and support";
+"support.faq" = "FAQ";
+"support.contact.email" = "Email";
+"support.contact.whatsapp" = "WhatsApp";
+"support.contact.phone" = "Call";
+"support.footer" = "Munyati connects brides with providers; payments go directly between them.";
+"support.tickets" = "Support requests";
+"support.newTicket" = "New support request";
+"support.subject" = "Subject";
+"support.message" = "Your message";
+"support.aboutBooking" = "The booking number is attached to your request.";
+"support.status.open" = "Open";
+"support.status.answered" = "Answered";
+"support.status.closed" = "Closed";
+
+"error.generic" = "Something went wrong. Please try again.";
+"error.not_completed" = "You can review once the service is completed.";
+"error.window_closed" = "The review period for this booking has ended.";
+"error.banned" = "You can't add reviews right now.";
+"error.invalid_rating" = "Choose a star rating.";
+"error.already_reviewed" = "You've already reviewed this booking.";
+"error.invalid_photo" = "Couldn't attach the photo. Try another one.";
+"error.sign_in_required" = "Please sign in first.";
+"error.too_many" = "Too many attempts. Please try later.";

@@ -25,6 +25,10 @@ public enum AnalyticsEvent: String, Sendable, CaseIterable {
     case bookingSubmitted = "booking_submitted"
     case paywallView = "paywall_view"
     case planPurchaseStarted = "plan_purchase_started"
+    case reviewSubmitted = "review_submitted"
+    case reportSubmitted = "report_submitted"
+    case userBlocked = "user_blocked"
+    case supportTicketCreated = "support_ticket_created"
 }
 
 /// Fire-and-forget analytics, injected once by the composition root (like `AuthGate`) so a

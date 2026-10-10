@@ -37,6 +37,8 @@ packages:
     path: Packages/Features/ProviderStudio
   Booking:
     path: Packages/Features/Booking
+  Trust:
+    path: Packages/Features/Trust
   # Vendor SDK, linked to the App target only (packages stay vendor-free).
   Firebase:
     url: https://github.com/firebase/firebase-ios-sdk
@@ -73,6 +75,7 @@ targets:
       - package: Catalog
       - package: ProviderStudio
       - package: Booking
+      - package: Trust
       - package: Firebase
         product: FirebaseMessaging
       - package: Firebase
@@ -126,4 +129,5 @@ schemes:
         - package: Catalog/CatalogTests
         - package: ProviderStudio/ProviderStudioTests
         - package: Booking/BookingTests
+        - package: Trust/TrustTests
         - package: DesignSystem/DesignSystemTests

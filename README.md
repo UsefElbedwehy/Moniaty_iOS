@@ -41,4 +41,7 @@ packages use iOS-only APIs, so run those from Xcode.
 - **Phase 4 (subscriptions):** Normal / Plus / Diamond plans paid through Tap, a 2-month
   free trial from approval, plan limits (services, stores, photos), boosted search and a
   featured badge, trial and renewal reminders, and an insights screen for providers.
-- Next: Phase 5 (reviews, reports and trust) (`docs/PLAN.md` §12).
+- **Phase 5 (trust):** reviews both ways after a completed booking (names masked, checked
+  before publishing), report and block from any provider, service, store, review or booking,
+  and a support screen with tickets.
+- Next: Phase 6 (admin dashboard) and Phase 7 (website) (`docs/PLAN.md` §12).

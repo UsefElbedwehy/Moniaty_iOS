@@ -32,7 +32,8 @@
 "profile.terms" = "Terms";
 "profile.privacy" = "Privacy policy";
 "profile.about" = "About Munyati";
-"profile.contact" = "Contact us";
+"profile.support" = "Help and support";
+"profile.blocked" = "Blocked accounts";
 "profile.signOut" = "Sign out";
 "profile.deleteAccount" = "Delete account";
 "profile.deleteAccount.confirmTitle" = "Delete your account permanently?";

@@ -91,6 +91,7 @@
 "action.cancel" = "Cancel booking";
 "action.cancel.confirm" = "Cancel this booking?";
 "action.dispute" = "Report a problem";
+"action.help" = "Need help with this booking?";
 
 "pay.title" = "Payment";
 "pay.amount" = "Amount due";

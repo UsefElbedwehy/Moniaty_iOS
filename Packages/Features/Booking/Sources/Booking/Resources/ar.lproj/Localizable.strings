@@ -91,6 +91,7 @@
 "action.cancel" = "إلغاء الحجز";
 "action.cancel.confirm" = "هل تريدين إلغاء هذا الحجز؟";
 "action.dispute" = "الإبلاغ عن مشكلة";
+"action.help" = "تحتاجين مساعدة بخصوص هذا الحجز؟";
 
 "pay.title" = "الدفع";
 "pay.amount" = "المبلغ المطلوب";

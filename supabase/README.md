@@ -12,6 +12,7 @@ Postgres schema, security rules and edge functions for the Munyati app. Region: 
 | `migrations/20261011000000_catalog.sql` | Phase 2: stores, services, favorites, budgets, search/detail/map RPCs, provider studio RPCs, public `media` bucket |
 | `migrations/20261012000000_booking.sql` | Phase 3: availability, bookings state machine, proposals, payment methods (IBAN check), receipts (private `receipts` bucket, duplicate detection), disputes, demo booking, timers and reminders, push/SMS notifications |
 | `migrations/20261013000000_subscriptions.sql` | Phase 4: plans (Normal / Plus / Diamond, dashboard-editable), entitlements by source (Tap now, App Store later), Tap payments ledger, 2-month trial on approval (one per phone), plan limits and listing visibility, upgrade credit, featured badge and search boost, trial/renewal reminders, provider insights |
+| `migrations/20261014000000_trust.sql` | Phase 5: two-way reviews (server-side name masking, pre-moderation, banned words, ratings on cards), reports, blocks (hide each other everywhere and prevent bookings), support tickets, admin moderation RPCs |
 | `migrations/20261010000100_reference_data.sql` | Admin roles, launch cities (Dammam, Khobar, Qatif), 25 categories (14 active), default app config, placeholder CMS pages |
 | `functions/send-otp` | Sends the login code by OurSMS. Saudi mobiles only; limits enforced atomically in SQL |
 | `functions/verify-otp` | Checks the code, creates the account (with role) or signs in, returns a session |
