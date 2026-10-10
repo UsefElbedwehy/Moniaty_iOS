@@ -47,4 +47,6 @@ packages use iOS-only APIs, so run those from Xcode.
 - **Phase 6 (admin dashboard):** `dashboard/`, a Next.js app in Arabic for running the business:
   approvals, bookings and disputes, moderation, payments, plans, content, settings, push
   campaigns, analytics, audit log and team roles. See `dashboard/README.md`.
-- Next: Phase 7 (website) (`docs/PLAN.md` §12).
+- **Phase 7 (website):** `website/`, the munyati.co site with legal pages, support, account
+  deletion and universal links. See `website/README.md`.
+- **Your checklist:** `docs/OWNER_TODO.md`. **Continuing locally:** `docs/HANDOFF.md`.
