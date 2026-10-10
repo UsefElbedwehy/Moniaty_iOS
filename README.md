@@ -33,4 +33,9 @@ packages use iOS-only APIs, so run those from Xcode.
   female staff only, sort), open service / provider / store pages, save favorites, set a
   budget, share links and explore the map. Providers fill in their join form, services (with
   photos) and stores in "My studio"; nothing is public until an admin approves them.
-- Next: Phase 3 (booking, payment receipts, demo booking), then subscriptions (`docs/PLAN.md` §12).
+- **Phase 3 (booking):** brides request a free time slot; providers approve, decline or
+  propose another time; brides transfer the full amount and upload the receipt; providers
+  confirm it and mark the service done. Either side can cancel or report a problem. New
+  providers get a demo booking, and providers set working hours and payout methods in
+  "My studio". Deadlines run on pg_cron, and key events also go out by SMS.
+- Next: Phase 4 (provider subscriptions), then reviews and trust (`docs/PLAN.md` §12).

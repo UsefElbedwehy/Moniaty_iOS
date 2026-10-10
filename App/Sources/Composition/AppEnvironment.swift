@@ -9,6 +9,7 @@ import Authentication
 import Shared
 import Catalog
 import ProviderStudio
+import Booking
 
 /// The composition root: builds every repository once, owns the app-wide stores, and is the
 /// only place that knows about Supabase and Firebase. Features get plain values and closures.
@@ -26,6 +27,8 @@ final class AppEnvironment {
     private(set) var catalog: CatalogFeature!
     /// Provider studio (Phase 2).
     let studio: StudioFeature
+    /// Requests, the booking lifecycle and receipts for both roles (Phase 3).
+    private(set) var booking: BookingFeature!
 
     private static var useRemoteBackend: Bool {
         ProcessInfo.processInfo.environment["UITEST_MOCK_BACKEND"] != "1"
@@ -40,6 +43,8 @@ final class AppEnvironment {
     private let performDeleteAccount: (@Sendable () async throws -> Void)?
 
     init() {
+        let bookingRepository: BookingRepository
+        let receiptStorage: ReceiptStorage
         if Self.useRemoteBackend, let values = BackendConfiguration.load(),
            let config = BackendConfiguration.makeNetworkConfiguration() {
             let auth = SupabaseAuthRepository(client: URLSessionAPIClient(configuration: config))
@@ -61,6 +66,12 @@ final class AppEnvironment {
                     accessToken: { await auth.currentAccessToken() },
                     currentUserId: { await auth.currentUserId }
                 )
+            )
+            bookingRepository = RemoteBookingRepository(client: dataClient)
+            receiptStorage = SupabaseReceiptStorage(
+                baseURL: values.baseURL,
+                anonKey: values.anonKey,
+                accessToken: { await auth.currentAccessToken() }
             )
             analytics = Self.makeAnalytics(client: dataClient)
 
@@ -87,6 +98,9 @@ final class AppEnvironment {
             cmsPageRepository = MockCMSPageRepository()
             catalogRepository = MockCatalogRepository()
             studio = StudioFeature(repository: MockStudioRepository(), uploader: MockMediaUploader())
+            // One mock for both shells: a request sent as a bride shows up in the provider inbox.
+            bookingRepository = MockBookingRepository()
+            receiptStorage = MockReceiptStorage()
             analytics = .disabled
             performDeleteAccount = nil
         }
@@ -96,6 +110,31 @@ final class AppEnvironment {
             openCityPicker: { [weak self] in self?.session.isPickingCities = true },
             requireSignIn: { [weak self] in self?.session.isPresentingAuth = true }
         )
+        booking = BookingFeature(
+            repository: bookingRepository,
+            receipts: receiptStorage,
+            remainingBudget: { [weak self] in self?.catalog.remainingBudget },
+            onBookingsChanged: { [weak self] in self?.catalog.refreshBudget() }
+        )
+        catalog.setBookingHandler { [weak self] card in self?.requestBooking(card) }
+        let bookingFeature = self.booking!
+        studio.setSettingsDestination { link in
+            switch link {
+            case .availability: AnyView(bookingFeature.destination(for: .availability, role: .provider))
+            case .paymentMethods: AnyView(bookingFeature.destination(for: .paymentMethods, role: .provider))
+            }
+        }
+    }
+
+    /// "Book" on a service: guests sign in first, providers can't book, brides get the request sheet.
+    private func requestBooking(_ card: ServiceCard) {
+        guard session.hasAccount else {
+            session.isPresentingAuth = true
+            return
+        }
+        guard session.user?.role != .provider else { return }
+        session.bookingRequest = BookableService(id: card.id, title: card.title, price: card.price,
+                                                 providerName: card.providerName)
     }
 
     /// Mirrors who is signed in and which cities are chosen into the catalog, which reloads

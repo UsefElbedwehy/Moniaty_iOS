@@ -328,6 +328,11 @@ Bilingual static site in the Munyati brand:
   (`supabase/migrations/20261011000000_catalog.sql`, `Packages/Features/{Catalog,ProviderStudio}`).
   Until Phase 4 plans exist, providers get the trial allowance from `app_config`
   (`trial_max_services` 10, `trial_max_stores` 3).
+- **Phase 3 — done:** booking requests with free slots, approve / decline / propose another
+  time, full-amount transfer with receipt upload (private `receipts` bucket, duplicate-hash
+  check), confirm or reject payment, completion, cancellation, disputes, a demo booking for
+  every new provider, timers via pg_cron, SMS for key events, and the provider's working hours
+  and payout methods (`supabase/migrations/20261012000000_booking.sql`, `Packages/Features/Booking`).
 
 ## 13. Design approach (answer to "premium app or Claude Design?")
 - **I can design it here.** The brand already has a palette (burgundy `#8A0D3A`, gold `#DFC389`, cream `#F2E5D2`, ivory `#FAFAEC`) and a logo.

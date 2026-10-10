@@ -29,12 +29,26 @@ public final class URLSessionAPIClient: APIClient {
         // vary per-environment).
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
+        encoder.dateEncodingStrategy = .iso8601
         self.encoder = encoder
 
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
-        decoder.dateDecodingStrategy = .iso8601
+        decoder.dateDecodingStrategy = .custom(Self.decodePostgresDate)
         self.decoder = decoder
+    }
+
+    /// Postgres `timestamptz` JSON is ISO 8601 with or without fractional seconds
+    /// ("2026-10-13T15:00:00+00:00", "2026-10-13T15:00:00.123456+00:00").
+    static func decodePostgresDate(_ decoder: Decoder) throws -> Date {
+        let container = try decoder.singleValueContainer()
+        let string = try container.decode(String.self)
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = formatter.date(from: string) { return date }
+        formatter.formatOptions = [.withInternetDateTime]
+        if let date = formatter.date(from: string) { return date }
+        throw DecodingError.dataCorruptedError(in: container, debugDescription: "Invalid date: \(string)")
     }
 
     public func send<Response: Decodable & Sendable>(_ endpoint: APIEndpoint) async throws(AppError) -> Response {

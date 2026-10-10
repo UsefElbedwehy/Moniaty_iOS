@@ -1,6 +1,7 @@
 import SwiftUI
 import Observation
 import Authentication
+import Booking
 
 /// Who is using the app right now. Decides which shell `RootView` shows:
 /// - `.checking`: launch only, restoring the Keychain session (splash).
@@ -30,6 +31,9 @@ final class AppSession {
 
     /// Set when a screen asks for the city picker (Home's city button).
     var isPickingCities = false
+
+    /// The service a bride tapped "Book" on; presents the booking request sheet.
+    var bookingRequest: BookableService?
 
     init() {
         // UI-test hooks: start signed in as a given role so automated runs skip OTP.

@@ -72,3 +72,8 @@
 "store.name" = "Store name";
 "store.description" = "Store description";
 "store.visible" = "Visible to brides";
+
+"studio.availability" = "Working hours";
+"studio.availability.subtitle" = "Days, hours and days off";
+"studio.paymentMethods" = "Payout methods";
+"studio.paymentMethods.subtitle" = "Accounts brides transfer to";

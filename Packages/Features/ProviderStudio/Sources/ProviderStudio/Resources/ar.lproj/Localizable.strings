@@ -72,3 +72,8 @@
 "store.name" = "اسم المتجر";
 "store.description" = "وصف المتجر";
 "store.visible" = "ظاهر للعرائس";
+
+"studio.availability" = "أوقات العمل";
+"studio.availability.subtitle" = "الأيام والساعات وأيام الإجازة";
+"studio.paymentMethods" = "طرق استلام المبالغ";
+"studio.paymentMethods.subtitle" = "الحسابات التي تحوّل لها العرائس";

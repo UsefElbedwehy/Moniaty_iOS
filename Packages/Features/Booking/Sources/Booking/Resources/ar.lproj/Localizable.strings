@@ -1,0 +1,162 @@
+/* Booking strings (Phase 3). */
+
+"common.cancel" = "إلغاء";
+"common.ok" = "حسناً";
+"common.send" = "إرسال";
+"common.done" = "تم";
+"common.save" = "حفظ";
+"common.copy" = "نسخ";
+"common.copied" = "تم النسخ";
+
+"request.title" = "طلب حجز";
+"request.day" = "اختاري اليوم";
+"request.time" = "الوقت المتاح";
+"request.noSlots" = "لا توجد أوقات متاحة في هذا اليوم، جرّبي يوماً آخر.";
+"request.note" = "ملاحظة لمقدّمة الخدمة (اختياري)";
+"request.budgetAfter" = "المتبقي من ميزانيتك بعد هذا الحجز: %@";
+"request.paymentInfo" = "لن تدفعي الآن. بعد موافقة مقدّمة الخدمة تحوّلين المبلغ كاملاً لحسابها وترفعين الإيصال.";
+"request.send" = "إرسال طلب الحجز";
+
+"list.title.bride" = "حجوزاتي";
+"list.title.provider" = "الحجوزات";
+"list.active" = "الحالية";
+"list.past" = "السابقة";
+"list.empty.title" = "لا توجد حجوزات";
+"list.empty.bride" = "تصفّحي الخدمات واحجزي ما يناسب يومك المميز.";
+"list.empty.provider" = "ستظهر هنا طلبات الحجز من العرائس.";
+
+"demo.badge" = "تجريبي";
+"demo.banner" = "هذا حجز تجريبي لتتعرّفي على خطوات الحجز. لا توجد عروس حقيقية ولا مبالغ.";
+"demo.receipt" = "إيصال تجريبي";
+
+"status.requested" = "بانتظار الموافقة";
+"status.reschedule_proposed" = "موعد مقترح";
+"status.awaiting_payment" = "بانتظار الدفع";
+"status.payment_submitted" = "تم رفع الإيصال";
+"status.payment_confirmed" = "مؤكد";
+"status.completed" = "مكتمل";
+"status.declined" = "مرفوض";
+"status.cancelled_by_bride" = "ألغته العروس";
+"status.cancelled_by_provider" = "ألغته مقدّمة الخدمة";
+"status.expired" = "منتهي";
+"status.disputed" = "قيد المراجعة";
+
+"hint.bride.requested" = "أرسلنا طلبك. ستردّ مقدّمة الخدمة خلال ٤٨ ساعة.";
+"hint.bride.reschedule_proposed" = "اقترحت مقدّمة الخدمة موعداً آخر. اقبليه أو ارفضيه خلال ٢٤ ساعة.";
+"hint.bride.awaiting_payment" = "تمت الموافقة! حوّلي المبلغ وارفعي الإيصال قبل انتهاء المهلة.";
+"hint.bride.payment_submitted" = "استلمنا إيصالك. ستؤكد مقدّمة الخدمة الاستلام خلال ٤٨ ساعة.";
+"hint.bride.payment_confirmed" = "حجزك مؤكد. نتمنى لك يوماً سعيداً!";
+"hint.bride.completed" = "اكتملت الخدمة. شكراً لاختيارك منيتي.";
+"hint.bride.declined" = "اعتذرت مقدّمة الخدمة عن هذا الموعد. جرّبي موعداً أو مقدّمة خدمة أخرى.";
+"hint.bride.cancelled_by_bride" = "ألغيتِ هذا الحجز.";
+"hint.bride.cancelled_by_provider" = "ألغت مقدّمة الخدمة هذا الحجز.";
+"hint.bride.expired" = "انتهت مهلة هذا الحجز.";
+"hint.bride.disputed" = "فريق منيتي يراجع البلاغ وسيتواصل معك.";
+
+"hint.provider.requested" = "طلب جديد. وافقي أو اقترحي موعداً آخر أو اعتذري خلال ٤٨ ساعة.";
+"hint.provider.reschedule_proposed" = "بانتظار ردّ العروس على الموعد المقترح.";
+"hint.provider.awaiting_payment" = "بانتظار تحويل العروس للمبلغ ورفع الإيصال.";
+"hint.provider.payment_submitted" = "رفعت العروس الإيصال. تأكدي من وصول المبلغ لحسابك ثم أكّدي الاستلام.";
+"hint.provider.payment_confirmed" = "الحجز مؤكد. بعد تقديم الخدمة اضغطي «تمت الخدمة».";
+"hint.provider.completed" = "اكتملت الخدمة.";
+"hint.provider.declined" = "اعتذرتِ عن هذا الطلب.";
+"hint.provider.cancelled_by_bride" = "ألغت العروس هذا الحجز.";
+"hint.provider.cancelled_by_provider" = "ألغيتِ هذا الحجز.";
+"hint.provider.expired" = "انتهت مهلة هذا الحجز.";
+"hint.provider.disputed" = "فريق منيتي يراجع البلاغ وسيتواصل معك.";
+
+"detail.missing" = "تعذّر العثور على الحجز.";
+"detail.payBy" = "ادفعي قبل %@";
+"proposal.title" = "الموعد المقترح";
+"proposal.expires" = "يُرجى الرد قبل %@";
+"proposal.newTime" = "الموعد الجديد";
+"proposal.note" = "ملاحظة للعروس (اختياري)";
+"receipts.title" = "الإيصالات";
+"receipt.status.pending" = "قيد المراجعة";
+"receipt.status.accepted" = "مقبول";
+"receipt.status.rejected" = "مرفوض";
+"timeline.title" = "سجل الحجز";
+"progress.label" = "الخطوة %1$d من %2$d";
+
+"action.acceptTime" = "قبول الموعد";
+"action.rejectTime" = "رفض الموعد";
+"action.pay" = "الدفع ورفع الإيصال";
+"action.approve" = "موافقة";
+"action.propose" = "اقتراح موعد آخر";
+"action.decline" = "اعتذار";
+"action.viewReceipt" = "عرض الإيصال";
+"action.confirmPayment" = "تأكيد استلام المبلغ";
+"action.rejectPayment" = "لم يصل المبلغ";
+"action.complete" = "تمت الخدمة";
+"action.cancel" = "إلغاء الحجز";
+"action.cancel.confirm" = "هل تريدين إلغاء هذا الحجز؟";
+"action.dispute" = "الإبلاغ عن مشكلة";
+
+"pay.title" = "الدفع";
+"pay.amount" = "المبلغ المطلوب";
+"pay.reference" = "رقم الحجز";
+"pay.referenceHint" = "اكتبي رقم الحجز في وصف التحويل.";
+"pay.methods" = "حوّلي إلى أحد الحسابات";
+"pay.beneficiary" = "باسم: %@";
+"pay.receipt" = "إيصال التحويل";
+"pay.attach" = "إرفاق صورة الإيصال";
+"pay.attached" = "تم إرفاق الإيصال";
+"pay.transferredAmount" = "المبلغ المحوَّل";
+"pay.transferTime" = "وقت التحويل";
+"pay.senderBank" = "البنك المحوِّل (اختياري)";
+"pay.disclaimer" = "منيتي لا تستلم المبالغ. التحويل يتم مباشرة لحساب مقدّمة الخدمة، وتتم مراجعة الإيصالات للحماية من الاحتيال.";
+"pay.submit" = "إرسال الإيصال";
+
+"method.iban" = "آيبان";
+"method.sarie_alias" = "سريع (رقم الجوال)";
+"method.wallet" = "محفظة إلكترونية";
+
+"reason.optional" = "السبب (اختياري)";
+"reason.required" = "اكتبي السبب";
+"dispute.reason" = "نوع المشكلة";
+"dispute.details" = "التفاصيل (اختياري)";
+"dispute.footer" = "سيراجع فريق منيتي البلاغ ويتواصل مع الطرفين.";
+"dispute.payment_not_received" = "لم يصل المبلغ";
+"dispute.receipt_fake" = "إيصال غير صحيح";
+"dispute.no_show" = "عدم الحضور";
+"dispute.service_issue" = "مشكلة في الخدمة";
+"dispute.refund" = "طلب استرداد";
+"dispute.other" = "أخرى";
+
+"availability.title" = "أوقات العمل";
+"availability.weekly" = "الأيام والساعات";
+"availability.weeklyFooter" = "تظهر للعرائس الأوقات المتاحة فقط ضمن هذه الساعات، بدون أي حجز متداخل.";
+"availability.from" = "من";
+"availability.to" = "إلى";
+"availability.daysOff" = "أيام الإجازة";
+"availability.addDayOff" = "إضافة يوم إجازة";
+
+"methods.title" = "طرق استلام المبالغ";
+"methods.add" = "إضافة طريقة";
+"methods.edit" = "تعديل الطريقة";
+"methods.kind" = "النوع";
+"methods.label" = "اسم البنك أو المحفظة";
+"methods.accountName" = "اسم صاحب الحساب";
+"methods.value.iban" = "رقم الآيبان SA…";
+"methods.value.sarie_alias" = "رقم الجوال";
+"methods.value.wallet" = "رقم المحفظة";
+"methods.hint.iban" = "آيبان سعودي من ٢٤ خانة يبدأ بـ SA.";
+"methods.hint.sarie_alias" = "رقم الجوال المربوط بخدمة سريع.";
+"methods.hint.wallet" = "رقم الجوال المسجّل في المحفظة (STC Pay وغيرها).";
+"methods.active" = "تظهر للعرائس";
+"methods.inactive" = "مخفية";
+"methods.footer" = "تُحفظ نسخة من هذه البيانات مع كل حجز تتم الموافقة عليه، فالتعديل لا يغيّر الحجوزات السابقة.";
+"methods.empty.title" = "لا توجد طرق دفع";
+"methods.empty.message" = "أضيفي حساباً واحداً على الأقل لتتمكني من قبول الحجوزات.";
+
+"error.generic" = "حدث خطأ، حاولي مرة أخرى.";
+"error.upload" = "تعذّر رفع الصورة، حاولي مرة أخرى.";
+"error.slot_unavailable" = "هذا الوقت لم يعد متاحاً، اختاري وقتاً آخر.";
+"error.category_active" = "لديك حجز قائم في هذا القسم. يمكنك الحجز مجدداً بعد اكتماله أو إلغائه.";
+"error.service_unavailable" = "هذه الخدمة غير متاحة حالياً.";
+"error.no_payment_method" = "أضيفي طريقة استلام مبالغ قبل الموافقة على الحجوزات.";
+"error.too_soon" = "الموعد المقترح قريب جداً، اختاري موعداً أبعد.";
+"error.not_started" = "لا يمكن إنهاء الخدمة قبل موعدها.";
+"error.invalid_iban" = "رقم الآيبان غير صحيح.";
+"error.invalid_mobile" = "رقم الجوال غير صحيح.";
+"error.demo" = "لا يمكن الإبلاغ عن الحجز التجريبي.";

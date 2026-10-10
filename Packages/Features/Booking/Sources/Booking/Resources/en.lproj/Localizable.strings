@@ -1,0 +1,162 @@
+/* Booking strings (Phase 3). */
+
+"common.cancel" = "Cancel";
+"common.ok" = "OK";
+"common.send" = "Send";
+"common.done" = "Done";
+"common.save" = "Save";
+"common.copy" = "Copy";
+"common.copied" = "Copied";
+
+"request.title" = "Booking request";
+"request.day" = "Choose a day";
+"request.time" = "Available times";
+"request.noSlots" = "No times are available on this day. Try another day.";
+"request.note" = "Note for the provider (optional)";
+"request.budgetAfter" = "Budget left after this booking: %@";
+"request.paymentInfo" = "You don't pay now. Once the provider approves, you transfer the full amount to their account and upload the receipt.";
+"request.send" = "Send booking request";
+
+"list.title.bride" = "My bookings";
+"list.title.provider" = "Bookings";
+"list.active" = "Current";
+"list.past" = "Past";
+"list.empty.title" = "No bookings";
+"list.empty.bride" = "Browse services and book what suits your special day.";
+"list.empty.provider" = "Booking requests from brides will appear here.";
+
+"demo.badge" = "Demo";
+"demo.banner" = "This is a demo booking to walk you through the steps. There is no real bride and no money involved.";
+"demo.receipt" = "Sample receipt";
+
+"status.requested" = "Awaiting approval";
+"status.reschedule_proposed" = "New time proposed";
+"status.awaiting_payment" = "Awaiting payment";
+"status.payment_submitted" = "Receipt uploaded";
+"status.payment_confirmed" = "Confirmed";
+"status.completed" = "Completed";
+"status.declined" = "Declined";
+"status.cancelled_by_bride" = "Cancelled by bride";
+"status.cancelled_by_provider" = "Cancelled by provider";
+"status.expired" = "Expired";
+"status.disputed" = "Under review";
+
+"hint.bride.requested" = "Request sent. The provider will reply within 48 hours.";
+"hint.bride.reschedule_proposed" = "The provider proposed another time. Accept or decline it within 24 hours.";
+"hint.bride.awaiting_payment" = "Approved! Transfer the amount and upload the receipt before the deadline.";
+"hint.bride.payment_submitted" = "We received your receipt. The provider will confirm within 48 hours.";
+"hint.bride.payment_confirmed" = "Your booking is confirmed. Have a wonderful day!";
+"hint.bride.completed" = "Service completed. Thank you for choosing Munyati.";
+"hint.bride.declined" = "The provider can't make this time. Try another time or provider.";
+"hint.bride.cancelled_by_bride" = "You cancelled this booking.";
+"hint.bride.cancelled_by_provider" = "The provider cancelled this booking.";
+"hint.bride.expired" = "This booking expired.";
+"hint.bride.disputed" = "The Munyati team is reviewing the report and will contact you.";
+
+"hint.provider.requested" = "New request. Approve, propose another time, or decline within 48 hours.";
+"hint.provider.reschedule_proposed" = "Waiting for the bride to answer your proposed time.";
+"hint.provider.awaiting_payment" = "Waiting for the bride to transfer the amount and upload the receipt.";
+"hint.provider.payment_submitted" = "The bride uploaded a receipt. Check the money reached your account, then confirm.";
+"hint.provider.payment_confirmed" = "Booking confirmed. After the service, tap “Service done”.";
+"hint.provider.completed" = "Service completed.";
+"hint.provider.declined" = "You declined this request.";
+"hint.provider.cancelled_by_bride" = "The bride cancelled this booking.";
+"hint.provider.cancelled_by_provider" = "You cancelled this booking.";
+"hint.provider.expired" = "This booking expired.";
+"hint.provider.disputed" = "The Munyati team is reviewing the report and will contact you.";
+
+"detail.missing" = "Booking not found.";
+"detail.payBy" = "Pay by %@";
+"proposal.title" = "Proposed time";
+"proposal.expires" = "Please reply by %@";
+"proposal.newTime" = "New time";
+"proposal.note" = "Note for the bride (optional)";
+"receipts.title" = "Receipts";
+"receipt.status.pending" = "Under review";
+"receipt.status.accepted" = "Accepted";
+"receipt.status.rejected" = "Rejected";
+"timeline.title" = "Booking history";
+"progress.label" = "Step %1$d of %2$d";
+
+"action.acceptTime" = "Accept time";
+"action.rejectTime" = "Decline time";
+"action.pay" = "Pay and upload receipt";
+"action.approve" = "Approve";
+"action.propose" = "Propose another time";
+"action.decline" = "Decline";
+"action.viewReceipt" = "View receipt";
+"action.confirmPayment" = "Confirm payment received";
+"action.rejectPayment" = "Payment not received";
+"action.complete" = "Service done";
+"action.cancel" = "Cancel booking";
+"action.cancel.confirm" = "Cancel this booking?";
+"action.dispute" = "Report a problem";
+
+"pay.title" = "Payment";
+"pay.amount" = "Amount due";
+"pay.reference" = "Booking number";
+"pay.referenceHint" = "Write the booking number in the transfer description.";
+"pay.methods" = "Transfer to one of these accounts";
+"pay.beneficiary" = "Name: %@";
+"pay.receipt" = "Transfer receipt";
+"pay.attach" = "Attach receipt photo";
+"pay.attached" = "Receipt attached";
+"pay.transferredAmount" = "Amount transferred";
+"pay.transferTime" = "Transfer time";
+"pay.senderBank" = "Sending bank (optional)";
+"pay.disclaimer" = "Munyati never holds your money. You transfer directly to the provider, and receipts are reviewed to protect against fraud.";
+"pay.submit" = "Send receipt";
+
+"method.iban" = "IBAN";
+"method.sarie_alias" = "Sarie (mobile number)";
+"method.wallet" = "E-wallet";
+
+"reason.optional" = "Reason (optional)";
+"reason.required" = "Write the reason";
+"dispute.reason" = "Problem";
+"dispute.details" = "Details (optional)";
+"dispute.footer" = "The Munyati team will review the report and contact both sides.";
+"dispute.payment_not_received" = "Payment not received";
+"dispute.receipt_fake" = "Invalid receipt";
+"dispute.no_show" = "No-show";
+"dispute.service_issue" = "Problem with the service";
+"dispute.refund" = "Refund request";
+"dispute.other" = "Other";
+
+"availability.title" = "Working hours";
+"availability.weekly" = "Days and hours";
+"availability.weeklyFooter" = "Brides only see free times within these hours, with no overlapping bookings.";
+"availability.from" = "From";
+"availability.to" = "To";
+"availability.daysOff" = "Days off";
+"availability.addDayOff" = "Add a day off";
+
+"methods.title" = "Payout methods";
+"methods.add" = "Add method";
+"methods.edit" = "Edit method";
+"methods.kind" = "Type";
+"methods.label" = "Bank or wallet name";
+"methods.accountName" = "Account holder name";
+"methods.value.iban" = "IBAN SA…";
+"methods.value.sarie_alias" = "Mobile number";
+"methods.value.wallet" = "Wallet number";
+"methods.hint.iban" = "A 24-character Saudi IBAN starting with SA.";
+"methods.hint.sarie_alias" = "The mobile number linked to Sarie.";
+"methods.hint.wallet" = "The mobile number registered with the wallet (STC Pay and others).";
+"methods.active" = "Visible to brides";
+"methods.inactive" = "Hidden";
+"methods.footer" = "Each approved booking keeps its own copy of these details, so edits don't change past bookings.";
+"methods.empty.title" = "No payout methods";
+"methods.empty.message" = "Add at least one account to start approving bookings.";
+
+"error.generic" = "Something went wrong. Please try again.";
+"error.upload" = "Couldn't upload the photo. Please try again.";
+"error.slot_unavailable" = "This time is no longer available. Choose another one.";
+"error.category_active" = "You already have an active booking in this category. You can book again once it's completed or cancelled.";
+"error.service_unavailable" = "This service isn't available right now.";
+"error.no_payment_method" = "Add a payout method before approving bookings.";
+"error.too_soon" = "The proposed time is too soon. Choose a later time.";
+"error.not_started" = "You can't complete the service before its start time.";
+"error.invalid_iban" = "The IBAN is invalid.";
+"error.invalid_mobile" = "The mobile number is invalid.";
+"error.demo" = "The demo booking can't be reported.";

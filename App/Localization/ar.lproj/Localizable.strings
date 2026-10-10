@@ -20,8 +20,6 @@
 "provider.home.comingSoon.title" = "الطلبات والخدمات قريباً";
 "provider.home.comingSoon.message" = "ستستقبلين هنا طلبات الحجز وتديرين خدماتك ومواعيدك.";
 "explore.comingSoon" = "مقدّمات الخدمة على الخريطة قريباً";
-"bookings.empty.title" = "لا توجد حجوزات بعد";
-"bookings.empty.message" = "ستظهر حجوزاتك هنا مع حالتها خطوة بخطوة.";
 "bookings.guest.title" = "سجّلي الدخول لمتابعة حجوزاتك";
 "bookings.guest.message" = "تحتاجين حساباً لطلب الحجز ومتابعته.";
 "auth.signIn" = "تسجيل الدخول";

@@ -82,6 +82,14 @@ public final class CatalogFeature {
         }
     }
 
+    /// What is left of the bride's budget (nil without one), for the booking request.
+    public var remainingBudget: Decimal? { budget.budget?.remaining }
+
+    /// Reloads the budget after bookings change what is reserved.
+    public func refreshBudget() {
+        Task { await budget.load(isGuest: context.isGuest) }
+    }
+
     /// Sets the booking entry point (Phase 3).
     public func setBookingHandler(_ handler: @escaping (ServiceCard) -> Void) {
         onBook = handler

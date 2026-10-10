@@ -13,6 +13,8 @@ import Catalog
 public final class StudioFeature {
     let store: StudioStore
     let uploader: MediaUploading
+    /// Booking settings screens, supplied by the App from the Booking feature (Phase 3).
+    var settingsDestination: ((StudioSettingsLink) -> AnyView)?
 
     public init(repository: StudioRepository, uploader: MediaUploading) {
         self.store = StudioStore(repository: repository)
@@ -22,6 +24,32 @@ public final class StudioFeature {
     public func homeScreen() -> some View {
         StudioHomeScreen(feature: self)
     }
+
+    /// Adds the working-hours and payout-method rows to the studio home.
+    public func setSettingsDestination(_ destination: @escaping (StudioSettingsLink) -> AnyView) {
+        settingsDestination = destination
+    }
+}
+
+/// Studio rows whose screens live in another feature.
+public enum StudioSettingsLink: CaseIterable, Sendable {
+    case availability, paymentMethods
+
+    var systemImage: String {
+        switch self {
+        case .availability: "clock"
+        case .paymentMethods: "banknote"
+        }
+    }
+
+    var titleKey: String {
+        switch self {
+        case .availability: "studio.availability"
+        case .paymentMethods: "studio.paymentMethods"
+        }
+    }
+
+    var subtitleKey: String { titleKey + ".subtitle" }
 }
 
 /// Shared state for every studio screen, reloaded after each save.
@@ -134,6 +162,16 @@ struct StudioHomeScreen: View {
             } label: {
                 StudioRow(systemImage: "storefront", title: StudioL10n.string("studio.stores"),
                           subtitle: StudioL10n.format("studio.stores.count", business.stores.count, business.limits.maxStores))
+            }
+            if let destination = feature.settingsDestination {
+                ForEach(StudioSettingsLink.allCases, id: \.self) { link in
+                    NavigationLink {
+                        destination(link)
+                    } label: {
+                        StudioRow(systemImage: link.systemImage, title: StudioL10n.string(link.titleKey),
+                                  subtitle: StudioL10n.string(link.subtitleKey))
+                    }
+                }
             }
             if business.status == .approved {
                 NavigationLink(value: CatalogRoute.provider(id: business.id)) {

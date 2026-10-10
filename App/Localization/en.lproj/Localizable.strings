@@ -20,8 +20,6 @@
 "provider.home.comingSoon.title" = "Requests and services are coming";
 "provider.home.comingSoon.message" = "You'll receive booking requests and manage your services and schedule here.";
 "explore.comingSoon" = "Providers on the map coming soon";
-"bookings.empty.title" = "No bookings yet";
-"bookings.empty.message" = "Your bookings will show here with their status, step by step.";
 "bookings.guest.title" = "Sign in to see your bookings";
 "bookings.guest.message" = "You need an account to request and follow bookings.";
 "auth.signIn" = "Sign in";
