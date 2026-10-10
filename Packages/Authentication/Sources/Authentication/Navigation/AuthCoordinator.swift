@@ -63,7 +63,12 @@ public final class AuthCoordinator: Coordinator {
 
     /// Verification succeeded. Report completion; the App decides where to go next.
     public func didAuthenticate(_ user: User) {
-        onFinished(.authenticated(user))
+        // The server always reports the account's role; when it doesn't (mock backend), the
+        // side picked on the landing screen is the best answer.
+        let resolved = user.role == nil
+            ? User(id: user.id, phoneNumber: user.phoneNumber, displayName: user.displayName, role: selectedRole)
+            : user
+        onFinished(.authenticated(resolved))
     }
 
     /// Onboarding → "Browse as guest" resolved. Forwards whatever the use case actually

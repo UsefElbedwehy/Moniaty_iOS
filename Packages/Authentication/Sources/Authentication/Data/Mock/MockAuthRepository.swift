@@ -39,7 +39,7 @@ public actor MockAuthRepository: AuthRepository {
             throw AppError.authentication(.otpIncorrect)
         }
         challenges[challengeId] = nil
-        let user = User(id: UUID().uuidString, phoneNumber: phone, displayName: nil, role: .bride)
+        let user = User(id: UUID().uuidString, phoneNumber: phone, displayName: nil)
         state = .authenticated(user)
         return user
     }

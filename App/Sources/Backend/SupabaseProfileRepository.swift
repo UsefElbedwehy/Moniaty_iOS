@@ -84,7 +84,8 @@ struct SupabaseContentRepository: ContentRepository {
 
 struct MockProfileRepository: ProfileRepository {
     func fetchMyProfile() async throws -> MyProfile {
-        MyProfile(id: "mock-user", displayName: "نورة", phone: "+966500000000", role: .bride,
+        // role nil: keep the role chosen at sign-in, so both shells can be tried on sample data.
+        MyProfile(id: "mock-user", displayName: "نورة", phone: "+966500000000", role: nil,
                   cityIds: ["dammam"], isAnonymous: false, providerStatus: nil)
     }
     func setMyCities(_ cityIds: [String]) async throws {}

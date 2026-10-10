@@ -1,0 +1,25 @@
+# Supabase CLI project config. Link the hosted project with:
+#   supabase link --project-ref <your-project-ref>
+project_id = "munyati"
+
+[db]
+major_version = 15
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[auth]
+# Guests browse with an anonymous session (Settings > Authentication > Allow anonymous sign-ins).
+enable_anonymous_sign_ins = true
+
+# OTP and push functions are called before sign-in (OTP) or by a database webhook (push);
+# they do their own checks instead of requiring a user JWT.
+[functions.send-otp]
+verify_jwt = false
+
+[functions.verify-otp]
+verify_jwt = false
+
+[functions.send-push]
+verify_jwt = false

@@ -141,7 +141,9 @@ final class AppEnvironment {
     func authFinished(_ state: AuthState) async {
         switch state {
         case .guest:
-            session.state = .signedOut
+            // "Browse as guest" without a server session (mock backend, or anonymous sign-in
+            // unavailable): browse as a bride; anything that needs an account asks to sign in.
+            session.state = .signedIn(.init(id: "guest", role: .bride, isAnonymous: true, displayName: nil))
         case .authenticated(let user):
             await signedIn(user)
         }
@@ -156,7 +158,8 @@ final class AppEnvironment {
 
     /// Refreshes the role, name and saved cities from the server profile.
     func syncProfile() async {
-        guard var current = session.user else { return }
+        // A local guest (no server session) has no profile to load.
+        guard var current = session.user, current.id != "guest" else { return }
         guard let profile = try? await profileRepository.fetchMyProfile() else {
             // Offline: keep what we have. A guest browses as a bride.
             if current.role == nil, current.isAnonymous { current.role = .bride }
