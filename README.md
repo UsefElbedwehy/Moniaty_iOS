@@ -21,7 +21,9 @@ Without step 4 the app runs on built-in sample data with Firebase switched off, 
 try the flows straight away. Test sign-in on sample data: any Saudi mobile (5XXXXXXXX) and the
 code `123456`.
 
-Package tests: `cd Packages/<Name> && swift test`, or the App scheme's test action.
+Tests: the App scheme's test action (Cmd-U) runs every package's tests on the simulator.
+Core, Networking and Shared also run with `cd Packages/<Name> && swift test`; the feature
+packages use iOS-only APIs, so run those from Xcode.
 
 ## Status
 
