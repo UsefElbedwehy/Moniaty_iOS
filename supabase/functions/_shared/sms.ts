@@ -33,7 +33,7 @@ export async function sendSms(
       msgClass: kind === "promotional" ? "promotional" : "transactional",
       priority: kind === "otp" ? 1 : 0,
       validity: kind === "otp" ? 10 : 1440,
-      maxParts: kind === "promotional" ? 3 : 1,
+      maxParts: kind === "otp" ? 1 : 3,
     }),
   });
   const text = await response.text();
