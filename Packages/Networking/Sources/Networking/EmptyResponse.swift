@@ -5,5 +5,6 @@ import Foundation
 /// logging) where only "did the request succeed" matters — a real HTTP/network failure still
 /// throws from `send`, but there's no payload shape to decode.
 public struct EmptyResponse: Decodable, Sendable {
+    public init() {}
     public init(from decoder: Decoder) throws {}
 }

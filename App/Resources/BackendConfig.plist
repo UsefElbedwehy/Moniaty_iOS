@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!--
+	  Supabase CLIENT configuration. Both values are public client credentials designed to ship
+	  in the app (the anon key only has the `anon` role; Row Level Security protects the data).
+	  NEVER put the service_role key or an sbp_ access token here.
+
+	  Fill these in after creating the Munyati Supabase project (Settings > API).
+	  While they are empty the app runs on in-memory mock data.
+	-->
+	<key>SUPABASE_URL</key>
+	<string></string>
+	<key>SUPABASE_ANON_KEY</key>
+	<string></string>
+</dict>
+</plist>

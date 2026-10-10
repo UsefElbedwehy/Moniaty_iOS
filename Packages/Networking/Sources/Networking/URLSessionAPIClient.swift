@@ -91,6 +91,11 @@ public final class URLSessionAPIClient: APIClient {
             throw Self.mapHTTPError(statusCode: httpResponse.statusCode, data: data, decoder: decoder)
         }
 
+        // A `void` RPC answers 204 with no body; JSONDecoder rejects empty data outright.
+        if data.isEmpty, let empty = EmptyResponse() as? Response {
+            return empty
+        }
+
         do {
             return try decoder.decode(Response.self, from: data)
         } catch {

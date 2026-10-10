@@ -1,38 +1,76 @@
 import SwiftUI
 
-/// The engagement events the admin dashboard reports on. Raw values are the Postgres
-/// `analytics_event_type` labels — keep them in step with the enum in
-/// `20260906150000_engagement_analytics.sql`.
-public enum AnalyticsEvent: String, Sendable {
+/// The curated business events the admin dashboard and the provider Insights screen report on
+/// (`docs/PLAN.md` §5). Raw values are the Postgres `analytics_event_type` labels: keep them in
+/// step with the enum in `supabase/migrations/*_analytics.sql`.
+///
+/// Every-tap/screen tracking does not belong here; it goes to Firebase Analytics through
+/// `AnalyticsRecorder.screen(_:)`, which costs nothing per event.
+public enum AnalyticsEvent: String, Sendable, CaseIterable {
     case appOpen = "app_open"
-    case placeDirections = "place_directions"
-    case placeWhatsapp = "place_whatsapp"
-    case deliveryLinkClick = "delivery_link_click"
-    case bannerImpression = "banner_impression"
+    case roleSelected = "role_selected"
+    case signUpCompleted = "sign_up_completed"
+    case categoryOpen = "category_open"
+    case providerView = "provider_view"
+    case serviceView = "service_view"
+    case storeView = "store_view"
+    case search = "search"
+    case cityFilterChanged = "city_filter_changed"
+    case budgetSet = "budget_set"
     case bannerClick = "banner_click"
+    case shareTap = "share_tap"
+    case whatsappTap = "whatsapp_tap"
+    case callTap = "call_tap"
+    case bookingStarted = "booking_started"
+    case bookingSubmitted = "booking_submitted"
+    case paywallView = "paywall_view"
+    case planPurchaseStarted = "plan_purchase_started"
 }
 
-/// Fire-and-forget engagement tracking, injected once by the composition root the same way
-/// `AuthGate` is, so a feature view can record a tap without knowing anything about the network
-/// layer — and so previews and tests record nothing at all.
+/// Fire-and-forget analytics, injected once by the composition root (like `AuthGate`) so a
+/// feature can record without knowing about Firebase or the network, and previews/tests record
+/// nothing.
+///
+/// - `callAsFunction` records a curated event: to Postgres (dashboard + provider insights) and
+///   to Firebase Analytics.
+/// - `screen` records a screen view: Firebase Analytics only.
+/// - `error` records a handled, non-fatal error: Crashlytics + the `error_logs` table.
 public struct AnalyticsRecorder: Sendable {
-    private let handler: @Sendable (AnalyticsEvent, String?, String?) -> Void
+    public typealias EventHandler = @Sendable (_ event: AnalyticsEvent, _ entityId: String?, _ context: String?, _ props: [String: String]) -> Void
+    public typealias ScreenHandler = @Sendable (_ name: String) -> Void
+    public typealias ErrorHandler = @Sendable (_ code: String, _ message: String, _ screen: String?) -> Void
 
-    public init(handler: @escaping @Sendable (AnalyticsEvent, String?, String?) -> Void) {
-        self.handler = handler
+    private let onEvent: EventHandler
+    private let onScreen: ScreenHandler
+    private let onError: ErrorHandler
+
+    public init(onEvent: @escaping EventHandler, onScreen: @escaping ScreenHandler, onError: @escaping ErrorHandler) {
+        self.onEvent = onEvent
+        self.onScreen = onScreen
+        self.onError = onError
     }
 
-    /// `entityId` is the thing the event is about — the place, delivery platform or banner slide;
-    /// nil for events not tied to one (`appOpen`). `context` is what it happened *on*, which for
-    /// a delivery link is the ad it was tapped from: without it the dashboard can say a platform
-    /// was tapped but never which listings earned the taps.
-    public func callAsFunction(_ event: AnalyticsEvent, _ entityId: String? = nil, context: String? = nil) {
-        handler(event, entityId, context)
+    /// `entityId` is what the event is about (a provider, service, category…); `context` is
+    /// where it happened (e.g. the screen or the provider a service was opened from).
+    public func callAsFunction(
+        _ event: AnalyticsEvent,
+        _ entityId: String? = nil,
+        context: String? = nil,
+        props: [String: String] = [:]
+    ) {
+        onEvent(event, entityId, context, props)
     }
 
-    /// Records nothing. The environment default, so a view rendered outside the composed app
-    /// (a preview, a test) never talks to the network.
-    public static let disabled = AnalyticsRecorder { _, _, _ in }
+    public func screen(_ name: String) {
+        onScreen(name)
+    }
+
+    public func error(code: String, message: String, screen: String? = nil) {
+        onError(code, message, screen)
+    }
+
+    /// Records nothing. The environment default, so previews and tests never talk to the network.
+    public static let disabled = AnalyticsRecorder(onEvent: { _, _, _, _ in }, onScreen: { _ in }, onError: { _, _, _ in })
 }
 
 public extension EnvironmentValues {
@@ -44,4 +82,20 @@ public extension EnvironmentValues {
 
 private struct AnalyticsRecorderKey: EnvironmentKey {
     static let defaultValue = AnalyticsRecorder.disabled
+}
+
+public extension View {
+    /// Records a screen view in Firebase Analytics when the view appears.
+    func trackScreen(_ name: String) -> some View {
+        modifier(TrackScreenModifier(name: name))
+    }
+}
+
+private struct TrackScreenModifier: ViewModifier {
+    let name: String
+    @Environment(\.analytics) private var analytics
+
+    func body(content: Content) -> some View {
+        content.onAppear { analytics.screen(name) }
+    }
 }

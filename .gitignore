@@ -60,3 +60,26 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+# Xcode / SPM build artifacts
+.build/
+.build-xcode/
+DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+xcuserdata/
+.swiftpm/
+
+# macOS
+.DS_Store
+
+# Local secrets (never commit real service_role/sbp_ keys)
+.env
+.env.local
+*.env
+
+# Supabase CLI local cache (project ref, pooler URL — not source)
+supabase/.temp/
+
+# XcodeGen output (regenerate with `xcodegen generate`)
+*.xcodeproj/
