@@ -59,7 +59,7 @@ struct AvailabilityScreen: View {
 
                 Section {
                     ForEach(daysOff, id: \.self) { day in
-                        Text(verbatim: day.formatted(.dateTime.weekday(.wide).day().month(.wide)))
+                        Text(verbatim: day.displayFormatted(.dateTime.weekday(.wide).day().month(.wide)))
                     }
                     .onDelete { daysOff.remove(atOffsets: $0) }
                     HStack {
@@ -157,6 +157,7 @@ struct PaymentMethodsScreen: View {
     let feature: BookingFeature
     @State private var state: ViewState<[PaymentMethod]> = .loading
     @State private var editing: PaymentMethodDraft?
+    @State private var deleteFailed = false
 
     var body: some View {
         List {
@@ -188,14 +189,18 @@ struct PaymentMethodsScreen: View {
                     .onDelete { offsets in
                         let ids = offsets.map { list[$0].id }
                         Task {
-                            for id in ids { try? await feature.repository.deletePaymentMethod(id: id) }
+                            for id in ids {
+                                do { try await feature.repository.deletePaymentMethod(id: id) } catch { deleteFailed = true }
+                            }
                             await load()
                         }
                     }
                 } footer: {
                     BookingL10n.text("methods.footer")
                 }
-            case .empty, .offline:
+            case .offline:
+                ErrorStateView(error: .offline) { Task { await load() } }.listRowBackground(Color.clear)
+            case .empty:
                 EmptyStateView(systemImage: "banknote", title: BookingL10n.key("methods.empty.title"),
                                message: BookingL10n.key("methods.empty.message"))
                     .listRowBackground(Color.clear)
@@ -204,6 +209,9 @@ struct PaymentMethodsScreen: View {
         .scrollContentBackground(.hidden)
         .dsScreenBackground()
         .navigationTitle(BookingL10n.string("methods.title"))
+        .alert(BookingL10n.string("error.generic"), isPresented: $deleteFailed) {
+            Button(BookingL10n.string("common.ok"), role: .cancel) {}
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { editing = PaymentMethodDraft() } label: { Image(systemName: "plus") }
@@ -259,6 +267,7 @@ struct PaymentMethodEditor: View {
                 BookingL10n.text("methods.hint.\(draft.kind)")
             }
         }
+        .dsFormBackground()
         .navigationTitle(BookingL10n.string(draft.id == nil ? "methods.add" : "methods.edit"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

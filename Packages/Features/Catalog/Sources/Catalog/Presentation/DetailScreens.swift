@@ -11,6 +11,7 @@ struct ServiceDetailScreen: View {
     @State private var state: ViewState<ServiceDetail> = .loading
     @State private var showComingSoon = false
     @Environment(\.analytics) private var analytics
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
         ScrollView {
@@ -115,9 +116,12 @@ struct ServiceDetailScreen: View {
 
     private func bookBar(_ detail: ServiceDetail) -> some View {
         HStack(spacing: DSSpacing.md) {
-            VStack(alignment: .leading, spacing: 0) {
-                CatalogL10n.text("detail.price").font(.dsCaption).foregroundStyle(Color.dsTextSecondary)
-                Text(verbatim: formatSAR(detail.card.price)).font(.dsHeadline)
+            // The price is already under the title; at accessibility sizes the button needs the room.
+            if !typeSize.isAccessibilitySize {
+                VStack(alignment: .leading, spacing: 0) {
+                    CatalogL10n.text("detail.price").font(.dsCaption).foregroundStyle(Color.dsTextSecondary)
+                    Text(verbatim: formatSAR(detail.card.price)).font(.dsHeadline)
+                }
             }
             PrimaryButton(CatalogL10n.key("book.cta")) {
                 analytics(.bookingStarted, detail.card.id)
@@ -324,6 +328,7 @@ struct ProviderRow: View {
                     if provider.isVerified {
                         Image(systemName: "checkmark.seal.fill").foregroundStyle(Color.dsPrimary)
                             .accessibilityLabel(CatalogL10n.string("badge.verified"))
+                            .accessibilityRemoveTraits(.isSelected)
                     }
                 }
                 if let avg = provider.ratingAvg, let count = provider.ratingCount, count > 0 {
@@ -336,6 +341,7 @@ struct ProviderRow: View {
             Spacer()
             if showsChevron {
                 Image(systemName: "chevron.forward").foregroundStyle(Color.dsTextSecondary)
+                    .accessibilityHidden(true)
             }
         }
         .padding(DSSpacing.sm)
@@ -355,6 +361,7 @@ struct InfoRow: View {
             Image(systemName: systemImage)
                 .foregroundStyle(Color.dsPrimary)
                 .frame(width: 28)
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: title).font(.dsSubhead).foregroundStyle(Color.dsTextPrimary)
                 if let subtitle, !subtitle.isEmpty {

@@ -35,7 +35,9 @@ struct BookingsListScreen: View {
                         BookingRow(booking: booking, role: role)
                     }
                 }
-            case .empty, .offline:
+            case .offline:
+                ErrorStateView(error: .offline) { Task { await load() } }.listRowBackground(Color.clear)
+            case .empty:
                 EmptyStateView(systemImage: "calendar", title: BookingL10n.key("list.empty.title"),
                                message: BookingL10n.key(role == .bride ? "list.empty.bride" : "list.empty.provider"))
                     .listRowBackground(Color.clear)
@@ -79,10 +81,14 @@ struct BookingRow: View {
             }
             Text(verbatim: "\(booking.serviceTitle) · \(role == .bride ? (booking.provider.name ?? "") : (booking.brideName ?? ""))")
                 .font(.dsHeadline)
-                .lineLimit(1)
+                .lineLimit(2)
             Text(verbatim: "\(bookingDateText(booking.startsAt)) · \(formatSAR(booking.price))")
                 .font(.dsFootnote)
                 .foregroundStyle(Color.dsTextSecondary)
+            // Where the booking stands at a glance (mockup 5), for bookings still in progress.
+            if booking.status.isActive, booking.status.step > 0 {
+                ProgressSteps(step: booking.status.step).padding(.top, 4)
+            }
         }
         .padding(.vertical, 4)
     }
@@ -96,9 +102,9 @@ struct StatusPill: View {
         let kind: StatusBadgeKind = switch status {
         case .paymentConfirmed, .completed: .live
         case .declined, .cancelledByBride, .cancelledByProvider, .expired, .disputed: .rejected
-        case .awaitingPayment where role == .bride: .featured
-        case .paymentSubmitted where role == .provider: .featured
-        case .requested where role == .provider: .featured
+        case .awaitingPayment where role == .bride: .action
+        case .paymentSubmitted where role == .provider: .action
+        case .requested where role == .provider: .action
         default: .pending
         }
         StatusBadge(kind: kind, text: BookingL10n.key("status.\(status.rawValue)"))
@@ -142,7 +148,9 @@ struct BookingDetailScreen: View {
                 ErrorStateView(error: error) { Task { await load() } }
             case .loaded(let detail), .refreshing(let detail):
                 content(detail)
-            case .empty, .offline:
+            case .offline:
+                ErrorStateView(error: .offline) { Task { await load() } }
+            case .empty:
                 EmptyStateView(systemImage: "calendar.badge.exclamationmark", title: BookingL10n.key("detail.missing"),
                                message: BookingL10n.key("error.generic"))
             }
@@ -229,6 +237,7 @@ struct BookingDetailScreen: View {
                         Button { sheet = .receipt(receipt) } label: {
                             HStack {
                                 Image(systemName: "doc.text.image").foregroundStyle(Color.dsPrimary)
+                                    .accessibilityHidden(true)
                                 VStack(alignment: .leading) {
                                     Text(verbatim: formatSAR(receipt.amount)).font(.dsSubhead)
                                     Text(verbatim: BookingL10n.string("receipt.status.\(receipt.status)"))
@@ -237,6 +246,7 @@ struct BookingDetailScreen: View {
                                 }
                                 Spacer()
                                 Image(systemName: "chevron.forward").foregroundStyle(Color.dsTextSecondary)
+                                    .accessibilityHidden(true)
                             }
                         }
                         .buttonStyle(.plain)
@@ -264,7 +274,7 @@ struct BookingDetailScreen: View {
                             Circle().fill(Color.dsPremiumGold).frame(width: 8, height: 8).padding(.top, 6)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(verbatim: BookingL10n.string("status.\(event.toStatus.rawValue)")).font(.dsSubhead)
-                                Text(verbatim: event.createdAt.formatted(date: .abbreviated, time: .shortened))
+                                Text(verbatim: event.createdAt.displayFormatted(date: .abbreviated, time: .shortened))
                                     .font(.dsCaption).foregroundStyle(Color.dsTextSecondary)
                             }
                         }
@@ -472,6 +482,7 @@ struct PaymentScreen: View {
                 BookingL10n.text("pay.disclaimer")
             }
         }
+        .dsFormBackground()
         .navigationTitle(BookingL10n.string("pay.title"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -553,6 +564,7 @@ struct ReceiptViewer: View {
                 // The demo booking's sample receipt.
                 VStack(spacing: DSSpacing.sm) {
                     Image(systemName: "doc.richtext").font(.system(size: 64)).foregroundStyle(Color.dsPrimary)
+                        .accessibilityHidden(true)
                     BookingL10n.text("demo.receipt").font(.dsFootnote)
                 }
                 .frame(maxHeight: .infinity)
@@ -565,7 +577,7 @@ struct ReceiptViewer: View {
                 LabeledContent(BookingL10n.string("pay.transferredAmount"), value: formatSAR(receipt.amount))
                 if let bank = receipt.senderBank { LabeledContent(BookingL10n.string("pay.senderBank"), value: bank) }
                 if let at = receipt.transferredAt {
-                    LabeledContent(BookingL10n.string("pay.transferTime"), value: at.formatted(date: .abbreviated, time: .shortened))
+                    LabeledContent(BookingL10n.string("pay.transferTime"), value: at.displayFormatted(date: .abbreviated, time: .shortened))
                 }
             }
             .font(.dsSubhead)
@@ -608,6 +620,7 @@ struct ProposeTimeSheet: View {
                 .datePickerStyle(.graphical)
             TextField(BookingL10n.string("proposal.note"), text: $note, axis: .vertical)
         }
+        .dsFormBackground()
         .navigationTitle(BookingL10n.string("action.propose"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -649,6 +662,7 @@ struct ReasonSheet: View {
             TextField(BookingL10n.string(optional ? "reason.optional" : "reason.required"), text: $reason, axis: .vertical)
                 .lineLimit(3...6)
         }
+        .dsFormBackground()
         .navigationTitle(BookingL10n.string(titleKey))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -697,6 +711,7 @@ struct DisputeSheet: View {
                 BookingL10n.text("dispute.footer")
             }
         }
+        .dsFormBackground()
         .navigationTitle(BookingL10n.string("action.dispute"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

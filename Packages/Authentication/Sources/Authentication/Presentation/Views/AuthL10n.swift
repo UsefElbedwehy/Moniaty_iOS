@@ -24,7 +24,8 @@ enum AuthL10n {
 
     /// "Sent to +966 55 123 4567."
     static func sentTo(_ phone: String) -> String {
-        String(format: string("auth.otp.sentTo"), phone)
+        // Isolated as left-to-right, or the bidi algorithm moves the "+" to the end in Arabic.
+        String(format: string("auth.otp.sentTo"), "\u{2066}\(phone)\u{2069}")
     }
 
     /// "Resend code in 0:24"

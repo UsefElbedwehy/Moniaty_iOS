@@ -67,6 +67,7 @@ struct ServiceCardView: View {
                         Image(systemName: "checkmark.seal.fill")
                             .foregroundStyle(Color.dsPrimary)
                             .accessibilityLabel(CatalogL10n.string("badge.verified"))
+                            .accessibilityRemoveTraits(.isSelected)
                     }
                 }
                 .font(.dsFootnote)
@@ -129,13 +130,17 @@ struct CategoryTile: View {
                 }
                 .frame(width: 60, height: 60)
                 .background(RoundedRectangle(cornerRadius: 20).fill(Color.dsPrimaryMuted))
+                .accessibilityHidden(true)
+                // Two lines reserved so every tile in a row is the same height, and a long single
+                // word ("photographers") shrinks a little rather than being cut off.
                 Text(verbatim: category.name)
                     .font(.dsCaption)
                     .foregroundStyle(Color.dsTextPrimary)
                     .multilineTextAlignment(.center)
-                    .lineLimit(2)
+                    .lineLimit(2, reservesSpace: true)
+                    .minimumScaleFactor(0.8)
             }
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, alignment: .top)
         }
         .buttonStyle(.plain)
     }
@@ -200,6 +205,8 @@ struct ServiceCarousel: View {
     let cards: [ServiceCard]
     let feature: CatalogFeature
     var seeAll: CatalogRoute?
+    /// Grows with the text size so titles aren't cut to a word at large sizes.
+    @ScaledMetric(relativeTo: .body) private var cardWidth: CGFloat = 170
 
     var body: some View {
         if !cards.isEmpty {
@@ -216,7 +223,7 @@ struct ServiceCarousel: View {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack(alignment: .top, spacing: DSSpacing.sm) {
                         ForEach(cards) { card in
-                            ServiceCardView(card: card, feature: feature, width: 170)
+                            ServiceCardView(card: card, feature: feature, width: min(cardWidth, 300))
                         }
                     }
                 }
@@ -225,13 +232,16 @@ struct ServiceCarousel: View {
     }
 }
 
-/// Two-column grid of service cards.
+/// Grid of service cards: two columns, one at accessibility text sizes.
 struct ServiceGrid: View {
     let cards: [ServiceCard]
     let feature: CatalogFeature
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     var body: some View {
-        LazyVGrid(columns: [GridItem(.flexible(), spacing: DSSpacing.sm), GridItem(.flexible(), spacing: DSSpacing.sm)],
+        // One column at accessibility sizes: two would leave a word or two per title.
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: DSSpacing.sm),
+                                 count: typeSize.isAccessibilitySize ? 1 : 2),
                   spacing: DSSpacing.md) {
             ForEach(cards) { card in
                 ServiceCardView(card: card, feature: feature)

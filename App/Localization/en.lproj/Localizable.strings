@@ -51,3 +51,5 @@
 "profile.section.wedding" = "My wedding";
 "profile.favorites" = "Favorites";
 "profile.budget" = "Wedding budget";
+"common.retry" = "Try again";
+"profile.signOut.confirmTitle" = "Sign out of Munyati?";

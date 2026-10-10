@@ -97,7 +97,8 @@ enum BookingL10n {
     static func key(_ key: String) -> LocalizedStringKey { LocalizedStringKey("\(string(key))") }
 
     static func format(_ key: String, _ args: CVarArg...) -> String {
-        String(format: string(key), arguments: args)
+        // The current locale: Arabic-Indic digits in Arabic, and plural rules from .stringsdict.
+        String(format: string(key), locale: .current, arguments: args)
     }
 
     /// Server refusal codes → user-facing text.
@@ -114,8 +115,8 @@ func appError(_ error: Error) -> AppError {
 
 /// "الثلاثاء ١١ نوفمبر · ٤:٠٠ م" in the user's language, Riyadh time.
 func bookingDateText(_ date: Date) -> String {
-    let day = date.formatted(.dateTime.weekday(.wide).day().month(.wide).locale(.current))
-    let time = date.formatted(.dateTime.hour().minute().locale(.current))
+    let day = date.displayFormatted(.dateTime.weekday(.wide).day().month(.wide).locale(.current))
+    let time = date.displayFormatted(.dateTime.hour().minute().locale(.current))
     return "\(day) · \(time)"
 }
 
@@ -160,8 +161,8 @@ struct BookingRequestScreen: View {
                             let isOn = Calendar.current.isDate(d, inSameDayAs: day)
                             Button { day = d; selected = nil } label: {
                                 VStack(spacing: 2) {
-                                    Text(verbatim: d.formatted(.dateTime.weekday(.abbreviated))).font(.dsCaption)
-                                    Text(verbatim: d.formatted(.dateTime.day())).font(.dsTitle2)
+                                    Text(verbatim: d.displayFormatted(.dateTime.weekday(.abbreviated))).font(.dsCaption)
+                                    Text(verbatim: d.displayFormatted(.dateTime.day())).font(.dsTitle2)
                                 }
                                 .frame(width: 56, height: 64)
                                 .foregroundStyle(isOn ? Color.dsBackground : Color.dsTextPrimary)
@@ -183,7 +184,7 @@ struct BookingRequestScreen: View {
                         ForEach(list, id: \.self) { slot in
                             let isOn = selected == slot
                             Button { selected = slot } label: {
-                                Text(verbatim: slot.formatted(.dateTime.hour().minute()))
+                                Text(verbatim: slot.displayFormatted(.dateTime.hour().minute()))
                                     .font(.dsSubhead)
                                     .frame(maxWidth: .infinity, minHeight: 44)
                                     .foregroundStyle(isOn ? Color.dsBackground : Color.dsTextPrimary)

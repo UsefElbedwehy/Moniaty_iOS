@@ -29,6 +29,12 @@ public extension View {
     func dsScreenBackground(_ base: Color = .dsBackground) -> some View {
         modifier(DSScreenBackground(base: base))
     }
+
+    /// The ground for a `Form` or `List`: hides the system grouped grey so it matches every
+    /// other screen (ivory in light mode, the dark token in dark mode).
+    func dsFormBackground() -> some View {
+        scrollContentBackground(.hidden).dsScreenBackground()
+    }
 }
 
 private struct DSScreenBackground: ViewModifier {

@@ -10,6 +10,7 @@ struct HomeScreen: View {
     @State private var state: ViewState<HomeContent> = .loading
     @State private var showBudget = false
     @Environment(\.analytics) private var analytics
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     private var context: CatalogContext { feature.context }
 
@@ -23,6 +24,7 @@ struct HomeScreen: View {
                 NavigationLink(value: CatalogRoute.services(ServiceFilter(title: CatalogL10n.string("search.title")))) {
                     HStack(spacing: DSSpacing.sm) {
                         Image(systemName: "magnifyingglass")
+                            .accessibilityHidden(true)
                         CatalogL10n.text("search.placeholder")
                         Spacer()
                     }
@@ -58,6 +60,11 @@ struct HomeScreen: View {
         }
         .dsScreenBackground()
         .toolbar(.hidden, for: .navigationBar)
+        // No navigation bar here, so nothing covers the status bar: give it the screen's ground
+        // so scrolled content doesn't run under the clock.
+        .safeAreaInset(edge: .top, spacing: 0) {
+            Color.clear.frame(height: 0).background(Color.dsBackground)
+        }
         .refreshable { await load() }
         .task(id: TaskKey(cities: context.cityIds, maxPrice: feature.budget.maxPrice, guest: context.isGuest)) {
             await load()
@@ -99,7 +106,8 @@ struct HomeScreen: View {
     private func categories(_ list: [CatalogCategory]) -> some View {
         VStack(alignment: .leading, spacing: DSSpacing.sm) {
             CatalogL10n.text("home.categories").font(.dsTitle2)
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: DSSpacing.xs), count: 4),
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: DSSpacing.xs, alignment: .top),
+                                     count: typeSize.isAccessibilitySize ? 2 : 4),
                       spacing: DSSpacing.md) {
                 ForEach(list) { category in
                     CategoryTile(category: category)
@@ -301,6 +309,7 @@ struct BudgetSheet: View {
                     }
                 }
             }
+            .dsFormBackground()
             .navigationTitle(CatalogL10n.string("budget.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

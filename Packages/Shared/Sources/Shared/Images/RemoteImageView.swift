@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import DesignSystem
 import os
 
 #if canImport(UIKit)
@@ -162,6 +163,9 @@ public struct RemoteImageView: View {
                     .aspectRatio(contentMode: contentMode)
                     .transition(reduceMotion ? .identity : .opacity.animation(.easeOut(duration: 0.25)))
 
+            case .failed where url == nil:
+                placeholder
+
             case .failed:
                 failureView
             }
@@ -177,22 +181,22 @@ public struct RemoteImageView: View {
 
     private var placeholder: some View {
         RoundedRectangle(cornerRadius: 8, style: .continuous)
-            .fill(Color.gray.opacity(0.2))
+            .fill(Color.dsBorder.opacity(0.6))
     }
 
     private var failureView: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .fill(Color.gray.opacity(0.15))
+                .fill(Color.dsBorder.opacity(0.45))
 
             Button {
                 loader.load(url: url)
             } label: {
                 Image(systemName: "arrow.clockwise")
                     .font(.title3)
-                    .foregroundStyle(Color.gray)
+                    .foregroundStyle(Color.dsTextSecondary)
                     .padding(12)
-                    .background(Circle().fill(Color.white.opacity(0.8)))
+                    .background(Circle().fill(Color.dsSurface.opacity(0.9)))
             }
             .accessibilityLabel(SharedStrings.retry)
         }

@@ -11,6 +11,7 @@ struct AuthLandingView: View {
     private let coordinator: AuthCoordinator
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.dynamicTypeSize) private var typeSize
 
     init(viewModel: OnboardingViewModel, coordinator: AuthCoordinator) {
         _viewModel = State(initialValue: viewModel)
@@ -18,6 +19,17 @@ struct AuthLandingView: View {
     }
 
     var body: some View {
+        // Fits on one screen at normal sizes (guest link pinned to the bottom); at large text
+        // sizes it scrolls instead of squeezing the role cards into truncation.
+        ViewThatFits(in: .vertical) {
+            content
+            ScrollView { content.fixedSize(horizontal: false, vertical: true) }
+        }
+        .dsScreenBackground()
+        .authHiddenBackButton()
+    }
+
+    private var content: some View {
         VStack(spacing: 0) {
             brand
                 .padding(.top, DSSpacing.xxl)
@@ -49,8 +61,6 @@ struct AuthLandingView: View {
         .padding(.horizontal, DSSpacing.xl)
         .padding(.bottom, DSSpacing.lg)
         .frame(maxWidth: .infinity)
-        .dsScreenBackground()
-        .authHiddenBackButton()
     }
 
     private var brand: some View {
@@ -60,10 +70,14 @@ struct AuthLandingView: View {
                 .scaledToFit()
                 .frame(height: 150)
                 .accessibilityLabel(AuthL10n.string("auth.brand.name"))
+            // One line: the display face's tall line height leaves a gap when it wraps. At
+            // accessibility sizes readability wins and it may wrap.
             AuthL10n.text("auth.landing.tagline")
                 .font(.dsTitle1)
                 .foregroundStyle(Color.dsPrimary)
                 .multilineTextAlignment(.center)
+                .lineLimit(typeSize.isAccessibilitySize ? nil : 1)
+                .minimumScaleFactor(0.7)
             HStack(spacing: DSSpacing.xs) {
                 Rectangle().fill(Color.dsPremiumGold).frame(width: 48, height: 1)
                 DSSparkle()
@@ -116,6 +130,7 @@ private struct RoleCard: View {
             HStack(spacing: DSSpacing.md) {
                 Image(systemName: systemImage)
                     .font(.title2)
+                    .accessibilityHidden(true)
                     .foregroundStyle(isProminent ? Color.dsPremiumGold : Color.dsPrimary)
                     .frame(width: 52, height: 52)
                     .background(
@@ -133,6 +148,7 @@ private struct RoleCard: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 Image(systemName: "chevron.forward")
                     .font(.headline)
+                    .accessibilityHidden(true)
             }
             .foregroundStyle(isProminent ? Color.dsBackground : Color.dsTextPrimary)
             .padding(DSSpacing.lg)

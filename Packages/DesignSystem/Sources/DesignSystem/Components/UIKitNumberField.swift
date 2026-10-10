@@ -66,6 +66,11 @@ public struct UIKitNumberField: UIViewRepresentable {
         )
         field.semanticContentAttribute = .forceLeftToRight
         field.textAlignment = .left
+        // Let SwiftUI size it: at large text sizes the placeholder's intrinsic width would
+        // otherwise push the whole row (and its screen) past the edges.
+        field.adjustsFontForContentSizeCategory = true
+        field.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        field.setContentHuggingPriority(.defaultLow, for: .horizontal)
         field.addTarget(context.coordinator, action: #selector(Coordinator.editingChanged), for: .editingChanged)
         return field
     }

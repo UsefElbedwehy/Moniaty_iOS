@@ -30,7 +30,7 @@ struct MockCMSPageRepository: CMSPageRepository {
                     ? "هذا محتوى مساعدة تجريبي — النص الحقيقي يأتي من محرر الصفحات في لوحة التحكم."
                     : "This is mock Help content — the real copy comes from the admin dashboard's Settings → Pages editor."
             )
-        case "terms-of-service":
+        case "terms":
             return CMSPage(
                 slug: slug,
                 title: isArabic ? "الشروط والأحكام" : "Terms of Service",
@@ -38,7 +38,7 @@ struct MockCMSPageRepository: CMSPageRepository {
                     ? "هذا محتوى شروط تجريبي — النص الحقيقي يأتي من محرر الصفحات في لوحة التحكم."
                     : "This is mock Terms content — the real copy comes from the admin dashboard's Settings → Pages editor."
             )
-        case "privacy-policy":
+        case "privacy":
             return CMSPage(
                 slug: slug,
                 title: isArabic ? "سياسة الخصوصية" : "Privacy Policy",

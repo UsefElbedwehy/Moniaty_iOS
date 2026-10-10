@@ -16,6 +16,7 @@ enum CatalogL10n {
     }
 
     static func format(_ key: String, _ args: CVarArg...) -> String {
-        String(format: string(key), arguments: args)
+        // The current locale: Arabic-Indic digits in Arabic, and plural rules from .stringsdict.
+        String(format: string(key), locale: .current, arguments: args)
     }
 }

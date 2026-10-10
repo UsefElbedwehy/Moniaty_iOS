@@ -11,6 +11,7 @@ struct ProfileScreen: View {
     @State private var showCities = false
     @State private var showBudget = false
     @State private var confirmDelete = false
+    @State private var confirmSignOut = false
     @State private var isDeleting = false
     @State private var deleteFailed = false
 
@@ -45,7 +46,7 @@ struct ProfileScreen: View {
                     Button {
                         if session.hasAccount { showBudget = true } else { session.isPresentingAuth = true }
                     } label: {
-                        Label(L10n.string("profile.budget"), systemImage: "banknote")
+                        ProfileActionRow(title: L10n.string("profile.budget"), systemImage: "banknote")
                     }
                 }
                 Section(L10n.string("profile.section.preferences")) {
@@ -54,6 +55,7 @@ struct ProfileScreen: View {
                     } label: {
                         LabeledContent(L10n.string("profile.cities"),
                                        value: environment.cities.summary(allLabel: L10n.string("cities.all")))
+                            .foregroundStyle(Color.dsTextPrimary)
                     }
                 }
             }
@@ -62,7 +64,9 @@ struct ProfileScreen: View {
                 Button {
                     if let url = URL(string: UIApplication.openSettingsURLString) { UIApplication.shared.open(url) }
                 } label: {
-                    Label(L10n.string("profile.language"), systemImage: "globe")
+                    // Opens the app's page in iOS Settings, where the language is chosen.
+                    ProfileActionRow(title: L10n.string("profile.language"), systemImage: "globe",
+                                     trailingSymbol: "arrow.up.forward")
                 }
                 NavigationLink {
                     CMSPageScreen(slug: "terms", repository: environment.cmsPageRepository)
@@ -86,7 +90,7 @@ struct ProfileScreen: View {
             if session.hasAccount {
                 Section {
                     Button(L10n.string("profile.signOut")) {
-                        Task { await environment.signOut() }
+                        confirmSignOut = true
                     }
                     Button(L10n.string("profile.deleteAccount"), role: .destructive) {
                         confirmDelete = true
@@ -109,6 +113,9 @@ struct ProfileScreen: View {
         }
         .sheet(isPresented: $showBudget) {
             environment.catalog.budgetEditor()
+        }
+        .confirmationDialog(L10n.string("profile.signOut.confirmTitle"), isPresented: $confirmSignOut, titleVisibility: .visible) {
+            Button(L10n.string("profile.signOut")) { Task { await environment.signOut() } }
         }
         .confirmationDialog(L10n.string("profile.deleteAccount.confirmTitle"), isPresented: $confirmDelete, titleVisibility: .visible) {
             Button(L10n.string("profile.deleteAccount.confirm"), role: .destructive) {
@@ -149,6 +156,7 @@ struct CityPickerSheet: View {
                     row(title: city.name(), isOn: store.selected.contains(city.id)) { store.toggle(city.id) }
                 }
             }
+            .dsFormBackground()
             .navigationTitle(L10n.string("cities.title"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -170,6 +178,7 @@ struct CityPickerSheet: View {
                 Spacer()
                 Image(systemName: isOn ? "checkmark.circle.fill" : "circle")
                     .foregroundStyle(isOn ? Color.dsPrimary : Color.dsDisabled)
+                    .accessibilityHidden(true)
             }
             .frame(minHeight: 44)
         }
@@ -190,17 +199,50 @@ struct CMSPageScreen: View {
                 CMSMarkdownView(markdown: page.bodyMarkdown)
                     .padding(DSSpacing.lg)
             } else if failed {
-                EmptyStateView(systemImage: "wifi.slash", title: L10n.key("common.errorTitle"), message: L10n.key("common.errorMessage"))
+                VStack(spacing: DSSpacing.md) {
+                    EmptyStateView(systemImage: "wifi.slash", title: L10n.key("common.errorTitle"), message: L10n.key("common.errorMessage"))
+                    Button(L10n.string("common.retry")) { Task { await load() } }
+                        .font(.dsHeadline)
+                        .foregroundStyle(Color.dsPrimary)
+                }
             } else {
                 ProgressView().padding(.top, DSSpacing.xxl)
             }
         }
         .dsScreenBackground()
         .navigationTitle(page?.title ?? "")
-        .task {
-            let locale = Locale.current.language.languageCode?.identifier == "ar" ? "ar" : "en"
-            do { page = try await repository.fetchPage(slug: slug, locale: locale); failed = page == nil }
-            catch { failed = true }
+        .task { await load() }
+    }
+
+    private func load() async {
+        failed = false
+        let locale = Locale.current.language.languageCode?.identifier == "ar" ? "ar" : "en"
+        do { page = try await repository.fetchPage(slug: slug, locale: locale); failed = page == nil }
+        catch { failed = true }
+    }
+}
+
+/// A list row that performs an action (opens a sheet or Settings) styled like the navigation rows
+/// around it: primary text, burgundy icon, and a quiet trailing symbol.
+private struct ProfileActionRow: View {
+    let title: String
+    let systemImage: String
+    var trailingSymbol: String?
+
+    var body: some View {
+        HStack {
+            Label {
+                Text(verbatim: title).foregroundStyle(Color.dsTextPrimary)
+            } icon: {
+                Image(systemName: systemImage).foregroundStyle(Color.dsPrimary)
+            }
+            Spacer()
+            if let trailingSymbol {
+                Image(systemName: trailingSymbol)
+                    .font(.dsFootnote.weight(.semibold))
+                    .foregroundStyle(Color.dsTextSecondary)
+                    .accessibilityHidden(true)
+            }
         }
     }
 }

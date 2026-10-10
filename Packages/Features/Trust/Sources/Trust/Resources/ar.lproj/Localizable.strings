@@ -8,7 +8,7 @@
 "reviews.title" = "التقييمات";
 "reviews.seeAll" = "عرض الكل";
 "reviews.none" = "لا توجد تقييمات بعد.";
-"reviews.count" = "%d تقييم";
+"reviews.count" = "عدد التقييمات: %d";
 "reviews.stars" = "%d من ٥ نجوم";
 "reviews.reply" = "رد مقدّمة الخدمة";
 
@@ -41,7 +41,7 @@
 
 "block.action" = "حظر";
 "block.confirm.title" = "حظر هذا الحساب؟";
-"block.confirm.message" = "لن تظهر لك خدماته وتقييماته، ولن يتمكن أحدكما من الحجز لدى الآخر. يمكنك إلغاء الحظر من حسابي.";
+"block.confirm.message" = "لن يظهر لكِ محتوى هذا الحساب، ولن تتمكّن أيٌّ منكما من الحجز لدى الأخرى. يمكنك إلغاء الحظر من «حسابي».";
 "block.done" = "تم الحظر.";
 "block.unblock" = "إلغاء الحظر";
 "block.list.title" = "الحسابات المحظورة";

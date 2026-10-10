@@ -1,6 +1,7 @@
 import SwiftUI
 import DesignSystem
 import Shared
+import Core
 
 @main
 struct MunyatiApp: App {
@@ -19,6 +20,8 @@ struct MunyatiApp: App {
             RootView(environment: environment)
                 .tint(Color.dsPrimary)
                 .environment(\.analytics, environment.analytics)
+                // Date pickers follow the same Gregorian calendar as every date on screen.
+                .environment(\.calendar, .display)
                 .onOpenURL { environment.open(url: $0) }
                 .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { activity in
                     if let url = activity.webpageURL { environment.open(url: url) }

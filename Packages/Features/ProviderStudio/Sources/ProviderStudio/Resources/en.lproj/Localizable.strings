@@ -123,7 +123,6 @@
 "plans.error.too_many_attempts" = "Too many attempts. Please try again shortly.";
 
 "insights.title" = "Insights";
-"insights.days" = "%d days";
 "insights.profileViews" = "Profile visits";
 "insights.serviceViews" = "Service views";
 "insights.requests" = "Booking requests";
@@ -136,3 +135,8 @@
 "insights.byService" = "By service";
 "insights.upsell" = "More detail (contacts, favorites, the booking funnel, each service) comes with Plus and Diamond.";
 "insights.upsell.cta" = "See plans";
+"studio.step.done" = "Done";
+"studio.step.todo" = "Not done yet";
+"insights.days.7" = "Last 7 days";
+"insights.days.30" = "Last 30 days";
+"insights.days.90" = "Last 90 days";

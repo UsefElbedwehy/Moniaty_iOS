@@ -7,6 +7,7 @@ import Core
 /// a "Send code" CTA docked above the keyboard.
 struct PhoneEntryView: View {
     @Environment(\.dsRaisedSurface) private var raisedSurface
+    @Environment(\.dynamicTypeSize) private var typeSize
     @State private var viewModel: PhoneEntryViewModel
     private let coordinator: AuthCoordinator
 
@@ -34,6 +35,7 @@ struct PhoneEntryView: View {
                     }
                     termsFootnote
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, DSSpacing.lg)
                 .padding(.top, DSSpacing.sm)
             }
@@ -69,8 +71,12 @@ struct PhoneEntryView: View {
         .accessibilityElement(children: .combine)
     }
 
+    /// Side by side normally; stacked at accessibility sizes, where both don't fit on one line.
     private var numberRow: some View {
-        HStack(spacing: DSSpacing.xs) {
+        let layout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: DSSpacing.xs))
+            : AnyLayout(HStackLayout(spacing: DSSpacing.xs))
+        return layout {
             countryCodeField
             numberField
         }
@@ -108,6 +114,7 @@ struct PhoneEntryView: View {
                     Image(systemName: "chevron.up.chevron.down")
                         .font(.dsCaption)
                         .foregroundStyle(Color.dsTextSecondary)
+                        .accessibilityHidden(true)
                 }
             }
             .padding(.horizontal, DSSpacing.sm)
@@ -121,7 +128,7 @@ struct PhoneEntryView: View {
     private var numberField: some View {
         numberFieldInput
             .padding(.horizontal, DSSpacing.md)
-            .frame(height: 56)
+            .frame(minHeight: 56)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(raisedSurface ?? Color.dsSurface, in: RoundedRectangle(cornerRadius: DSRadius.control, style: .continuous))
             .overlay(

@@ -62,8 +62,14 @@ final class WalkthroughTests: XCTestCase {
         snap("profile-bottom-\(name)", tree: false)
         tap(button("Sign out"))
         snap("signout-confirm-\(name)")
-        let confirm = app.buttons.matching(NSPredicate(format: "label == 'Sign out'"))
-        if confirm.count > 1 { confirm.element(boundBy: confirm.count - 1).tap() }
+        confirmSignOut("Sign out")
+    }
+
+    /// Sign out asks for confirmation: tap the dialog's button (the list's own is covered).
+    func confirmSignOut(_ label: String) {
+        let buttons = app.buttons.matching(NSPredicate(format: "label == %@", label))
+        let dialog = (0..<buttons.count).map { buttons.element(boundBy: $0) }.first { $0.isHittable }
+        dialog?.tap()
         sleep(1)
     }
 
@@ -169,5 +175,130 @@ final class WalkthroughTests: XCTestCase {
         snap("ar-detail", tree: false)
         tap(button("طلب حجز"))
         snap("ar-request", tree: false)
+    }
+
+    // MARK: - Screen tour (polish pass)
+
+    private var isArabic: Bool { (ProcessInfo.processInfo.environment["WALKTHROUGH_LANG"] ?? "en") == "ar" }
+    private func t(_ en: String, _ ar: String) -> String { isArabic ? ar : en }
+
+    /// Taps the first button containing `label` if it shows up; logs and carries on otherwise.
+    @discardableResult
+    func go(_ label: String, in query: XCUIElementQuery? = nil) -> Bool {
+        let element = (query ?? app.buttons).matching(NSPredicate(format: "label CONTAINS %@", label)).firstMatch
+        // At large text sizes the target is often below the fold: scroll a little before giving up.
+        for _ in 0..<3 where !(element.waitForExistence(timeout: 2) && element.isHittable) { app.swipeUp() }
+        guard element.waitForExistence(timeout: 3) else {
+            print("TOUR missing: \(label) among \(app.buttons.allElementsBoundByIndex.prefix(30).map(\.label))")
+            return false
+        }
+        if element.isHittable { element.tap() } else { element.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap() }
+        return true
+    }
+
+    func back() {
+        let button = app.navigationBars.buttons.firstMatch
+        if button.waitForExistence(timeout: 3) { button.tap() }
+        sleep(1)
+    }
+
+    func dismissSheet() {
+        let close = app.buttons.matching(NSPredicate(format: "label IN %@",
+            [t("Cancel", "إلغاء"), t("Done", "تم"), t("Close", "إغلاق")])).firstMatch
+        if close.waitForExistence(timeout: 2) { close.tap() } else { app.swipeDown(velocity: .fast) }
+        sleep(1)
+    }
+
+    func tab(_ symbol: String) {
+        let button = app.tabBars.buttons[symbol]
+        if button.waitForExistence(timeout: 5) { button.tap() } else { print("TOUR missing tab: \(symbol)") }
+        sleep(1)
+    }
+
+    func tourSignIn(bride: Bool) {
+        go(bride ? t("a bride", "أنا عروس") : t("service provider", "أنا مقدّمة خدمة"))
+        let field = app.textFields.firstMatch
+        _ = field.waitForExistence(timeout: 5)
+        snap("auth-phone-empty", tree: false)
+        field.typeText(bride ? "512345678" : "598765432")
+        go(t("Send code", "إرسال الرمز"))
+        sleep(1)
+        snap("auth-otp", tree: false)
+        app.typeText("123456")
+        sleep(3)
+    }
+
+    /// Every screen reachable on the mocks, for both roles. Variant comes from the environment
+    /// (WALKTHROUGH_LANG, WALKTHROUGH_TYPE); dark mode is the simulator's appearance setting.
+    func testScreenTour() throws {
+        continueAfterFailure = true
+        if let size = ProcessInfo.processInfo.environment["WALKTHROUGH_TYPE"] {
+            app.launchArguments += ["-UIPreferredContentSizeCategoryName", size]
+        }
+        app.launch()
+        snap("landing")
+        tourSignIn(bride: true)
+
+        // Bride: empty states first, before anything is booked or saved.
+        tab("calendar"); snap("bride-bookings-empty", tree: false)
+        tab("map"); sleep(2); snap("bride-explore", tree: false)
+        tab("person"); snap("bride-profile", tree: false)
+        go(t("Favorites", "المفضلة")); snap("bride-favorites-empty", tree: false); back()
+        go(t("Wedding budget", "ميزانية الزفاف")); snap("bride-budget", tree: false); dismissSheet(); back()
+        go(t("Cities", "المدن")); snap("bride-cities", tree: false); dismissSheet()
+        go(t("Help and support", "الدعم والمساعدة")); snap("bride-support", tree: false); back()
+        go(t("Blocked accounts", "الحسابات المحظورة")); snap("bride-blocked-empty", tree: false); back()
+        go(t("Terms", "الشروط والأحكام")); sleep(1); snap("bride-terms", tree: false); back()
+
+        tab("house"); snap("bride-home", tree: false)
+        app.swipeUp(); snap("bride-home-scrolled", tree: false); app.swipeDown()
+        go(t("Search services or providers", "ابحثي عن خدمة أو مقدّمة خدمة")); sleep(1); snap("bride-search", tree: false)
+        let searchField = app.searchFields.count > 0 ? app.searchFields.firstMatch : app.textFields.firstMatch
+        if searchField.waitForExistence(timeout: 3) {
+            searchField.tap(); searchField.typeText(t("zzz", "ززز")); sleep(2)
+            snap("bride-search-no-results", tree: false)
+        }
+        dismissSheet(); back()
+        tab("house")
+        go(t("Makeup artist", "خبيرة مكياج")); sleep(1); snap("bride-category", tree: false); back()
+        go("مكياج العروس"); snap("bride-service", tree: false)
+        go("لمسة جمال"); sleep(1); snap("bride-provider", tree: false)
+        app.swipeUp(); snap("bride-provider-scrolled", tree: false); back()
+        go(t("Request booking", "طلب حجز")); snap("bride-request", tree: false)
+        let day = app.scrollViews.buttons.element(boundBy: 2)
+        if day.waitForExistence(timeout: 3) { day.tap() }
+        sleep(1)
+        let slot = app.buttons.matching(NSPredicate(format: "label CONTAINS ':'")).firstMatch
+        if slot.waitForExistence(timeout: 3) { slot.tap() }
+        go(t("Send booking request", "إرسال طلب الحجز")); sleep(1)
+        snap("bride-booking-requested", tree: false)
+        tab("calendar"); snap("bride-bookings-list", tree: false)
+
+        // Provider: studio, editors, plans, inbox.
+        tab("person"); app.swipeUp(); app.swipeUp()
+        go(t("Sign out", "تسجيل الخروج")); sleep(1)
+        snap("profile-signout-confirm", tree: false)
+        confirmSignOut(t("Sign out", "تسجيل الخروج"))
+        tourSignIn(bride: false)
+        snap("provider-studio", tree: false)
+        app.swipeUp(); snap("provider-studio-scrolled", tree: false); app.swipeDown()
+        go(t("Business profile", "ملف النشاط")); sleep(1); snap("provider-business", tree: false)
+        app.swipeUp(); snap("provider-business-scrolled", tree: false); app.swipeDown(); app.swipeDown()
+        // Saving a name approves the mock provider, which unlocks plans and insights.
+        let name = app.textFields[t("Business name", "اسم النشاط")]
+        if name.waitForExistence(timeout: 3) { name.tap(); name.typeText(t("Lamsa Beauty", "لمسة جمال")) }
+        go(t("Save", "حفظ")); sleep(2)
+        if app.navigationBars.buttons[t("Save", "حفظ")].exists { back() }
+        go(t("My services", "خدماتي")); sleep(1); snap("provider-services-empty", tree: false)
+        if go(t("Add", "إضافة")) { sleep(1); snap("provider-service-editor", tree: false); dismissSheet() }
+        back()
+        go(t("My stores", "متاجري")); sleep(1); snap("provider-stores-empty", tree: false); back()
+        app.swipeUp()
+        go(t("Working hours", "أوقات العمل")); sleep(1); snap("provider-hours", tree: false); back()
+        go(t("Payout methods", "طرق استلام المبالغ")); sleep(1); snap("provider-payout-empty", tree: false); back()
+        go(t("Plan and subscription", "الباقة والاشتراك")); sleep(1); snap("provider-plans", tree: false); back()
+        go(t("Insights", "الإحصائيات")); sleep(1); snap("provider-insights", tree: false); back()
+        tab("calendar"); snap("provider-inbox", tree: false)
+        go("MN-"); sleep(1); snap("provider-booking", tree: false)
     }
 }

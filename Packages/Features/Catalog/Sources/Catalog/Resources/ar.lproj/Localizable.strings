@@ -42,14 +42,14 @@
 "budget.reserved" = "محجوز: %@";
 "budget.prompt" = "حدّدي ميزانيتك ونعرض لكِ الخدمات المناسبة لها، ونخصم كل حجز منها تلقائياً.";
 "budget.amount" = "الميزانية الكاملة للزفاف";
-"budget.amountPlaceholder" = "مثال: ٢٥٠٠٠";
+"budget.amountPlaceholder" = "مثال: ٢٥٬٠٠٠";
 "budget.footer" = "بالريال السعودي. يمكنك تعديلها في أي وقت.";
 "budget.hasDate" = "أعرف موعد الزفاف";
 "budget.date" = "موعد الزفاف";
 "detail.missing.title" = "هذه الصفحة غير متاحة";
 "detail.missing.message" = "ربما أُزيلت أو لم تعد متاحة في مدينتك.";
 "detail.about" = "عن الخدمة";
-"detail.moreFromProvider" = "خدمات أخرى من نفس مقدّمة الخدمة";
+"detail.moreFromProvider" = "خدمات أخرى لمقدّمة الخدمة";
 "detail.atLocation" = "تحضر إلى موقعك";
 "detail.femaleOnly" = "طاقم نسائي فقط";
 "detail.price" = "السعر";

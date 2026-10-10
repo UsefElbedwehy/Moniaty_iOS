@@ -6,7 +6,7 @@
 "auth.onboarding.subtitle" = "مكياج، تصوير، قاعات، حناء وأكثر — احجزي بسهولة ضمن ميزانيتك.";
 "auth.onboarding.continueApple" = "المتابعة عبر Apple";
 "auth.onboarding.continuePhone" = "المتابعة عبر رقم الجوال";
-"auth.onboarding.browseGuest" = "تصفّح كزائرة";
+"auth.onboarding.browseGuest" = "تصفّحي كزائرة";
 "auth.debug.signIn" = "الدخول كمستخدم تجريبي (تجريبي)";
 
 /* Phone entry */
@@ -17,15 +17,15 @@
 "auth.name.submit" = "إنشاء الحساب";
 "auth.error.nameRequired" = "يرجى إدخال الاسم الأول والأخير.";
 "auth.phone.title" = "رقم جوالك";
-"auth.phone.subtitle" = "سنرسل رمزاً من 6 أرقام للتحقق. أرقام الجوال السعودية فقط.";
+"auth.phone.subtitle" = "سنرسل إليكِ رمز تحقق من ٦ أرقام. أرقام الجوال السعودية فقط.";
 "auth.phone.countryAccessibility" = "رمز الدولة، السعودية، زائد 966";
 "auth.phone.numberAccessibility" = "رقم الجوال";
-"auth.phone.terms" = "بالمتابعة فإنك توافقين على شروط منيتي وسياسة الخصوصية، ولا نتسامح مع أي محتوى مسيء أو مستخدم مسيء.";
+"auth.phone.terms" = "بالمتابعة توافقين على شروط منيتي وسياسة الخصوصية. لا مكان في منيتي لأي محتوى أو سلوك مسيء.";
 "auth.phone.sendCode" = "إرسال الرمز";
 
 /* OTP */
 "auth.otp.title" = "أدخلي الرمز";
-"auth.otp.sentTo" = "أُرسل إلى %@.";
+"auth.otp.sentTo" = "أرسلنا الرمز إلى %@.";
 "auth.otp.edit" = "تعديل";
 "auth.otp.codeAccessibility" = "رمز التحقق المكوّن من 6 أرقام";
 "auth.otp.resendIn" = "إعادة الإرسال خلال %@";

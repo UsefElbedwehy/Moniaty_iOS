@@ -161,8 +161,11 @@ struct StudioHomeScreen: View {
                             Image(systemName: step.done ? "checkmark.circle.fill" : "circle")
                                 .foregroundStyle(step.done ? Color.dsSuccess : Color.dsDisabled)
                         }
+                        .accessibilityElement(children: .combine)
+                        .accessibilityValue(StudioL10n.string(step.done ? "studio.step.done" : "studio.step.todo"))
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
 
@@ -171,7 +174,7 @@ struct StudioHomeScreen: View {
                 BusinessEditScreen(feature: feature, business: business)
             } label: {
                 StudioRow(systemImage: "person.text.rectangle", title: StudioL10n.string("studio.business"),
-                          subtitle: business.businessName ?? StudioL10n.string("studio.business.empty"))
+                          subtitle: business.businessName.flatMap { $0.isEmpty ? nil : $0 } ?? StudioL10n.string("studio.business.empty"))
             }
             NavigationLink {
                 ServicesListScreen(feature: feature)
@@ -251,14 +254,16 @@ struct StudioRow: View {
                 .foregroundStyle(Color.dsPrimary)
                 .frame(width: 44, height: 44)
                 .background(RoundedRectangle(cornerRadius: 14).fill(Color.dsPrimaryMuted))
+                .accessibilityHidden(true)
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: title).font(.dsHeadline).foregroundStyle(Color.dsTextPrimary)
-                if let subtitle {
-                    Text(verbatim: subtitle).font(.dsFootnote).foregroundStyle(Color.dsTextSecondary).lineLimit(1)
+                if let subtitle, !subtitle.isEmpty {
+                    Text(verbatim: subtitle).font(.dsFootnote).foregroundStyle(Color.dsTextSecondary).lineLimit(2)
                 }
             }
             Spacer()
             Image(systemName: "chevron.forward").foregroundStyle(Color.dsTextSecondary)
+                .accessibilityHidden(true)
         }
         .padding(DSSpacing.md)
         .background(RoundedRectangle(cornerRadius: DSRadius.card).fill(Color.dsSurface))
@@ -369,11 +374,13 @@ struct MultiSelectScreen: View {
                     Spacer()
                     if selection.contains(option.id) {
                         Image(systemName: "checkmark").foregroundStyle(Color.dsPrimary)
+                            .accessibilityHidden(true)
                     }
                 }
             }
             .accessibilityAddTraits(selection.contains(option.id) ? .isSelected : [])
         }
+        .dsFormBackground()
         .navigationTitle(title)
     }
 }

@@ -87,6 +87,7 @@ struct BusinessEditScreen: View {
                 StudioL10n.text("business.verification.footer")
             }
         }
+        .dsFormBackground()
         .navigationTitle(StudioL10n.string("studio.business"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -121,6 +122,7 @@ struct BusinessEditScreen: View {
 struct ServicesListScreen: View {
     let feature: StudioFeature
     @State private var editing: ServiceDraft?
+    @State private var deleteFailed = false
     private var store: StudioStore { feature.store }
 
     var body: some View {
@@ -150,7 +152,9 @@ struct ServicesListScreen: View {
                     .onDelete { offsets in
                         let ids = offsets.map { business.services[$0].id }
                         Task {
-                            for id in ids { try? await store.repository.deleteService(id: id) }
+                            for id in ids {
+                                do { try await store.repository.deleteService(id: id) } catch { deleteFailed = true }
+                            }
                             await store.reload()
                         }
                     }
@@ -159,6 +163,7 @@ struct ServicesListScreen: View {
                 }
             }
         }
+        .dsFormBackground()
         .overlay {
             if business?.services.isEmpty == true {
                 EmptyStateView(systemImage: "sparkles", title: StudioL10n.key("services.empty.title"),
@@ -167,6 +172,9 @@ struct ServicesListScreen: View {
             }
         }
         .navigationTitle(StudioL10n.string("studio.services"))
+        .alert(StudioL10n.string("common.saveFailed"), isPresented: $deleteFailed) {
+            Button(StudioL10n.string("common.ok"), role: .cancel) {}
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { editing = ServiceDraft() } label: { Image(systemName: "plus") }
@@ -273,6 +281,7 @@ struct ServiceEditScreen: View {
                 StudioL10n.text("service.active.footer")
             }
         }
+        .dsFormBackground()
         .navigationTitle(StudioL10n.string(draft.id == nil ? "services.add" : "services.edit"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -327,6 +336,7 @@ struct ServiceEditScreen: View {
 struct StoresListScreen: View {
     let feature: StudioFeature
     @State private var editing: StoreDraft?
+    @State private var deleteFailed = false
     private var store: StudioStore { feature.store }
 
     var body: some View {
@@ -351,7 +361,9 @@ struct StoresListScreen: View {
                     .onDelete { offsets in
                         let ids = offsets.map { business.stores[$0].id }
                         Task {
-                            for id in ids { try? await store.repository.deleteStore(id: id) }
+                            for id in ids {
+                                do { try await store.repository.deleteStore(id: id) } catch { deleteFailed = true }
+                            }
                             await store.reload()
                         }
                     }
@@ -360,6 +372,7 @@ struct StoresListScreen: View {
                 }
             }
         }
+        .dsFormBackground()
         .overlay {
             if business?.stores.isEmpty == true {
                 EmptyStateView(systemImage: "storefront", title: StudioL10n.key("stores.empty.title"),
@@ -368,6 +381,9 @@ struct StoresListScreen: View {
             }
         }
         .navigationTitle(StudioL10n.string("studio.stores"))
+        .alert(StudioL10n.string("common.saveFailed"), isPresented: $deleteFailed) {
+            Button(StudioL10n.string("common.ok"), role: .cancel) {}
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { editing = StoreDraft() } label: { Image(systemName: "plus") }
@@ -432,6 +448,7 @@ struct StoreEditScreen: View {
                 Toggle(StudioL10n.string("store.visible"), isOn: $draft.isActive)
             }
         }
+        .dsFormBackground()
         .navigationTitle(StudioL10n.string(draft.id == nil ? "stores.add" : "stores.edit"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

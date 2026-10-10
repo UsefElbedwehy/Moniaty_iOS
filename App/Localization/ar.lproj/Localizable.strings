@@ -38,7 +38,7 @@
 "profile.deleteAccount" = "حذف الحساب";
 "profile.deleteAccount.confirmTitle" = "حذف الحساب نهائياً؟";
 "profile.deleteAccount.confirm" = "حذف الحساب";
-"profile.deleteAccount.message" = "سيتم حذف حسابك وبياناتك الشخصية، مع الاحتفاظ بالسجلات التي يلزمنا النظام بحفظها.";
+"profile.deleteAccount.message" = "سنحذف حسابك وبياناتك الشخصية، ونحتفظ فقط بالسجلات التي يُلزمنا النظام بحفظها.";
 "profile.deleteAccount.failed" = "تعذّر حذف الحساب. حاولي مرة أخرى.";
 "profile.version" = "الإصدار";
 "common.ok" = "حسناً";
@@ -51,3 +51,5 @@
 "profile.section.wedding" = "زفافي";
 "profile.favorites" = "المفضلة";
 "profile.budget" = "ميزانية الزفاف";
+"common.retry" = "إعادة المحاولة";
+"profile.signOut.confirmTitle" = "تسجيل الخروج من منيتي؟";

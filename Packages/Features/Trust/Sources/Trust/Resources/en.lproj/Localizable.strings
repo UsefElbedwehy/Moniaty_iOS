@@ -8,7 +8,7 @@
 "reviews.title" = "Reviews";
 "reviews.seeAll" = "See all";
 "reviews.none" = "No reviews yet.";
-"reviews.count" = "%d reviews";
+"reviews.count" = "Reviews: %d";
 "reviews.stars" = "%d out of 5 stars";
 "reviews.reply" = "Provider's reply";
 

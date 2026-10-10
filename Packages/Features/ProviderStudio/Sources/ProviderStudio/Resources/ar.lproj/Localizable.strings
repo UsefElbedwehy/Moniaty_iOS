@@ -1,6 +1,6 @@
 /* ProviderStudio strings. */
 
-"studio.title" = "استوديو أعمالي";
+"studio.title" = "نشاطي";
 "studio.setup.title" = "أكملي ملفك ليظهر للعرائس";
 "studio.step.profile" = "اسم النشاط والشعار";
 "studio.step.coverage" = "الأقسام والمدن التي تخدمينها";
@@ -9,9 +9,9 @@
 "studio.business" = "ملف النشاط";
 "studio.business.empty" = "أضيفي اسم نشاطك";
 "studio.services" = "خدماتي";
-"studio.services.count" = "%1$d من %2$d خدمة نشطة";
+"studio.services.count" = "الخدمات النشطة: %1$d من %2$d";
 "studio.stores" = "متاجري";
-"studio.stores.count" = "%1$d من %2$d متجر";
+"studio.stores.count" = "المتاجر: %1$d من %2$d";
 "studio.preview" = "معاينة صفحتي كما تراها العروس";
 "studio.status.pending" = "طلب الانضمام قيد المراجعة";
 "studio.status.pending.message" = "جهّزي ملفك وخدماتك الآن، وستظهر للعرائس فور موافقة الإدارة. سنتواصل معك قريباً.";
@@ -62,8 +62,8 @@
 "service.store" = "المتجر";
 "service.active" = "ظاهرة للعرائس";
 "service.active.footer" = "يمكنك إيقاف الخدمة مؤقتاً دون حذفها. الخدمات الموقوفة لا تُحسب ضمن حد باقتك.";
-"limit.services" = "وصلتِ للحد الأقصى (%d خدمات نشطة). أوقفي خدمة أخرى أو رقّي باقتك.";
-"limit.stores" = "وصلتِ للحد الأقصى (%d متاجر).";
+"limit.services" = "وصلتِ إلى الحد الأقصى للخدمات النشطة في باقتك (%d). أوقفي خدمة أخرى أو رقّي باقتك.";
+"limit.stores" = "وصلتِ إلى الحد الأقصى للمتاجر في باقتك (%d).";
 "store.hidden" = "مخفي";
 "stores.empty.title" = "لا توجد متاجر";
 "stores.empty.message" = "اربطي متجرك ليظهر على الخريطة مع منتجاته.";
@@ -76,19 +76,19 @@
 "studio.availability" = "أوقات العمل";
 "studio.availability.subtitle" = "الأيام والساعات وأيام الإجازة";
 "studio.paymentMethods" = "طرق استلام المبالغ";
-"studio.paymentMethods.subtitle" = "الحسابات التي تحوّل لها العرائس";
+"studio.paymentMethods.subtitle" = "الحسابات التي تحوّل إليها العرائس";
 
 /* Phase 4: plans, trial and insights. */
 "studio.plans" = "الباقة والاشتراك";
 "studio.insights" = "الإحصائيات";
 "studio.insights.subtitle" = "المشاهدات والطلبات";
-"limit.photos" = "وصلتِ للحد الأقصى (%d صورة) في باقتك.";
+"limit.photos" = "وصلتِ إلى الحد الأقصى للصور في باقتك (%d).";
 
 "plan.card.trial" = "الفترة المجانية";
 "plan.card.subscribed" = "باقتك";
 "plan.card.expired" = "خدماتك مخفية الآن";
 "plan.card.expired.message" = "انتهت فترتك. خدماتك محفوظة وستظهر للعرائس فور اشتراكك.";
-"plan.card.until" = "حتى %1$@ · باقي %2$d يوم";
+"plan.card.until" = "حتى %1$@ · الأيام المتبقية: %2$d";
 "plan.card.next" = "بعدها: باقة %1$@ من %2$@";
 "plan.card.choose" = "اختاري باقتك";
 "plan.card.renew" = "تجديد الاشتراك";
@@ -99,7 +99,7 @@
 "plans.sub.trial" = "أنتِ في الفترة المجانية حتى %@. إذا اشتركتِ الآن تبدأ باقتك بعد انتهائها.";
 "plans.sub.subscribed" = "باقتك الحالية %1$@ حتى %2$@.";
 "plans.sub.expired" = "اشتركي لتظهر خدماتك للعرائس من جديد.";
-"plans.price" = "%@ / شهرياً";
+"plans.price" = "%@ شهرياً";
 "plans.recommended" = "الأكثر اختياراً";
 "plans.current" = "باقتك";
 "plans.cta.subscribe" = "اشتركي في باقة %1$@ · %2$@";
@@ -114,7 +114,7 @@
 "plans.payment.failed" = "فشلت";
 "plans.payment.review" = "قيد المراجعة";
 "plans.result.captured" = "تم الدفع بنجاح";
-"plans.result.captured.message" = "باقة %@ مفعّلة. شكراً لك!";
+"plans.result.captured.message" = "باقة %@ مفعّلة. شكراً لكِ!";
 "plans.result.failed" = "لم تكتمل عملية الدفع، حاولي مرة أخرى.";
 "plans.result.review" = "استلمنا الدفعة وسيراجعها فريق منيتي قريباً.";
 "plans.error.generic" = "تعذّر بدء الدفع، حاولي مرة أخرى.";
@@ -123,7 +123,6 @@
 "plans.error.too_many_attempts" = "محاولات كثيرة، حاولي بعد قليل.";
 
 "insights.title" = "الإحصائيات";
-"insights.days" = "%d يوم";
 "insights.profileViews" = "زيارات صفحتك";
 "insights.serviceViews" = "مشاهدات الخدمات";
 "insights.requests" = "طلبات الحجز";
@@ -136,3 +135,8 @@
 "insights.byService" = "حسب الخدمة";
 "insights.upsell" = "تفاصيل أكثر (التواصل، المفضلة، مسار الحجز، كل خدمة) متاحة في باقتي بلس ودايموند.";
 "insights.upsell.cta" = "عرض الباقات";
+"studio.step.done" = "تم";
+"studio.step.todo" = "لم يكتمل بعد";
+"insights.days.7" = "آخر ٧ أيام";
+"insights.days.30" = "آخر ٣٠ يوماً";
+"insights.days.90" = "آخر ٩٠ يوماً";

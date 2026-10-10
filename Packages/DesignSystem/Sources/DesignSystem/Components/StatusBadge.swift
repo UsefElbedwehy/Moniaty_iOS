@@ -7,6 +7,8 @@ public enum StatusBadgeKind: Sendable {
     case rejected
     case featured
     case verified
+    /// Waiting on the viewer (pay, approve, confirm): solid primary, flat, no icon.
+    case action
 }
 
 /// Small pill-ish label used to convey listing/moderation status (pending, live,
@@ -26,7 +28,7 @@ public struct StatusBadge: View {
         case .live: return .dsLiveBackground
         case .rejected: return .dsRejectedBackground
         case .featured: return .dsPremiumGold
-        case .verified: return .dsPrimary
+        case .verified, .action: return .dsPrimary
         }
     }
 
@@ -37,7 +39,7 @@ public struct StatusBadge: View {
         switch kind {
         case .featured: DSGradient.gold
         case .verified: DSGradient.primary
-        case .pending, .live, .rejected: backgroundColor
+        case .pending, .live, .rejected, .action: backgroundColor
         }
     }
 
@@ -46,7 +48,7 @@ public struct StatusBadge: View {
         case .pending: return .dsPendingForeground
         case .live: return .dsLiveForeground
         case .rejected: return .dsRejectedForeground
-        case .featured, .verified: return .white
+        case .featured, .verified, .action: return .white
         }
     }
 
@@ -54,7 +56,7 @@ public struct StatusBadge: View {
         switch kind {
         case .featured: return "star.fill"
         case .verified: return "checkmark.seal.fill"
-        case .pending, .live, .rejected: return nil
+        case .pending, .live, .rejected, .action: return nil
         }
     }
 
@@ -63,6 +65,7 @@ public struct StatusBadge: View {
             if let systemImage {
                 Image(systemName: systemImage)
                     .font(.system(size: 10, weight: .bold))
+                    .accessibilityHidden(true)
             }
             Text(text)
                 .font(.dsCaption.weight(.bold))
@@ -85,7 +88,7 @@ private struct ShineIfNeeded: ViewModifier {
     func body(content: Content) -> some View {
         switch kind {
         case .featured, .verified: content.shimmering()
-        case .pending, .live, .rejected: content
+        case .pending, .live, .rejected, .action: content
         }
     }
 }

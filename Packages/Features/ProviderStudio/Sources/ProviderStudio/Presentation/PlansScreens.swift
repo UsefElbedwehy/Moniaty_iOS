@@ -21,6 +21,7 @@ struct SubscriptionCard: View {
                 HStack {
                     Image(systemName: icon)
                         .foregroundStyle(entitlement.state == .expired ? Color.dsError : Color.dsPrimary)
+                        .accessibilityHidden(true)
                     Text(verbatim: title).font(.dsHeadline)
                     Spacer()
                     if entitlement.state == .subscribed, let plan = subscription.currentPlan {
@@ -31,7 +32,7 @@ struct SubscriptionCard: View {
                     .font(.dsSubhead)
                     .foregroundStyle(Color.dsTextSecondary)
                 if let next = subscription.nextPlan, let start = entitlement.nextStartsAt {
-                    Text(verbatim: StudioL10n.format("plan.card.next", next.name, start.formatted(date: .abbreviated, time: .omitted)))
+                    Text(verbatim: StudioL10n.format("plan.card.next", next.name, start.displayFormatted(date: .abbreviated, time: .omitted)))
                         .font(.dsFootnote)
                         .foregroundStyle(Color.dsTextSecondary)
                 }
@@ -67,7 +68,7 @@ struct SubscriptionCard: View {
         switch entitlement.state {
         case .trial, .subscribed:
             guard let days, let end = entitlement.listedUntil else { return "" }
-            return StudioL10n.format("plan.card.until", end.formatted(date: .abbreviated, time: .omitted), days)
+            return StudioL10n.format("plan.card.until", end.displayFormatted(date: .abbreviated, time: .omitted), days)
         case .expired:
             return StudioL10n.string("plan.card.expired.message")
         case .pending:
@@ -181,7 +182,7 @@ struct PlansScreen: View {
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(verbatim: subscription.plan(payment.planId)?.name ?? payment.planId).font(.dsSubhead)
-                        Text(verbatim: payment.createdAt.formatted(date: .abbreviated, time: .shortened))
+                        Text(verbatim: payment.createdAt.displayFormatted(date: .abbreviated, time: .shortened))
                             .font(.dsCaption).foregroundStyle(Color.dsTextSecondary)
                     }
                     Spacer()
@@ -208,10 +209,10 @@ struct PlansScreen: View {
         case .pending:
             return StudioL10n.string("plans.sub.pending")
         case .trial:
-            let end = (e.trialEndsAt ?? .now).formatted(date: .abbreviated, time: .omitted)
+            let end = (e.trialEndsAt ?? .now).displayFormatted(date: .abbreviated, time: .omitted)
             return StudioL10n.format("plans.sub.trial", end)
         case .subscribed:
-            let end = (e.paidUntil ?? e.periodEndsAt ?? .now).formatted(date: .abbreviated, time: .omitted)
+            let end = (e.paidUntil ?? e.periodEndsAt ?? .now).displayFormatted(date: .abbreviated, time: .omitted)
             return StudioL10n.format("plans.sub.subscribed", subscription.currentPlan?.name ?? "", end)
         case .expired:
             return StudioL10n.string("plans.sub.expired")
@@ -298,6 +299,7 @@ struct PlanCardView: View {
                 Spacer()
                 Image(systemName: isSelected ? "largecircle.fill.circle" : "circle")
                     .foregroundStyle(isSelected ? Color.dsPrimary : Color.dsDisabled)
+                    .accessibilityHidden(true)
             }
             Text(verbatim: StudioL10n.format("plans.price", formatSAR(plan.priceSar)))
                 .font(.dsHeadline)
@@ -331,9 +333,9 @@ struct InsightsScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: DSSpacing.md) {
                 Picker("", selection: $days) {
-                    Text(verbatim: StudioL10n.format("insights.days", 7)).tag(7)
-                    Text(verbatim: StudioL10n.format("insights.days", 30)).tag(30)
-                    Text(verbatim: StudioL10n.format("insights.days", 90)).tag(90)
+                    Text(verbatim: StudioL10n.string("insights.days.7")).tag(7)
+                    Text(verbatim: StudioL10n.string("insights.days.30")).tag(30)
+                    Text(verbatim: StudioL10n.string("insights.days.90")).tag(90)
                 }
                 .pickerStyle(.segmented)
 
@@ -429,6 +431,7 @@ private struct StatTile: View {
     var body: some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
             Image(systemName: systemImage).foregroundStyle(Color.dsPrimary)
+                .accessibilityHidden(true)
             Text(verbatim: value).font(.dsTitle2).foregroundStyle(Color.dsTextPrimary)
             Text(verbatim: title).font(.dsFootnote).foregroundStyle(Color.dsTextSecondary).lineLimit(2)
         }

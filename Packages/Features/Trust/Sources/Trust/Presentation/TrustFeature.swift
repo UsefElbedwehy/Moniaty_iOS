@@ -83,7 +83,8 @@ enum TrustL10n {
     static func key(_ key: String) -> LocalizedStringKey { LocalizedStringKey("\(string(key))") }
 
     static func format(_ key: String, _ args: CVarArg...) -> String {
-        String(format: string(key), arguments: args)
+        // The current locale: Arabic-Indic digits in Arabic, and plural rules from .stringsdict.
+        String(format: string(key), locale: .current, arguments: args)
     }
 
     static func refusal(_ code: String) -> String {
@@ -217,7 +218,7 @@ struct ReviewRow: View {
             }
             HStack(spacing: DSSpacing.xs) {
                 StarsView(rating: Double(review.rating))
-                Text(verbatim: review.createdAt.formatted(date: .abbreviated, time: .omitted))
+                Text(verbatim: review.createdAt.displayFormatted(date: .abbreviated, time: .omitted))
                     .font(.dsCaption).foregroundStyle(Color.dsTextSecondary)
                 if let title = review.serviceTitle {
                     Text(verbatim: "· " + title).font(.dsCaption).foregroundStyle(Color.dsTextSecondary).lineLimit(1)
@@ -390,6 +391,7 @@ struct ReviewComposer: View {
                 }
             }
         }
+        .dsFormBackground()
         .navigationTitle(TrustL10n.string("review.title"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -411,11 +413,13 @@ struct ReviewComposer: View {
     private func upload(_ picked: [PhotosPickerItem]) async {
         isUploading = true
         defer { isUploading = false; pickerItems = [] }
+        var failed = false
         for item in picked {
             guard let data = try? await item.loadTransferable(type: Data.self),
-                  let jpeg = ImageCompressor.jpeg(from: data) else { continue }
-            if let url = try? await feature.uploader.uploadJPEG(jpeg, folder: "reviews") { photos.append(url) }
+                  let jpeg = ImageCompressor.jpeg(from: data) else { failed = true; continue }
+            if let url = try? await feature.uploader.uploadJPEG(jpeg, folder: "reviews") { photos.append(url) } else { failed = true }
         }
+        if failed { message = TrustL10n.string("error.invalid_photo") }
     }
 
     private func send() {
@@ -532,6 +536,7 @@ struct ReportSheet: View {
                 TrustL10n.text("report.footer")
             }
         }
+        .dsFormBackground()
         .navigationTitle(TrustL10n.string("report.title"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -570,6 +575,7 @@ struct ReportSheet: View {
 struct BlockedUsersScreen: View {
     let feature: TrustFeature
     @State private var state: ViewState<[BlockedUser]> = .loading
+    @State private var unblockFailed = false
 
     var body: some View {
         List {
@@ -585,14 +591,16 @@ struct BlockedUsersScreen: View {
                         Spacer()
                         Button(TrustL10n.string("block.unblock")) {
                             Task {
-                                try? await feature.repository.unblock(userId: user.userId)
+                                do { try await feature.repository.unblock(userId: user.userId) } catch { unblockFailed = true }
                                 await load()
                             }
                         }
                         .tint(Color.dsPrimary)
                     }
                 }
-            case .empty, .offline:
+            case .offline:
+                ErrorStateView(error: .offline) { Task { await load() } }.listRowBackground(Color.clear)
+            case .empty:
                 EmptyStateView(systemImage: "hand.raised", title: TrustL10n.key("block.empty.title"),
                                message: TrustL10n.key("block.empty.message"))
                     .listRowBackground(Color.clear)
@@ -601,6 +609,9 @@ struct BlockedUsersScreen: View {
         .scrollContentBackground(.hidden)
         .dsScreenBackground()
         .navigationTitle(TrustL10n.string("block.list.title"))
+        .alert(TrustL10n.string("error.generic"), isPresented: $unblockFailed) {
+            Button(TrustL10n.string("common.ok"), role: .cancel) {}
+        }
         .task { await load() }
         .trackScreen("blocked_users")
     }
@@ -642,6 +653,7 @@ struct SupportScreen: View {
                                 }
                             } icon: {
                                 Image(systemName: contact.kind == .email ? "envelope" : contact.kind == .phone ? "phone" : "message")
+                                    .accessibilityHidden(true)
                             }
                         }
                     }
@@ -725,6 +737,7 @@ struct TicketComposer: View {
                 TrustL10n.text("support.aboutBooking").font(.dsFootnote).foregroundStyle(Color.dsTextSecondary)
             }
         }
+        .dsFormBackground()
         .navigationTitle(TrustL10n.string("support.newTicket"))
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {

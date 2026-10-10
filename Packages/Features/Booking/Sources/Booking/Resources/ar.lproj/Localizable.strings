@@ -45,7 +45,7 @@
 "hint.bride.reschedule_proposed" = "اقترحت مقدّمة الخدمة موعداً آخر. اقبليه أو ارفضيه خلال ٢٤ ساعة.";
 "hint.bride.awaiting_payment" = "تمت الموافقة! حوّلي المبلغ وارفعي الإيصال قبل انتهاء المهلة.";
 "hint.bride.payment_submitted" = "استلمنا إيصالك. ستؤكد مقدّمة الخدمة الاستلام خلال ٤٨ ساعة.";
-"hint.bride.payment_confirmed" = "حجزك مؤكد. نتمنى لك يوماً سعيداً!";
+"hint.bride.payment_confirmed" = "حجزك مؤكَّد. نتمنى لكِ يوماً سعيداً!";
 "hint.bride.completed" = "اكتملت الخدمة. شكراً لاختيارك منيتي.";
 "hint.bride.declined" = "اعتذرت مقدّمة الخدمة عن هذا الموعد. جرّبي موعداً أو مقدّمة خدمة أخرى.";
 "hint.bride.cancelled_by_bride" = "ألغيتِ هذا الحجز.";
@@ -83,7 +83,7 @@
 "action.pay" = "الدفع ورفع الإيصال";
 "action.approve" = "موافقة";
 "action.propose" = "اقتراح موعد آخر";
-"action.decline" = "اعتذار";
+"action.decline" = "الاعتذار عن الطلب";
 "action.viewReceipt" = "عرض الإيصال";
 "action.confirmPayment" = "تأكيد استلام المبلغ";
 "action.rejectPayment" = "لم يصل المبلغ";
@@ -91,13 +91,13 @@
 "action.cancel" = "إلغاء الحجز";
 "action.cancel.confirm" = "هل تريدين إلغاء هذا الحجز؟";
 "action.dispute" = "الإبلاغ عن مشكلة";
-"action.help" = "تحتاجين مساعدة بخصوص هذا الحجز؟";
+"action.help" = "هل تحتاجين مساعدة في هذا الحجز؟";
 
 "pay.title" = "الدفع";
 "pay.amount" = "المبلغ المطلوب";
 "pay.reference" = "رقم الحجز";
 "pay.referenceHint" = "اكتبي رقم الحجز في وصف التحويل.";
-"pay.methods" = "حوّلي إلى أحد الحسابات";
+"pay.methods" = "حوّلي المبلغ إلى أحد هذه الحسابات";
 "pay.beneficiary" = "باسم: %@";
 "pay.receipt" = "إيصال التحويل";
 "pay.attach" = "إرفاق صورة الإيصال";
@@ -105,7 +105,7 @@
 "pay.transferredAmount" = "المبلغ المحوَّل";
 "pay.transferTime" = "وقت التحويل";
 "pay.senderBank" = "البنك المحوِّل (اختياري)";
-"pay.disclaimer" = "منيتي لا تستلم المبالغ. التحويل يتم مباشرة لحساب مقدّمة الخدمة، وتتم مراجعة الإيصالات للحماية من الاحتيال.";
+"pay.disclaimer" = "منيتي لا تستلم أي مبالغ؛ يتم التحويل مباشرة إلى حساب مقدّمة الخدمة، ونراجع الإيصالات للحماية من الاحتيال.";
 "pay.submit" = "إرسال الإيصال";
 
 "method.iban" = "آيبان";
@@ -126,7 +126,7 @@
 
 "availability.title" = "أوقات العمل";
 "availability.weekly" = "الأيام والساعات";
-"availability.weeklyFooter" = "تظهر للعرائس الأوقات المتاحة فقط ضمن هذه الساعات، بدون أي حجز متداخل.";
+"availability.weeklyFooter" = "لا تظهر للعرائس إلا الأوقات المتاحة ضمن هذه الساعات، دون تداخل مع حجوزاتك.";
 "availability.from" = "من";
 "availability.to" = "إلى";
 "availability.daysOff" = "أيام الإجازة";
@@ -146,8 +146,8 @@
 "methods.hint.wallet" = "رقم الجوال المسجّل في المحفظة (STC Pay وغيرها).";
 "methods.active" = "تظهر للعرائس";
 "methods.inactive" = "مخفية";
-"methods.footer" = "تُحفظ نسخة من هذه البيانات مع كل حجز تتم الموافقة عليه، فالتعديل لا يغيّر الحجوزات السابقة.";
-"methods.empty.title" = "لا توجد طرق دفع";
+"methods.footer" = "نحفظ نسخة من هذه البيانات مع كل حجز توافقين عليه، لذلك لا يؤثر تعديلها على الحجوزات السابقة.";
+"methods.empty.title" = "لا توجد طرق استلام بعد";
 "methods.empty.message" = "أضيفي حساباً واحداً على الأقل لتتمكني من قبول الحجوزات.";
 
 "error.generic" = "حدث خطأ، حاولي مرة أخرى.";
