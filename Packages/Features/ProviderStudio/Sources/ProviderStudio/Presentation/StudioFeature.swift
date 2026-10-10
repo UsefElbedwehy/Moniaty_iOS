@@ -280,6 +280,8 @@ struct PhotoUploadButton: View {
     @State private var failed = false
 
     var body: some View {
+        // PhotosPicker's label closure is Sendable: read main-actor state outside it.
+        let isUploading = isUploading
         PhotosPicker(selection: $items, maxSelectionCount: max(1, maxCount), matching: .images) {
             HStack(spacing: DSSpacing.xs) {
                 if isUploading { ProgressView() } else { Image(systemName: "photo.badge.plus") }

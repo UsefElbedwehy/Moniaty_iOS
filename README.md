@@ -15,7 +15,7 @@ wedding services, and providers manage requests and schedules.
 4. Optional, for real data and push:
    - `App/Resources/BackendConfig.plist`: Supabase project URL + anon key
    - `App/Resources/GoogleService-Info.plist`: from the Firebase console
-5. Run the **App** scheme on an iOS 17+ simulator.
+5. Run the **Munyati** scheme on an iOS 17+ simulator.
 
 Without step 4 the app runs on built-in sample data with Firebase switched off, so you can
 try the flows straight away. Test sign-in on sample data: any Saudi mobile (5XXXXXXXX) and the

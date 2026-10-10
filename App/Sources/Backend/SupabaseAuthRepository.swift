@@ -202,7 +202,8 @@ public actor SupabaseAuthRepository: AuthRepository {
                 body: RefreshTokenBody(refreshToken: refreshToken)
             )
             store(dto)
-        } catch let error as AppError {
+        } catch {
+            // `client.send` has typed throws, so `error` is an `AppError`.
             switch error {
             case .authentication, .validation:
                 discardSession()
@@ -220,9 +221,6 @@ public actor SupabaseAuthRepository: AuthRepository {
             case .network, .server, .offline, .unknown:
                 break
             }
-        } catch {
-            // Unreachable in practice (`client.send` only throws `AppError`), but keep this
-            // path silent rather than crashing on a token refresh that's already best-effort.
         }
     }
 

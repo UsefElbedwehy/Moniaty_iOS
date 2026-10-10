@@ -452,9 +452,11 @@ struct PaymentScreen: View {
             }
 
             Section {
+                // PhotosPicker's label closure is Sendable: read main-actor state outside it.
+                let attached = imageData != nil
                 PhotosPicker(selection: $item, matching: .images) {
-                    Label(BookingL10n.string(imageData == nil ? "pay.attach" : "pay.attached"),
-                          systemImage: imageData == nil ? "photo.badge.plus" : "checkmark.circle.fill")
+                    Label(BookingL10n.string(attached ? "pay.attached" : "pay.attach"),
+                          systemImage: attached ? "checkmark.circle.fill" : "photo.badge.plus")
                 }
                 if let imageData, let image = UIImage(data: imageData) {
                     Image(uiImage: image).resizable().scaledToFit().frame(maxHeight: 220)

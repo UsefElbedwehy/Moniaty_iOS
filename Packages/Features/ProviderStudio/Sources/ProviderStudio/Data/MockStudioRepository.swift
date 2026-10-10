@@ -20,7 +20,7 @@ public actor MockStudioRepository: StudioRepository {
 
     public init() {}
 
-    nonisolated(unsafe) private static let decoder: JSONDecoder = {
+    private static let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return decoder

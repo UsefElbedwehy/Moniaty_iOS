@@ -52,9 +52,12 @@ targets:
       - path: App/Sources
       - path: App/Resources/Assets.xcassets
       - path: App/Resources/BackendConfig.plist
-      # Per-project Firebase config: download from the Firebase console and drop it here.
-      - path: App/Resources/GoogleService-Info.plist
-        optional: true
+      # Per-project Firebase config: download from the Firebase console and drop it here, then
+      # regenerate. The glob only adds it when present (`optional: true` would still add a
+      # reference to a missing file and fail the build).
+      - path: App/Resources
+        includes:
+          - GoogleService-Info.plist
       - path: App/Localization
     settings:
       base:
@@ -113,7 +116,7 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
 
 schemes:
-  App:
+  Munyati:
     build:
       targets:
         App: all

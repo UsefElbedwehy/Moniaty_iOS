@@ -374,6 +374,8 @@ struct ReviewComposer: View {
                         }
                     }
                     if photos.count < 4 {
+                        // PhotosPicker's label closure is Sendable: read main-actor state outside it.
+                        let isUploading = isUploading
                         PhotosPicker(selection: $pickerItems, maxSelectionCount: 4 - photos.count, matching: .images) {
                             Label {
                                 TrustL10n.text("review.addPhotos")

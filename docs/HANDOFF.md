@@ -17,7 +17,7 @@ claude
 
 ## Suggested first prompts
 1. "Build the app in Xcode and fix the compile errors" — paste the errors (or let Claude run
-   `xcodebuild -scheme Munyati -destination 'platform=iOS Simulator,name=iPhone 16' build`).
+   `xcodebuild -project Munyati.xcodeproj -scheme Munyati -destination 'platform=iOS Simulator,name=iPhone 16' build`).
    Expect a few rounds: fix by module (Core → DesignSystem → Shared → features → App).
 2. "Run the unit tests and fix failures."
 3. "Walk me through `docs/OWNER_TODO.md` step by step" (Supabase project, secrets, deploys).

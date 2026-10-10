@@ -10,13 +10,13 @@ struct URLSessionAPIClientRequestBuildingTests {
     @Test("builds the correct URL, path, and method for an RPC endpoint")
     func rpcEndpoint() {
         let request = URLSessionAPIClient.makeURLRequest(
-            for: .places.detail,
+            for: .catalog.categories,
             baseURL: baseURL,
             defaultHeaders: [:],
             timeoutInterval: 30
         )
 
-        #expect(request.url?.absoluteString == "https://api.example.com/rest/v1/rpc/get_place_detail")
+        #expect(request.url?.absoluteString == "https://api.example.com/rest/v1/rpc/get_categories")
         #expect(request.httpMethod == "POST")
     }
 
@@ -39,7 +39,7 @@ struct URLSessionAPIClientRequestBuildingTests {
     @Test("applies default headers")
     func defaultHeaders() {
         let request = URLSessionAPIClient.makeURLRequest(
-            for: .categories.list,
+            for: .catalog.cities,
             baseURL: baseURL,
             defaultHeaders: ["X-App-Version": "1.0.0"],
             timeoutInterval: 30
@@ -60,10 +60,10 @@ struct URLSessionAPIClientRequestBuildingTests {
         #expect(request.timeoutInterval == 15)
     }
 
-    @Test("uses POST method for submit endpoint")
+    @Test("uses POST method for an update RPC")
     func postMethod() {
         let request = URLSessionAPIClient.makeURLRequest(
-            for: .places.submit,
+            for: .profile.update,
             baseURL: baseURL,
             defaultHeaders: [:],
             timeoutInterval: 30
