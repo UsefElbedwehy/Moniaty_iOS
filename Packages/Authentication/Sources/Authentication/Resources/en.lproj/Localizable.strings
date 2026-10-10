@@ -1,0 +1,45 @@
+/* Common */
+"auth.common.back" = "Back";
+
+/* Onboarding */
+"auth.onboarding.headline" = "Everything for the bride, in one place.";
+"auth.onboarding.subtitle" = "Makeup, photography, venues, henna and more — book easily within your budget.";
+"auth.onboarding.continueApple" = "Continue with Apple";
+"auth.onboarding.continuePhone" = "Continue with phone";
+"auth.onboarding.browseGuest" = "Browse as guest";
+"auth.debug.signIn" = "Continue as Test User (Debug)";
+
+/* Phone entry */
+"auth.name.title" = "Your name";
+"auth.name.subtitle" = "Enter your first and last name to finish creating your account.";
+"auth.name.first" = "First name";
+"auth.name.last" = "Last name";
+"auth.name.submit" = "Create account";
+"auth.error.nameRequired" = "Please enter your first and last name.";
+"auth.phone.title" = "Your number";
+"auth.phone.subtitle" = "We will send a 6-digit code to verify it. Saudi mobile numbers only.";
+"auth.phone.countryAccessibility" = "Country code, Saudi Arabia, plus 966";
+"auth.phone.numberAccessibility" = "Phone number";
+"auth.phone.terms" = "By continuing you agree to Munyati's Terms and Privacy Policy.";
+"auth.phone.sendCode" = "Send code";
+
+/* OTP */
+"auth.otp.title" = "Enter code";
+"auth.otp.sentTo" = "Sent to %@.";
+"auth.otp.edit" = "Edit";
+"auth.otp.codeAccessibility" = "6-digit verification code";
+"auth.otp.resendIn" = "Resend code in %@";
+"auth.otp.resend" = "Resend";
+
+/* Errors */
+"auth.error.phoneEmpty" = "Enter your phone number.";
+"auth.error.phoneInvalid" = "Enter a valid Saudi mobile number starting with 5.";
+"auth.error.codeInvalid" = "Enter the 6-digit code.";
+"auth.error.generic" = "Something went wrong. Please try again.";
+"auth.brand.name" = "Munyati";
+"auth.landing.tagline" = "Everything for the bride, in one place";
+"auth.landing.prompt" = "How would you like to start?";
+"auth.role.bride.title" = "I'm a bride";
+"auth.role.bride.subtitle" = "Discover and book wedding services within your budget";
+"auth.role.provider.title" = "I'm a service provider";
+"auth.role.provider.subtitle" = "Join and receive bookings · first 2 months free";

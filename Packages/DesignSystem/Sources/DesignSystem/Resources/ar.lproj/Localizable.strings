@@ -1,0 +1,8 @@
+/* Retry action shown in ErrorStateView */
+"common.retry" = "إعادة المحاولة";
+
+/* Accessibility value announced while a button is in its loading state */
+"common.loading" = "جارٍ التحميل";
+"common.error.offline.title" = "لا يوجد اتصال";
+"common.error.generic.title" = "حدث خطأ ما";
+"common.tryAgain" = "حاول مرة أخرى";

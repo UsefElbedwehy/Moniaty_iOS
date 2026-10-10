@@ -1,0 +1,15 @@
+/* Common, cross-cutting strings shared across features. */
+
+"common.retry" = "Retry";
+"common.cancel" = "Cancel";
+"common.save" = "Save";
+"common.edit" = "Edit";
+"common.continue" = "Continue";
+"common.submit" = "Submit";
+"common.done" = "Done";
+"common.back" = "Back";
+"common.loading" = "Loading…";
+"common.tryAgain" = "Try Again";
+"common.viewAll" = "View All";
+"common.seeMore" = "See More";
+

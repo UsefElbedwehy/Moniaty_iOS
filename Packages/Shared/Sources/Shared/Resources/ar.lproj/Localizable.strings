@@ -1,0 +1,16 @@
+/* Common, cross-cutting strings shared across features. */
+
+"common.retry" = "إعادة المحاولة";
+"common.cancel" = "إلغاء";
+"common.save" = "حفظ";
+"common.edit" = "تعديل";
+"common.continue" = "متابعة";
+"common.submit" = "إرسال";
+"common.done" = "تم";
+"common.back" = "رجوع";
+"common.loading" = "جارٍ التحميل…";
+"common.tryAgain" = "حاول مرة أخرى";
+"common.viewAll" = "عرض الكل";
+"common.seeMore" = "المزيد";
+
+/* ثيم اليوم الوطني السعودي الموسمي (يُتحكم به عبر علم من لوحة التحكم) */

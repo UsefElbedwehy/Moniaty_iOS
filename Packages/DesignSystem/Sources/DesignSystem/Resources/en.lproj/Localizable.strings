@@ -1,0 +1,8 @@
+/* Retry action shown in ErrorStateView */
+"common.retry" = "Retry";
+
+/* Accessibility value announced while a button is in its loading state */
+"common.loading" = "Loading";
+"common.error.offline.title" = "No connection";
+"common.error.generic.title" = "Something went wrong";
+"common.tryAgain" = "Try again";

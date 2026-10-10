@@ -1,0 +1,45 @@
+/* Common */
+"auth.common.back" = "رجوع";
+
+/* Onboarding */
+"auth.onboarding.headline" = "كل تجهيزات العروس في مكان واحد.";
+"auth.onboarding.subtitle" = "مكياج، تصوير، قاعات، حناء وأكثر — احجزي بسهولة ضمن ميزانيتك.";
+"auth.onboarding.continueApple" = "المتابعة عبر Apple";
+"auth.onboarding.continuePhone" = "المتابعة عبر رقم الجوال";
+"auth.onboarding.browseGuest" = "تصفّح كزائرة";
+"auth.debug.signIn" = "الدخول كمستخدم تجريبي (تجريبي)";
+
+/* Phone entry */
+"auth.name.title" = "اسمك";
+"auth.name.subtitle" = "أدخلي اسمك الأول والأخير لإكمال إنشاء حسابك.";
+"auth.name.first" = "الاسم الأول";
+"auth.name.last" = "الاسم الأخير";
+"auth.name.submit" = "إنشاء الحساب";
+"auth.error.nameRequired" = "يرجى إدخال الاسم الأول والأخير.";
+"auth.phone.title" = "رقم جوالك";
+"auth.phone.subtitle" = "سنرسل رمزاً من 6 أرقام للتحقق. أرقام الجوال السعودية فقط.";
+"auth.phone.countryAccessibility" = "رمز الدولة، السعودية، زائد 966";
+"auth.phone.numberAccessibility" = "رقم الجوال";
+"auth.phone.terms" = "بالمتابعة فإنك توافقين على شروط منيتي وسياسة الخصوصية.";
+"auth.phone.sendCode" = "إرسال الرمز";
+
+/* OTP */
+"auth.otp.title" = "أدخلي الرمز";
+"auth.otp.sentTo" = "أُرسل إلى %@.";
+"auth.otp.edit" = "تعديل";
+"auth.otp.codeAccessibility" = "رمز التحقق المكوّن من 6 أرقام";
+"auth.otp.resendIn" = "إعادة الإرسال خلال %@";
+"auth.otp.resend" = "إعادة الإرسال";
+
+/* Errors */
+"auth.error.phoneEmpty" = "أدخلي رقم جوالك.";
+"auth.error.phoneInvalid" = "أدخلي رقم جوال سعودي صحيح يبدأ بـ 5.";
+"auth.error.codeInvalid" = "أدخلي الرمز المكوّن من 6 أرقام.";
+"auth.error.generic" = "حدث خطأ ما. يرجى المحاولة مرة أخرى.";
+"auth.brand.name" = "منيتي";
+"auth.landing.tagline" = "كل تجهيزات العروس في مكان واحد";
+"auth.landing.prompt" = "كيف تحبين أن تبدئي؟";
+"auth.role.bride.title" = "أنا عروس";
+"auth.role.bride.subtitle" = "اكتشفي واحجزي خدمات زفافك ضمن ميزانيتك";
+"auth.role.provider.title" = "أنا مقدّمة خدمة";
+"auth.role.provider.subtitle" = "انضمي واستقبلي الحجوزات · أول شهرين مجاناً";
