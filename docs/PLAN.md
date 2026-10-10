@@ -322,6 +322,13 @@ Bilingual static site in the Munyati brand:
 | **7. Website** (parallel) | Landing, legal pages, AASA, link fallbacks | munyati.co live |
 | **8. Launch** | TestFlight with real providers in the launch cities, App Review submission, ASO (name «منيتي - Munyati», subtitle «كل تجهيزات العروس في مكان واحد») | Live on App Store |
 
+### Progress
+- **Phase 1 — done:** app shell, design system, auth with roles, core database (`supabase/migrations/20261010*`).
+- **Phase 2 — done:** catalog, search, budget, favorites, map, share links; provider studio
+  (`supabase/migrations/20261011000000_catalog.sql`, `Packages/Features/{Catalog,ProviderStudio}`).
+  Until Phase 4 plans exist, providers get the trial allowance from `app_config`
+  (`trial_max_services` 10, `trial_max_stores` 3).
+
 ## 13. Design approach (answer to "premium app or Claude Design?")
 - **I can design it here.** The brand already has a palette (burgundy `#8A0D3A`, gold `#DFC389`, cream `#F2E5D2`, ivory `#FAFAEC`) and a logo.
 - **Next step:** I build a **Munyati design system** in the code. Details:

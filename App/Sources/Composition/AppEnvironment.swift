@@ -7,6 +7,8 @@ import Core
 import Networking
 import Authentication
 import Shared
+import Catalog
+import ProviderStudio
 
 /// The composition root: builds every repository once, owns the app-wide stores, and is the
 /// only place that knows about Supabase and Firebase. Features get plain values and closures.
@@ -20,6 +22,10 @@ final class AppEnvironment {
     let deepLink = DeepLinkStore()
     let cities = CityFilterStore()
     let analytics: AnalyticsRecorder
+    /// Bride discovery (Phase 2). Its context mirrors the session and city filter.
+    private(set) var catalog: CatalogFeature!
+    /// Provider studio (Phase 2).
+    let studio: StudioFeature
 
     private static var useRemoteBackend: Bool {
         ProcessInfo.processInfo.environment["UITEST_MOCK_BACKEND"] != "1"
@@ -30,6 +36,7 @@ final class AppEnvironment {
     private let profileRepository: ProfileRepository
     private let contentRepository: ContentRepository
     let cmsPageRepository: CMSPageRepository
+    private let catalogRepository: CatalogRepository
     private let performDeleteAccount: (@Sendable () async throws -> Void)?
 
     init() {
@@ -45,6 +52,16 @@ final class AppEnvironment {
             profileRepository = SupabaseProfileRepository(client: dataClient)
             contentRepository = SupabaseContentRepository(client: dataClient)
             cmsPageRepository = SupabaseCMSPageRepository(client: dataClient)
+            catalogRepository = RemoteCatalogRepository(client: dataClient)
+            studio = StudioFeature(
+                repository: RemoteStudioRepository(client: dataClient),
+                uploader: SupabaseMediaUploader(
+                    baseURL: values.baseURL,
+                    anonKey: values.anonKey,
+                    accessToken: { await auth.currentAccessToken() },
+                    currentUserId: { await auth.currentUserId }
+                )
+            )
             analytics = Self.makeAnalytics(client: dataClient)
 
             let baseURL = values.baseURL
@@ -68,9 +85,29 @@ final class AppEnvironment {
             profileRepository = MockProfileRepository()
             contentRepository = MockContentRepository()
             cmsPageRepository = MockCMSPageRepository()
+            catalogRepository = MockCatalogRepository()
+            studio = StudioFeature(repository: MockStudioRepository(), uploader: MockMediaUploader())
             analytics = .disabled
             performDeleteAccount = nil
         }
+        catalog = CatalogFeature(
+            repository: catalogRepository,
+            context: CatalogContext(citySummary: L10n.string("cities.all")),
+            openCityPicker: { [weak self] in self?.session.isPickingCities = true },
+            requireSignIn: { [weak self] in self?.session.isPresentingAuth = true }
+        )
+    }
+
+    /// Mirrors who is signed in and which cities are chosen into the catalog, which reloads
+    /// its screens when these change.
+    func refreshCatalogContext() {
+        let context = catalog.context
+        let wasGuest = context.isGuest
+        context.isGuest = !session.hasAccount
+        context.displayName = session.user?.displayName
+        context.cityIds = cities.queryCityIds
+        context.citySummary = cities.summary(allLabel: L10n.string("cities.all"))
+        if wasGuest != context.isGuest { catalog.accountChanged() }
     }
 
     // MARK: - Analytics
@@ -148,12 +185,14 @@ final class AppEnvironment {
             await signedIn(user)
         }
         session.isPresentingAuth = false
+        refreshCatalogContext()
     }
 
     private func signedIn(_ user: User) async {
         let isAnonymous = await supabaseAuth?.currentUserIsAnonymous ?? false
         session.state = .signedIn(.init(id: user.id, role: user.role, isAnonymous: isAnonymous, displayName: user.displayName))
         await syncProfile()
+        refreshCatalogContext()
     }
 
     /// Refreshes the role, name and saved cities from the server profile.
@@ -171,6 +210,7 @@ final class AppEnvironment {
         current.displayName = profile.displayName
         session.state = .signedIn(current)
         cities.restore(profile.cityIds)
+        refreshCatalogContext()
         if FirebaseApp.app() != nil {
             Analytics.setUserProperty(current.role?.rawValue, forName: "role")
             Crashlytics.crashlytics().setUserID(profile.id)
@@ -180,6 +220,8 @@ final class AppEnvironment {
     func signOut() async {
         await supabaseAuth?.signOut()
         session.state = .signedOut
+        cities.restore([])
+        refreshCatalogContext()
     }
 
     func deleteAccount() async throws {
@@ -209,12 +251,14 @@ final class AppEnvironment {
     func loadCities() async {
         if let list = try? await contentRepository.fetchCities() {
             cities.available = list
+            refreshCatalogContext()
         }
     }
 
     /// Saves the bride's city choice ("All" = empty list) to her profile.
     func saveCities() async {
         let ids = cities.isAll ? [] : Array(cities.selected).sorted()
+        refreshCatalogContext()
         analytics(.cityFilterChanged, nil, props: ["cities": cities.isAll ? "all" : ids.joined(separator: ",")])
         guard session.hasAccount else { return }
         try? await profileRepository.setMyCities(ids)

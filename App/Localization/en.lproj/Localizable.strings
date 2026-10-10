@@ -49,3 +49,6 @@
 "forceUpdate.title" = "Update required";
 "forceUpdate.message" = "Please update the app to keep using it.";
 "forceUpdate.action" = "Update now";
+"profile.section.wedding" = "My wedding";
+"profile.favorites" = "Favorites";
+"profile.budget" = "Wedding budget";

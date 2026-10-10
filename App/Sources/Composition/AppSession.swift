@@ -28,6 +28,9 @@ final class AppSession {
     /// Set when a guest taps something that needs an account (book, favorite, review, report).
     var isPresentingAuth = false
 
+    /// Set when a screen asks for the city picker (Home's city button).
+    var isPickingCities = false
+
     init() {
         // UI-test hooks: start signed in as a given role so automated runs skip OTP.
         let env = ProcessInfo.processInfo.environment

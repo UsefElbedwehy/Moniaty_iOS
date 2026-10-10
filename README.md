@@ -25,7 +25,10 @@ Package tests: `cd Packages/<Name> && swift test`, or the App scheme's test acti
 
 ## Status
 
-Phase 1 (foundation) is in place: Munyati design system and logo, sign-in with role choice
-(bride / provider), the two four-tab shells, cities with "All", remote config and strings,
-analytics, push and deep links, and the Phase 1 database with its security rules. Catalog,
-booking and subscriptions follow in Phases 2–4 (`docs/PLAN.md` §12).
+- **Phase 1 (foundation):** design system and logo, sign-in with role choice, the two
+  four-tab shells, cities with "All", remote config and strings, analytics, push, deep links.
+- **Phase 2 (discovery):** brides browse categories, search with filters (within budget,
+  female staff only, sort), open service / provider / store pages, save favorites, set a
+  budget, share links and explore the map. Providers fill in their join form, services (with
+  photos) and stores in "My studio"; nothing is public until an admin approves them.
+- Next: Phase 3 (booking, payment receipts, demo booking), then subscriptions (`docs/PLAN.md` §12).

@@ -49,3 +49,6 @@
 "forceUpdate.title" = "التحديث مطلوب";
 "forceUpdate.message" = "يرجى تحديث التطبيق للاستمرار في استخدامه.";
 "forceUpdate.action" = "تحديث الآن";
+"profile.section.wedding" = "زفافي";
+"profile.favorites" = "المفضلة";
+"profile.budget" = "ميزانية الزفاف";

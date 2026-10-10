@@ -23,8 +23,10 @@ upload the receipt. Repo name is `Moniaty_iOS`, but the brand is **Munyati / م�
   `Shared` (analytics recorder, auth gate, cache, image loading, `RemoteStrings`) ·
   `DesignSystem` (Munyati colors/fonts/components, brand assets) ·
   `Authentication` (role choice → phone → OTP → name).
-  Feature packages go under `Packages/Features/<Name>` (Phase 2+: Catalog, Booking,
-  Availability, ProviderStudio, Reviews…).
+  Feature packages live under `Packages/Features/<Name>`: `Catalog` (bride discovery: home,
+  search, details, favorites, budget, map; `CatalogRoute` destinations) and `ProviderStudio`
+  (provider's Home tab: join form, services, stores, photo upload). Each has a Remote and a
+  Mock repository; the App picks one in `AppEnvironment`. Next: Booking, Availability, Reviews.
 - `App/` is the composition root: `AppEnvironment` builds repositories and is the **only**
   place that imports Firebase or knows Supabase. Features receive protocols and closures.
 - The app talks to Supabase over plain HTTPS (PostgREST RPCs + edge functions); it does

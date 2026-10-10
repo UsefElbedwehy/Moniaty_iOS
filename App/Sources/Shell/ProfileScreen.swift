@@ -1,12 +1,14 @@
 import SwiftUI
 import DesignSystem
 import Shared
+import Catalog
 
 /// Profile & settings, shared by both roles. Phase 1: identity, cities, legal pages, support,
 /// sign out and in-app account deletion (App Store guideline 5.1.1(v)).
 struct ProfileScreen: View {
     let environment: AppEnvironment
     @State private var showCities = false
+    @State private var showBudget = false
     @State private var confirmDelete = false
     @State private var isDeleting = false
     @State private var deleteFailed = false
@@ -35,6 +37,16 @@ struct ProfileScreen: View {
             }
 
             if session.role != .provider {
+                Section(L10n.string("profile.section.wedding")) {
+                    NavigationLink(value: CatalogRoute.favorites) {
+                        Label(L10n.string("profile.favorites"), systemImage: "heart")
+                    }
+                    Button {
+                        if session.hasAccount { showBudget = true } else { session.isPresentingAuth = true }
+                    } label: {
+                        Label(L10n.string("profile.budget"), systemImage: "banknote")
+                    }
+                }
                 Section(L10n.string("profile.section.preferences")) {
                     Button {
                         showCities = true
@@ -88,6 +100,9 @@ struct ProfileScreen: View {
         .navigationTitle(L10n.string("tab.profile"))
         .sheet(isPresented: $showCities) {
             CityPickerSheet(environment: environment)
+        }
+        .sheet(isPresented: $showBudget) {
+            environment.catalog.budgetEditor()
         }
         .confirmationDialog(L10n.string("profile.deleteAccount.confirmTitle"), isPresented: $confirmDelete, titleVisibility: .visible) {
             Button(L10n.string("profile.deleteAccount.confirm"), role: .destructive) {

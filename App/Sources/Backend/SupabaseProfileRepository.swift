@@ -2,6 +2,7 @@ import Foundation
 import Core
 import Networking
 import Authentication
+import Catalog
 
 /// The signed-in person's profile as the app needs it in Phase 1: who they are, which side of
 /// the marketplace they're on, and which cities they browse.
@@ -14,17 +15,6 @@ struct MyProfile: Equatable, Sendable {
     let isAnonymous: Bool
     /// Provider accounts only: "pending" until an admin approves the join request.
     let providerStatus: String?
-}
-
-/// A city the app serves. Managed from the dashboard (`cities` table).
-struct City: Identifiable, Equatable, Sendable, Decodable {
-    let id: String
-    let nameAr: String
-    let nameEn: String
-
-    func name(locale: Locale = .current) -> String {
-        locale.language.languageCode?.identifier == "ar" ? nameAr : nameEn
-    }
 }
 
 protocol ProfileRepository: Sendable {

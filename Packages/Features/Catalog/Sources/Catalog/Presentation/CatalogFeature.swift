@@ -66,6 +66,11 @@ public final class CatalogFeature {
         ExploreScreen(feature: self)
     }
 
+    /// The budget editor, for presenting from outside Home (e.g. Profile).
+    public func budgetEditor() -> some View {
+        BudgetSheet(store: budget)
+    }
+
     @ViewBuilder
     public func destination(for route: CatalogRoute) -> some View {
         switch route {

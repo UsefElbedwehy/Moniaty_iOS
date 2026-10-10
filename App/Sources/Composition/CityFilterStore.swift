@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import Catalog
 
 /// The bride's city choice (`docs/PLAN.md` §4.9): one or more cities, or «الكل» (All).
 /// "All" is a client-side option, not a database row: an empty selection means all cities.
