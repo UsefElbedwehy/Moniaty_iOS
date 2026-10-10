@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>منيتي — حجوزاتي</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#8A0D3A}a:hover{color:#5E0827}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; height: 844px; box-sizing: border-box; background: #FAFAEC; color: #2A1420; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="flex: 1; overflow: hidden; padding: 56px 20px 12px; display: flex; flex-direction: column; gap: 16px">
+    <h1 style="margin: 0; font-family: Amiri, serif; font-size: 30px; font-weight: 700">حجوزاتي</h1>
+
+    <div role="tablist" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 4px; border-radius: 14px; background: #F2E5D2">
+      <button type="button" role="tab" aria-selected="true" style="min-height: 40px; border: none; border-radius: 11px; background: #FFFFFF; font: 600 14px 'IBM Plex Sans Arabic', sans-serif; color: #2A1420">الحالية (٤)</button>
+      <button type="button" role="tab" aria-selected="false" style="min-height: 40px; border: none; border-radius: 11px; background: transparent; font: 500 14px 'IBM Plex Sans Arabic', sans-serif; color: #5A4650">المكتملة</button>
+    </div>
+
+    <div style="padding: 16px; border-radius: 20px; background: #FFFFFF; border: 1.5px solid #8A0D3A; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <span style="font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 10px; background: #8A0D3A; color: #FAFAEC">بانتظار الدفع · ٤٢ ساعة</span>
+        <span style="font-size: 12px; color: #6B5560">MN-7K3QX</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 16px; font-weight: 700">مكياج العروس · لمسة جمال</span>
+        <span style="font-size: 13px; color: #6B5560">الثلاثاء ١١ نوفمبر · ٤:٠٠ م · ٢٬٨٠٠ ر.س</span>
+      </div>
+      <div aria-label="مراحل الحجز" style="display: flex; align-items: center; gap: 4px">
+        <span style="flex: 1; height: 4px; border-radius: 2px; background: #8A0D3A"></span>
+        <span style="flex: 1; height: 4px; border-radius: 2px; background: #8A0D3A"></span>
+        <span style="flex: 1; height: 4px; border-radius: 2px; background: #DFC389"></span>
+        <span style="flex: 1; height: 4px; border-radius: 2px; background: #EDE3D2"></span>
+        <span style="flex: 1; height: 4px; border-radius: 2px; background: #EDE3D2"></span>
+      </div>
+      <a href="Payment.dc.html" style="min-height: 46px; border-radius: 23px; background: #8A0D3A; color: #FAFAEC; font-size: 15px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">ادفعي وارفعي الإيصال</a>
+    </div>
+
+    <div style="padding: 16px; border-radius: 20px; background: #FFFFFF; border: 1px solid #E9DCC6; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <span style="font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 10px; background: #F6E9C8; color: #6A4A00">موعد مقترح جديد</span>
+        <span style="font-size: 12px; color: #6B5560">ينتهي خلال ١٨ ساعة</span>
+      </div>
+      <span style="font-size: 16px; font-weight: 700">تصوير الزفاف · عدسة ريم</span>
+      <span style="font-size: 13px; color: #6B5560">طلبتِ: الخميس ٢٠ نوفمبر ٨:٠٠ م ← المقترح: <strong style="color: #2A1420">٩:٠٠ م</strong></span>
+      <div style="display: flex; gap: 8px">
+        <button type="button" style="flex: 1; min-height: 44px; border-radius: 22px; border: none; background: #2A1420; color: #FAFAEC; font: 600 14px 'IBM Plex Sans Arabic', sans-serif">قبول الموعد</button>
+        <button type="button" style="flex: 1; min-height: 44px; border-radius: 22px; border: 1px solid #E9DCC6; background: #FFFFFF; color: #2A1420; font: 600 14px 'IBM Plex Sans Arabic', sans-serif">رفض</button>
+      </div>
+    </div>
+
+    <sc-for list="{{rest}}" as="b" hint-placeholder-count="2">
+      <div style="padding: 14px 16px; border-radius: 20px; background: #FFFFFF; border: 1px solid #E9DCC6; display: flex; align-items: center; gap: 12px">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+          <span style="font-size: 15px; font-weight: 600">{{b.title}}</span>
+          <span style="font-size: 12.5px; color: #6B5560">{{b.when}}</span>
+        </span>
+        <span style="{{b.pill}}">{{b.status}}</span>
+      </div>
+    </sc-for>
+  </div>
+
+  <nav aria-label="التبويبات" style="flex: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 8px 8px 26px; background: rgba(255,255,255,0.92); border-top: 1px solid #E9DCC6">
+    <a href="Home.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 44px; text-decoration: none; color: #8A7A80; font-size: 10.5px; font-weight: 500">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A7A80" stroke-width="1.7" aria-hidden="true"><path d="M4 11 L12 4 L20 11 V20 H14 V14 H10 V20 H4 Z"></path></svg>الرئيسية</a>
+    <a href="Home.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 44px; text-decoration: none; color: #8A7A80; font-size: 10.5px; font-weight: 500">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A7A80" stroke-width="1.7" aria-hidden="true"><path d="M3 6 L9 4 L15 6 L21 4 V18 L15 20 L9 18 L3 20 Z"></path><path d="M9 4 V18 M15 6 V20"></path></svg>استكشفي</a>
+    <a href="Bookings.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 44px; text-decoration: none; color: #8A0D3A; font-size: 10.5px; font-weight: 600">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="#8A0D3A" aria-hidden="true"><path d="M4 7 A2 2 0 0 1 6 5 H18 A2 2 0 0 1 20 7 V9 H4 Z M4 10.5 H20 V18 A2 2 0 0 1 18 20 H6 A2 2 0 0 1 4 18 Z M8 3 H10 V7 H8 Z M14 3 H16 V7 H14 Z"></path></svg>حجوزاتي</a>
+    <a href="Home.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 44px; text-decoration: none; color: #8A7A80; font-size: 10.5px; font-weight: 500">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A7A80" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21 C5 16 19 16 20 21"></path></svg>حسابي</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const pill = 'font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 10px; ';
+    return {
+      rest: [
+        { title: 'كوشة وتنسيق · ورد الخليج', when: 'السبت ٢٢ نوفمبر · ٥:٠٠ م', status: 'بانتظار القبول', pill: pill + 'background: #EFE7DA; color: #4A3A40' },
+        { title: 'قاعة الزفاف · قصر اللؤلؤة', when: 'السبت ٢٢ نوفمبر · ٨:٠٠ م', status: 'مؤكّد ومدفوع', pill: pill + 'background: #E2EFE4; color: #1F5A2E' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

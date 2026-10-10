@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>منيتي — صفحة مقدّمة الخدمة</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#8A0D3A}a:hover{color:#5E0827}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; height: 844px; box-sizing: border-box; background: #FAFAEC; color: #2A1420; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column">
+    <div style="height: 200px; background: #F2E5D2; position: relative; display: flex; align-items: flex-start; justify-content: space-between; padding: 52px 16px 0; box-sizing: border-box">
+      <a href="Home.dc.html" aria-label="رجوع" style="width: 44px; height: 44px; border-radius: 22px; background: #FAFAEC; display: flex; align-items: center; justify-content: center">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2A1420" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6 L15 12 L9 18"></path></svg>
+      </a>
+      <div style="display: flex; gap: 8px">
+        <button type="button" aria-label="مشاركة" style="width: 44px; height: 44px; border-radius: 22px; border: none; background: #FAFAEC; display: flex; align-items: center; justify-content: center">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#2A1420" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 3 V15 M7 8 L12 3 L17 8 M5 13 V20 H19 V13"></path></svg>
+        </button>
+        <button type="button" aria-label="إضافة للمفضلة" style="width: 44px; height: 44px; border-radius: 22px; border: none; background: #FAFAEC; display: flex; align-items: center; justify-content: center">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8A0D3A" stroke-width="1.8" aria-hidden="true"><path d="M12 20 C12 20 4 14.5 4 9 A4 4 0 0 1 12 7 A4 4 0 0 1 20 9 C20 14.5 12 20 12 20Z"></path></svg>
+        </button>
+      </div>
+      <span style="position: absolute; bottom: -36px; right: 20px; width: 76px; height: 76px; border-radius: 38px; background: #8A0D3A; border: 4px solid #FAFAEC; display: flex; align-items: center; justify-content: center; font-family: Amiri, serif; font-size: 30px; color: #DFC389; box-sizing: border-box">ل</span>
+    </div>
+
+    <div style="padding: 46px 20px 0; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; align-items: center; gap: 8px">
+        <h1 style="margin: 0; font-size: 22px; font-weight: 700">لمسة جمال</h1>
+        <span style="display: flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; color: #8A0D3A; background: #F2E5D2; padding: 3px 9px; border-radius: 10px">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#8A0D3A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12 L10 17 L19 7"></path></svg>موثّقة</span>
+      </div>
+      <p style="margin: 0; font-size: 13.5px; color: #6B5560">خبيرة مكياج · الدمام، الخبر · ★ ٤٫٩ (١٢٤ تقييماً)</p>
+      <div style="display: flex; gap: 8px; flex-wrap: wrap">
+        <span style="font-size: 12px; padding: 5px 10px; border-radius: 12px; border: 1px solid #E9DCC6; background: #FFFFFF">طاقم نسائي فقط</span>
+        <span style="font-size: 12px; padding: 5px 10px; border-radius: 12px; border: 1px solid #E9DCC6; background: #FFFFFF">تحضر لموقع العروس</span>
+        <span style="font-size: 12px; padding: 5px 10px; border-radius: 12px; border: 1px solid #E9DCC6; background: #FFFFFF">متجر: لمسة ستوديو</span>
+      </div>
+    </div>
+
+    <div style="padding: 18px 20px 0; display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 16px; font-weight: 700">الخدمات</h2>
+      <sc-for list="{{services}}" as="s" hint-placeholder-count="3">
+        <a href="Book.dc.html" style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 18px; background: #FFFFFF; border: 1px solid #E9DCC6; text-decoration: none; color: #2A1420">
+          <span style="flex: 1; display: flex; flex-direction: column; gap: 3px">
+            <span style="font-size: 15px; font-weight: 600">{{s.name}}</span>
+            <span style="font-size: 12.5px; color: #6B5560">{{s.meta}}</span>
+          </span>
+          <span style="display: flex; flex-direction: column; align-items: flex-end; gap: 2px">
+            <span style="font-size: 15px; font-weight: 700; color: #8A0D3A">{{s.price}} ر.س</span>
+            <span style="font-size: 11.5px; color: #6B5560">{{s.fit}}</span>
+          </span>
+        </a>
+      </sc-for>
+    </div>
+
+    <div style="padding: 18px 20px 0; display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 16px; font-weight: 700">آراء العرائس</h2>
+      <div style="padding: 14px 16px; border-radius: 18px; background: #F2E5D2; display: flex; flex-direction: column; gap: 6px">
+        <div style="display: flex; justify-content: space-between; font-size: 13px">
+          <span style="font-weight: 600">نو**** مح****</span>
+          <span style="color: #8A0D3A">★★★★★</span>
+        </div>
+        <p style="margin: 0; font-size: 13.5px; line-height: 1.6">مكياج ناعم وثابت طول الليلة، والتزام بالموعد بالدقيقة.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex: none; padding: 12px 20px 30px; background: #FFFFFF; border-top: 1px solid #E9DCC6; display: flex; align-items: center; gap: 14px">
+    <span style="display: flex; flex-direction: column">
+      <span style="font-size: 12px; color: #6B5560">يبدأ من</span>
+      <span style="font-size: 18px; font-weight: 700">١٬٢٠٠ ر.س</span>
+    </span>
+    <a href="Book.dc.html" style="flex: 1; min-height: 52px; border-radius: 26px; background: #8A0D3A; color: #FAFAEC; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">احجزي موعداً</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      services: [
+        { name: 'مكياج العروس', meta: '٣ ساعات · شامل الرموش', price: '٢٬٨٠٠', fit: 'ضمن ميزانيتك' },
+        { name: 'مكياج ليلة الحناء', meta: 'ساعتان', price: '١٬٥٠٠', fit: 'ضمن ميزانيتك' },
+        { name: 'مكياج الأم والأخوات', meta: 'للشخص · ساعة', price: '١٬٢٠٠', fit: 'ضمن ميزانيتك' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

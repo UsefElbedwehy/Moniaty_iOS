@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>منيتي — الباقات</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#8A0D3A}a:hover{color:#5E0827}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; height: 844px; box-sizing: border-box; background: #FAFAEC; color: #2A1420; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="flex: none; display: flex; align-items: center; padding: 52px 12px 0">
+    <a href="ProviderInbox.dc.html" aria-label="إغلاق" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2A1420" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6 L18 18 M18 6 L6 18"></path></svg>
+    </a>
+  </div>
+
+  <div style="flex: 1; overflow: hidden; padding: 0 20px; display: flex; flex-direction: column; gap: 14px">
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center">
+      <img src="/_blob/84a5aee8dc57915bdb057bec137fa32b" alt="" style="width: 56px; height: 56px; object-fit: contain">
+      <h1 style="margin: 0; font-family: Amiri, serif; font-size: 28px; font-weight: 700">اختاري باقتك</h1>
+      <p style="margin: 0; font-size: 13.5px; color: #6B5560">أول شهرين مجاناً · ثم اشتراك شهري ويمكنك الإلغاء في أي وقت</p>
+    </div>
+
+    <div role="radiogroup" aria-label="الباقات" style="display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{plans}}" as="p" hint-placeholder-count="3">
+        <button type="button" role="radio" aria-checked="{{p.checked}}" onClick="{{p.pick}}" style="{{p.style}}">
+          <span style="display: flex; align-items: center; justify-content: space-between; width: 100%">
+            <span style="display: flex; align-items: center; gap: 8px">
+              <span style="{{p.dot}}"></span>
+              <span style="font: 700 17px 'IBM Plex Sans Arabic', sans-serif; color: #2A1420">{{p.name}}</span>
+              <sc-if value="{{p.badge}}" hint-placeholder-val="{{ false }}">
+                <span style="font: 700 11px 'IBM Plex Sans Arabic', sans-serif; padding: 3px 8px; border-radius: 9px; background: #DFC389; color: #3A2400">الأكثر اختياراً</span>
+              </sc-if>
+            </span>
+            <span style="font: 600 13.5px 'IBM Plex Sans Arabic', sans-serif; color: #8A0D3A">[السعر] ر.س / شهرياً</span>
+          </span>
+          <span style="font: 400 13px 'IBM Plex Sans Arabic', sans-serif; color: #5A4650; text-align: right; width: 100%; line-height: 1.7">{{p.features}}</span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="flex: none; padding: 12px 20px 30px; display: flex; flex-direction: column; gap: 8px">
+    <a href="ProviderInbox.dc.html" style="min-height: 52px; border-radius: 26px; background: #8A0D3A; color: #FAFAEC; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">اشتركي في باقة {{selectedName}}</a>
+    <span style="font-size: 11.5px; line-height: 1.6; color: #6B5560; text-align: center">يتجدد الاشتراك شهرياً تلقائياً حتى تلغيه · <a href="https://munyati.co/terms">الشروط</a> · <a href="https://munyati.co/privacy">الخصوصية</a></span>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { sel: 1 }; }
+  renderVals() {
+    const defs = [
+      { name: 'Normal · عادية', short: 'العادية', features: 'خدمة واحدة · ٦ صور لكل خدمة · ظهور عادي · إحصائيات أساسية' },
+      { name: 'Plus · بلس', short: 'بلس', features: '٣ خدمات · متجر واحد · ١٥ صورة · ظهور مُعزَّز · إحصائيات كاملة', badge: true },
+      { name: 'Diamond · دايموند', short: 'دايموند', features: '١٠ خدمات · ٣ متاجر · ٣٠ صورة · أعلى الظهور وشارة مميّزة · بنر شهري' }
+    ];
+    const plans = defs.map((d, i) => {
+      const on = i === this.state.sel;
+      return {
+        name: d.name, features: d.features, badge: !!d.badge, checked: on ? 'true' : 'false',
+        pick: () => this.setState({ sel: i }),
+        style: 'display: flex; flex-direction: column; gap: 6px; padding: 16px; border-radius: 20px; cursor: pointer; text-align: right; ' + (on ? 'background: #FFFFFF; border: 2px solid #8A0D3A' : 'background: #FFFFFF; border: 1px solid #E9DCC6'),
+        dot: 'width: 18px; height: 18px; border-radius: 9px; box-sizing: border-box; ' + (on ? 'border: 5px solid #8A0D3A' : 'border: 1.5px solid #B9A9AE')
+      };
+    });
+    return { plans, selectedName: defs[this.state.sel].short };
+  }
+}
+</script>
+</body>
+</html>
