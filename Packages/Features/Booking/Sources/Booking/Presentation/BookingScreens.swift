@@ -387,8 +387,9 @@ struct ProgressSteps: View {
     var body: some View {
         HStack(spacing: 4) {
             ForEach(1...5, id: \.self) { index in
+                // Gold marks the step in progress; the last step (completed) has nothing left to do.
                 Capsule()
-                    .fill(index < step ? Color.dsPrimary : index == step ? Color.dsPremiumGold : Color.dsBorder)
+                    .fill(index < step || step == 5 ? Color.dsPrimary : index == step ? Color.dsPremiumGold : Color.dsBorder)
                     .frame(height: 4)
             }
         }

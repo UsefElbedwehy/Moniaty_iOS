@@ -120,13 +120,25 @@ public actor MockBookingRepository: BookingRepository {
     }
 
     public func confirmPayment(bookingId: String) async throws -> ActionResult {
+        reviewPendingReceipts(bookingId, as: "accepted")
         move(bookingId, to: .paymentConfirmed, by: "provider")
         return .ok(id: bookingId)
     }
 
     public func rejectPayment(bookingId: String, reason: String) async throws -> ActionResult {
+        reviewPendingReceipts(bookingId, as: "rejected", reason: reason)
         move(bookingId, to: .awaitingPayment, by: "provider")
         return .ok(id: bookingId)
+    }
+
+    /// Like the server's confirm/reject: settles the pending receipts.
+    private func reviewPendingReceipts(_ id: String, as status: String, reason: String? = nil) {
+        guard var receipts = rows[id]?.receipts else { return }
+        for index in receipts.indices where receipts[index]["status"] as? String == "pending" {
+            receipts[index]["status"] = status
+            if let reason { receipts[index]["reject_reason"] = reason }
+        }
+        rows[id]?.receipts = receipts
     }
 
     public func complete(bookingId: String) async throws -> ActionResult {

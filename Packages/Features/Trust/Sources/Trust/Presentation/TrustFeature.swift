@@ -307,7 +307,9 @@ struct BookingReviewSection: View {
     @State private var composing = false
 
     var body: some View {
-        Group {
+        // A VStack, not a Group: before the state loads there is no content, and an empty Group
+        // drops its modifiers, so the `.task` that loads the state would never run.
+        VStack(alignment: .leading, spacing: 0) {
             if let review = reviewState?.review {
                 VStack(alignment: .leading, spacing: DSSpacing.xs) {
                     TrustL10n.text(role == .bride ? "review.mine.bride" : "review.mine.provider").font(.dsHeadline)

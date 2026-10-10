@@ -115,6 +115,23 @@ targets:
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1"
 
+  # Walkthrough of both roles on the in-memory mocks (UITEST_MOCK_BACKEND=1).
+  MunyatiUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: App/UITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.munyati.app.uitests
+        # XCTest's UI APIs are main-actor; Swift 5 mode keeps the test boilerplate plain.
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        TEST_TARGET_NAME: App
+    dependencies:
+      - target: App
+
 schemes:
   Munyati:
     build:
@@ -134,3 +151,13 @@ schemes:
         - package: Booking/BookingTests
         - package: Trust/TrustTests
         - package: DesignSystem/DesignSystemTests
+  # Slow end-to-end walkthrough, kept out of the unit-test scheme.
+  MunyatiUITests:
+    build:
+      targets:
+        App: all
+        MunyatiUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - MunyatiUITests
