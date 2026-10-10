@@ -190,9 +190,13 @@ struct ServiceEditScreen: View {
     @State private var draft: ServiceDraft
     @State private var isSaving = false
     @State private var message: String?
+    @State private var paywallReason: String?
     @Environment(\.dismiss) private var dismiss
 
     private static let durations = [30, 60, 90, 120, 180, 240, 360, 480]
+
+    /// Photos per service on the provider's plan.
+    private var maxPhotos: Int { feature.store.business?.limits.maxPhotos ?? 10 }
 
     init(feature: StudioFeature, initial: ServiceDraft) {
         self.feature = feature
@@ -245,8 +249,13 @@ struct ServiceEditScreen: View {
                         }
                     }
                 }
-                PhotoUploadButton(uploader: feature.uploader, folder: "services", maxCount: 10 - draft.imageUrls.count) { urls in
-                    draft.imageUrls.append(contentsOf: urls)
+                if draft.imageUrls.count < maxPhotos {
+                    PhotoUploadButton(uploader: feature.uploader, folder: "services", maxCount: maxPhotos - draft.imageUrls.count) { urls in
+                        draft.imageUrls.append(contentsOf: urls)
+                    }
+                } else {
+                    Text(verbatim: StudioL10n.format("limit.photos", maxPhotos))
+                        .font(.dsFootnote).foregroundStyle(Color.dsTextSecondary)
                 }
             }
 
@@ -275,6 +284,9 @@ struct ServiceEditScreen: View {
                     .disabled(!draft.isValid || isSaving)
             }
         }
+        .sheet(isPresented: Binding(get: { paywallReason != nil }, set: { if !$0 { paywallReason = nil } })) {
+            NavigationStack { PlansScreen(feature: feature, reason: paywallReason) }
+        }
         .alert(message ?? "", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })) {
             Button(StudioL10n.string("common.ok"), role: .cancel) {}
         }
@@ -301,7 +313,7 @@ struct ServiceEditScreen: View {
                     await store.reload()
                     dismiss()
                 case .limitReached(let max):
-                    message = StudioL10n.format("limit.services", max)
+                    paywallReason = StudioL10n.format("limit.services", max)
                 }
             } catch {
                 message = StudioL10n.string("common.saveFailed")
@@ -374,6 +386,7 @@ struct StoreEditScreen: View {
     @State private var draft: StoreDraft
     @State private var isSaving = false
     @State private var message: String?
+    @State private var paywallReason: String?
     @Environment(\.dismiss) private var dismiss
 
     init(feature: StudioFeature, initial: StoreDraft) {
@@ -430,6 +443,9 @@ struct StoreEditScreen: View {
                     .disabled(!draft.isValid || isSaving)
             }
         }
+        .sheet(isPresented: Binding(get: { paywallReason != nil }, set: { if !$0 { paywallReason = nil } })) {
+            NavigationStack { PlansScreen(feature: feature, reason: paywallReason) }
+        }
         .alert(message ?? "", isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })) {
             Button(StudioL10n.string("common.ok"), role: .cancel) {}
         }
@@ -445,7 +461,7 @@ struct StoreEditScreen: View {
                     await store.reload()
                     dismiss()
                 case .limitReached(let max):
-                    message = StudioL10n.format("limit.stores", max)
+                    paywallReason = StudioL10n.format("limit.stores", max)
                 }
             } catch {
                 message = StudioL10n.string("common.saveFailed")

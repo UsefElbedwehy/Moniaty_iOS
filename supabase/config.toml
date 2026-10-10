@@ -23,3 +23,7 @@ verify_jwt = false
 
 [functions.send-push]
 verify_jwt = false
+
+# Tap calls this server-to-server and redirects browsers to it; it re-fetches every charge from Tap.
+[functions.tap-webhook]
+verify_jwt = false

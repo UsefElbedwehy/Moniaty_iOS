@@ -77,3 +77,62 @@
 "studio.availability.subtitle" = "الأيام والساعات وأيام الإجازة";
 "studio.paymentMethods" = "طرق استلام المبالغ";
 "studio.paymentMethods.subtitle" = "الحسابات التي تحوّل لها العرائس";
+
+/* Phase 4: plans, trial and insights. */
+"studio.plans" = "الباقة والاشتراك";
+"studio.insights" = "الإحصائيات";
+"studio.insights.subtitle" = "المشاهدات والطلبات";
+"limit.photos" = "وصلتِ للحد الأقصى (%d صورة) في باقتك.";
+
+"plan.card.trial" = "الفترة المجانية";
+"plan.card.subscribed" = "باقتك";
+"plan.card.expired" = "خدماتك مخفية الآن";
+"plan.card.expired.message" = "انتهت فترتك. خدماتك محفوظة وستظهر للعرائس فور اشتراكك.";
+"plan.card.until" = "حتى %1$@ · باقي %2$d يوم";
+"plan.card.next" = "بعدها: باقة %1$@ من %2$@";
+"plan.card.choose" = "اختاري باقتك";
+"plan.card.renew" = "تجديد الاشتراك";
+
+"plans.title" = "الباقات";
+"plans.headline" = "اختاري باقتك";
+"plans.sub.pending" = "تبدأ فترتك المجانية (شهران) فور موافقة الإدارة على حسابك.";
+"plans.sub.trial" = "أنتِ في الفترة المجانية حتى %@. إذا اشتركتِ الآن تبدأ باقتك بعد انتهائها.";
+"plans.sub.subscribed" = "باقتك الحالية %1$@ حتى %2$@.";
+"plans.sub.expired" = "اشتركي لتظهر خدماتك للعرائس من جديد.";
+"plans.price" = "%@ / شهرياً";
+"plans.recommended" = "الأكثر اختياراً";
+"plans.current" = "باقتك";
+"plans.cta.subscribe" = "اشتركي في باقة %1$@ · %2$@";
+"plans.cta.upgrade" = "الترقية إلى %1$@ · %2$@";
+"plans.cta.renew" = "تجديد لشهر إضافي · %@";
+"plans.disclosure" = "الدفع شهرياً عبر Tap ببطاقة مدى أو بطاقة ائتمانية أو Apple Pay. لا يتجدد الاشتراك تلقائياً، وسنذكّرك قبل نهايته. الترقية تبدأ فوراً وتُحتسب الأيام المتبقية من باقتك، والباقة الأصغر تبدأ بعد انتهاء الحالية.";
+"plans.terms" = "الشروط";
+"plans.privacy" = "الخصوصية";
+"plans.payments" = "المدفوعات";
+"plans.payment.initiated" = "لم يكتمل";
+"plans.payment.captured" = "مدفوعة";
+"plans.payment.failed" = "فشلت";
+"plans.payment.review" = "قيد المراجعة";
+"plans.result.captured" = "تم الدفع بنجاح";
+"plans.result.captured.message" = "باقة %@ مفعّلة. شكراً لك!";
+"plans.result.failed" = "لم تكتمل عملية الدفع، حاولي مرة أخرى.";
+"plans.result.review" = "استلمنا الدفعة وسيراجعها فريق منيتي قريباً.";
+"plans.error.generic" = "تعذّر بدء الدفع، حاولي مرة أخرى.";
+"plans.error.not_approved" = "يمكنك الاشتراك بعد موافقة الإدارة على حسابك.";
+"plans.error.plan_unavailable" = "هذه الباقة غير متاحة حالياً.";
+"plans.error.too_many_attempts" = "محاولات كثيرة، حاولي بعد قليل.";
+
+"insights.title" = "الإحصائيات";
+"insights.days" = "%d يوم";
+"insights.profileViews" = "زيارات صفحتك";
+"insights.serviceViews" = "مشاهدات الخدمات";
+"insights.requests" = "طلبات الحجز";
+"insights.contacts" = "تواصل ومشاركة";
+"insights.favorites" = "إضافات للمفضلة";
+"insights.revenue" = "قيمة الحجوزات المؤكدة";
+"insights.funnel" = "من المشاهدة إلى الحجز";
+"insights.approved" = "حجوزات تمت الموافقة عليها";
+"insights.completed" = "حجوزات مكتملة";
+"insights.byService" = "حسب الخدمة";
+"insights.upsell" = "تفاصيل أكثر (التواصل، المفضلة، مسار الحجز، كل خدمة) متاحة في باقتي بلس ودايموند.";
+"insights.upsell.cta" = "عرض الباقات";

@@ -333,6 +333,14 @@ Bilingual static site in the Munyati brand:
   check), confirm or reject payment, completion, cancellation, disputes, a demo booking for
   every new provider, timers via pg_cron, SMS for key events, and the provider's working hours
   and payout methods (`supabase/migrations/20261012000000_booking.sql`, `Packages/Features/Booking`).
+- **Phase 4 — done, with Tap instead of StoreKit (decision #2):** plans with dashboard-editable
+  limits, the 2-month trial starting on approval (one per phone number), Tap hosted checkout with
+  server-side pricing and re-fetched charge status, upgrade now with credit / smaller plan after
+  the current one, paused services above the limit, hidden listing after the trial or plan ends,
+  search boost and featured badge, reminders at 14/7/3/1 days, and the insights screen
+  (`supabase/migrations/20261013000000_subscriptions.sql`, `functions/tap-*`, `ProviderStudio`).
+  Plans don't renew automatically (no saved cards); providers pay again, prompted by reminders.
+  Seeded prices (99 / 249 / 499 SAR a month) are placeholders for the owner to set.
 
 ## 13. Design approach (answer to "premium app or Claude Design?")
 - **I can design it here.** The brand already has a palette (burgundy `#8A0D3A`, gold `#DFC389`, cream `#F2E5D2`, ivory `#FAFAEC`) and a logo.

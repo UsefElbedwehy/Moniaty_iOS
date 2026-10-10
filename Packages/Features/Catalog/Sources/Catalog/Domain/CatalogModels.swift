@@ -55,6 +55,8 @@ public struct ServiceCard: Identifiable, Hashable, Sendable, Decodable {
     public let providerName: String?
     public let providerLogoUrl: URL?
     public let isVerified: Bool
+    /// Diamond plan: "featured" badge (Phase 4; absent from older responses).
+    public let isFeatured: Bool?
     public let femaleStaffOnly: Bool
     public let isFavorite: Bool
 }

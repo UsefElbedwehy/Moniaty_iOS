@@ -3,6 +3,7 @@ import DesignSystem
 import Shared
 import Catalog
 import Booking
+import ProviderStudio
 
 /// The four native tabs (`docs/PLAN.md` §3). Home and Explore come from the Catalog feature
 /// (bride) and the ProviderStudio feature (provider); Bookings from the Booking feature.
@@ -113,6 +114,7 @@ struct ProviderShell: View {
                 environment.studio.homeScreen()
                     .navigationDestination(for: CatalogRoute.self) { catalog.destination(for: $0) }
                     .navigationDestination(for: BookingRoute.self) { booking.destination(for: $0, role: .provider) }
+                    .navigationDestination(for: StudioRoute.self) { environment.studio.destination(for: $0) }
             }
             .tabItem { Label(L10n.string("tab.home"), systemImage: "house") }
             .tag(AppTab.home)
@@ -142,7 +144,9 @@ struct ProviderShell: View {
             case .booking(let id):
                 tab = .bookings
                 bookingsPath = NavigationPath([BookingRoute.detail(id: id)])
-            case .plans: tab = .profile
+            case .plans:
+                tab = .home
+                homePath = NavigationPath([StudioRoute.plans])
             case .provider(let id):
                 tab = .home
                 homePath.append(CatalogRoute.provider(id: id))

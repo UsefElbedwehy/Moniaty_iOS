@@ -77,3 +77,62 @@
 "studio.availability.subtitle" = "Days, hours and days off";
 "studio.paymentMethods" = "Payout methods";
 "studio.paymentMethods.subtitle" = "Accounts brides transfer to";
+
+/* Phase 4: plans, trial and insights. */
+"studio.plans" = "Plan and subscription";
+"studio.insights" = "Insights";
+"studio.insights.subtitle" = "Views and requests";
+"limit.photos" = "You've reached your plan's limit (%d photos).";
+
+"plan.card.trial" = "Free trial";
+"plan.card.subscribed" = "Your plan";
+"plan.card.expired" = "Your services are hidden";
+"plan.card.expired.message" = "Your period ended. Your services are saved and come back as soon as you subscribe.";
+"plan.card.until" = "Until %1$@ · %2$d days left";
+"plan.card.next" = "Then: %1$@ from %2$@";
+"plan.card.choose" = "Choose your plan";
+"plan.card.renew" = "Renew";
+
+"plans.title" = "Plans";
+"plans.headline" = "Choose your plan";
+"plans.sub.pending" = "Your 2-month free trial starts as soon as an admin approves your account.";
+"plans.sub.trial" = "You're on the free trial until %@. If you subscribe now, your plan starts when it ends.";
+"plans.sub.subscribed" = "You're on %1$@ until %2$@.";
+"plans.sub.expired" = "Subscribe to show your services to brides again.";
+"plans.price" = "%@ / month";
+"plans.recommended" = "Most popular";
+"plans.current" = "Current";
+"plans.cta.subscribe" = "Subscribe to %1$@ · %2$@";
+"plans.cta.upgrade" = "Upgrade to %1$@ · %2$@";
+"plans.cta.renew" = "Renew for another month · %@";
+"plans.disclosure" = "Paid monthly through Tap with mada, a credit card or Apple Pay. Plans don't renew automatically; we remind you before yours ends. An upgrade starts now and credits your remaining days; a smaller plan starts when the current one ends.";
+"plans.terms" = "Terms";
+"plans.privacy" = "Privacy";
+"plans.payments" = "Payments";
+"plans.payment.initiated" = "Not completed";
+"plans.payment.captured" = "Paid";
+"plans.payment.failed" = "Failed";
+"plans.payment.review" = "Under review";
+"plans.result.captured" = "Payment successful";
+"plans.result.captured.message" = "The %@ plan is active. Thank you!";
+"plans.result.failed" = "The payment didn't go through. Please try again.";
+"plans.result.review" = "We received the payment and the Munyati team will review it shortly.";
+"plans.error.generic" = "Couldn't start the payment. Please try again.";
+"plans.error.not_approved" = "You can subscribe once an admin approves your account.";
+"plans.error.plan_unavailable" = "This plan isn't available right now.";
+"plans.error.too_many_attempts" = "Too many attempts. Please try again shortly.";
+
+"insights.title" = "Insights";
+"insights.days" = "%d days";
+"insights.profileViews" = "Profile visits";
+"insights.serviceViews" = "Service views";
+"insights.requests" = "Booking requests";
+"insights.contacts" = "Contacts and shares";
+"insights.favorites" = "Added to favorites";
+"insights.revenue" = "Confirmed bookings value";
+"insights.funnel" = "From view to booking";
+"insights.approved" = "Approved bookings";
+"insights.completed" = "Completed bookings";
+"insights.byService" = "By service";
+"insights.upsell" = "More detail (contacts, favorites, the booking funnel, each service) comes with Plus and Diamond.";
+"insights.upsell.cta" = "See plans";

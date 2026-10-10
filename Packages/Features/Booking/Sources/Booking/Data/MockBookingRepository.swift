@@ -67,7 +67,7 @@ public actor MockBookingRepository: BookingRepository {
             "service_title": "مكياج العروس", "price": 2800,
             "starts_at": Self.iso.string(from: startsAt), "ends_at": Self.iso.string(from: startsAt.addingTimeInterval(3 * 3600)),
             "note": note ?? "", "status_changed_at": Self.iso.string(from: .now),
-            "provider": ["id": "p-lamsa", "name": "لمسة جمال", "is_verified": true], "bride_name": "نورة"
+            "provider": ["id": "p-lamsa", "name": "لمسة جمال", "is_verified": true] as [String: Any], "bride_name": "نورة"
         ], status: .requested, events: [["to_status": "requested", "actor_role": "bride", "created_at": Self.iso.string(from: .now)]])
         return .ok(id: id)
     }

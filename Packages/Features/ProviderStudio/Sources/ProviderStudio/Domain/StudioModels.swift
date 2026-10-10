@@ -9,6 +9,8 @@ public struct MyBusiness: Sendable, Decodable {
     public struct Limits: Sendable, Decodable, Equatable {
         public let maxServices: Int
         public let maxStores: Int
+        /// Photos per service on the current plan (Phase 4).
+        public let maxPhotos: Int?
     }
 
     public let id: String

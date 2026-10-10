@@ -38,4 +38,7 @@ packages use iOS-only APIs, so run those from Xcode.
   confirm it and mark the service done. Either side can cancel or report a problem. New
   providers get a demo booking, and providers set working hours and payout methods in
   "My studio". Deadlines run on pg_cron, and key events also go out by SMS.
-- Next: Phase 4 (provider subscriptions), then reviews and trust (`docs/PLAN.md` §12).
+- **Phase 4 (subscriptions):** Normal / Plus / Diamond plans paid through Tap, a 2-month
+  free trial from approval, plan limits (services, stores, photos), boosted search and a
+  featured badge, trial and renewal reminders, and an insights screen for providers.
+- Next: Phase 5 (reviews, reports and trust) (`docs/PLAN.md` §12).

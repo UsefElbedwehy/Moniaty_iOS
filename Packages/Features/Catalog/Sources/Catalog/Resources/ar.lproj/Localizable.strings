@@ -9,6 +9,7 @@
 "common.saveFailed" = "تعذّر الحفظ. حاولي مرة أخرى.";
 "common.ok" = "حسناً";
 "badge.verified" = "موثّقة";
+"badge.featured" = "مميّزة";
 "favorite.add" = "إضافة إلى المفضلة";
 "favorite.remove" = "إزالة من المفضلة";
 "share" = "مشاركة";

@@ -13,22 +13,37 @@ import Catalog
 public final class StudioFeature {
     let store: StudioStore
     let uploader: MediaUploading
+    let checkout: PlanCheckout
     /// Booking settings screens, supplied by the App from the Booking feature (Phase 3).
     var settingsDestination: ((StudioSettingsLink) -> AnyView)?
 
-    public init(repository: StudioRepository, uploader: MediaUploading) {
+    public init(repository: StudioRepository, uploader: MediaUploading, checkout: PlanCheckout) {
         self.store = StudioStore(repository: repository)
         self.uploader = uploader
+        self.checkout = checkout
     }
 
     public func homeScreen() -> some View {
         StudioHomeScreen(feature: self)
     }
 
+    /// Plans and insights (Phase 4), registered on the provider's NavigationStacks.
+    @ViewBuilder
+    public func destination(for route: StudioRoute) -> some View {
+        switch route {
+        case .plans: PlansScreen(feature: self, reason: nil)
+        case .insights: InsightsScreen(feature: self)
+        }
+    }
+
     /// Adds the working-hours and payout-method rows to the studio home.
     public func setSettingsDestination(_ destination: @escaping (StudioSettingsLink) -> AnyView) {
         settingsDestination = destination
     }
+}
+
+public enum StudioRoute: Hashable, Sendable {
+    case plans, insights
 }
 
 /// Studio rows whose screens live in another feature.
@@ -57,6 +72,8 @@ public enum StudioSettingsLink: CaseIterable, Sendable {
 @Observable
 final class StudioStore {
     private(set) var state: ViewState<MyBusiness> = .loading
+    /// Plan, trial and limits (nil until loaded, or if it failed: the studio still works).
+    private(set) var subscription: SubscriptionOverview?
     private(set) var categories: [CatalogCategory] = []
     private(set) var cities: [City] = []
     let repository: StudioRepository
@@ -76,6 +93,7 @@ final class StudioStore {
             self.categories = c
             self.cities = ci
             state = .loaded(b)
+            subscription = try? await repository.subscription()
         } catch {
             if state.value == nil { state = .error((error as? AppError) ?? .unknown(message: error.localizedDescription)) }
         }
@@ -83,6 +101,7 @@ final class StudioStore {
 
     func reload() async {
         if let fresh = try? await repository.business() { state = .loaded(fresh) }
+        if let fresh = try? await repository.subscription() { subscription = fresh }
     }
 
     func categoryName(_ id: String) -> String {
@@ -126,6 +145,9 @@ struct StudioHomeScreen: View {
     @ViewBuilder
     private func content(_ business: MyBusiness) -> some View {
         statusCard(business)
+        if let subscription = store.subscription, subscription.entitlement.state != .pending {
+            SubscriptionCard(subscription: subscription)
+        }
 
         let steps = business.setupSteps
         if steps.contains(where: { !$0.done }) {
@@ -174,6 +196,14 @@ struct StudioHomeScreen: View {
                 }
             }
             if business.status == .approved {
+                NavigationLink(value: StudioRoute.insights) {
+                    StudioRow(systemImage: "chart.bar", title: StudioL10n.string("studio.insights"),
+                              subtitle: StudioL10n.string("studio.insights.subtitle"))
+                }
+                NavigationLink(value: StudioRoute.plans) {
+                    StudioRow(systemImage: "crown", title: StudioL10n.string("studio.plans"),
+                              subtitle: store.subscription?.currentPlan?.name)
+                }
                 NavigationLink(value: CatalogRoute.provider(id: business.id)) {
                     StudioRow(systemImage: "eye", title: StudioL10n.string("studio.preview"), subtitle: nil)
                 }

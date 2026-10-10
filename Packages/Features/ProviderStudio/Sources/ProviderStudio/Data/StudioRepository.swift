@@ -12,6 +12,9 @@ public protocol StudioRepository: Sendable {
     func deleteStore(id: String) async throws
     func categories() async throws -> [CatalogCategory]
     func cities() async throws -> [City]
+    // Phase 4: plans and insights
+    func subscription() async throws -> SubscriptionOverview
+    func insights(days: Int) async throws -> Insights
 }
 
 /// Supabase RPCs from `supabase/migrations/20261011000000_catalog.sql`.
@@ -70,6 +73,14 @@ public struct RemoteStudioRepository: StudioRepository {
     public func cities() async throws -> [City] {
         try await client.send(.catalog.cities, body: NoArgs())
     }
+
+    public func subscription() async throws -> SubscriptionOverview {
+        try await client.send(.rpc("get_my_subscription"), body: NoArgs())
+    }
+
+    public func insights(days: Int) async throws -> Insights {
+        try await client.send(.rpc("get_my_insights"), body: DaysArgs(pDays: days))
+    }
 }
 
 extension String {
@@ -81,6 +92,7 @@ extension String {
 
 private struct NoArgs: Encodable, Sendable {}
 private struct IdArgs: Encodable, Sendable { let pId: String }
+private struct DaysArgs: Encodable, Sendable { let pDays: Int }
 private struct OkResult: Decodable, Sendable { let ok: Bool? }
 
 private struct SaveDTO: Decodable, Sendable {

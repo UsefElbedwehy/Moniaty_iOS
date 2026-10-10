@@ -65,6 +65,11 @@ final class AppEnvironment {
                     anonKey: values.anonKey,
                     accessToken: { await auth.currentAccessToken() },
                     currentUserId: { await auth.currentUserId }
+                ),
+                checkout: TapPlanCheckout(
+                    baseURL: values.baseURL,
+                    anonKey: values.anonKey,
+                    accessToken: { await auth.currentAccessToken() }
                 )
             )
             bookingRepository = RemoteBookingRepository(client: dataClient)
@@ -97,7 +102,9 @@ final class AppEnvironment {
             contentRepository = MockContentRepository()
             cmsPageRepository = MockCMSPageRepository()
             catalogRepository = MockCatalogRepository()
-            studio = StudioFeature(repository: MockStudioRepository(), uploader: MockMediaUploader())
+            let studioRepository = MockStudioRepository()
+            studio = StudioFeature(repository: studioRepository, uploader: MockMediaUploader(),
+                                   checkout: MockPlanCheckout(repository: studioRepository))
             // One mock for both shells: a request sent as a bride shows up in the provider inbox.
             bookingRepository = MockBookingRepository()
             receiptStorage = MockReceiptStorage()

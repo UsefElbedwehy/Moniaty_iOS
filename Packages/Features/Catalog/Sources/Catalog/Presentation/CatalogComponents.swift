@@ -50,6 +50,12 @@ struct ServiceCardView: View {
                     FavoriteButton(card: card, feature: feature)
                         .padding(6)
                 }
+                .overlay(alignment: .bottomLeading) {
+                    if card.isFeatured == true {
+                        StatusBadge(kind: .featured, text: CatalogL10n.key("badge.featured"))
+                            .padding(6)
+                    }
+                }
                 Text(verbatim: card.title)
                     .font(.dsHeadline)
                     .foregroundStyle(Color.dsTextPrimary)
