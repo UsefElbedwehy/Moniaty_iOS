@@ -13,7 +13,7 @@ sql_paths = ["./seed.sql"]
 # Guests browse with an anonymous session (Settings > Authentication > Allow anonymous sign-ins).
 enable_anonymous_sign_ins = true
 
-# OTP and push functions are called before sign-in (OTP) or by a database webhook (push);
+# OTP, push and SMS functions are called before sign-in (OTP) or by a database webhook (push, SMS);
 # they do their own checks instead of requiring a user JWT.
 [functions.send-otp]
 verify_jwt = false
@@ -22,6 +22,9 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.send-push]
+verify_jwt = false
+
+[functions.send-sms]
 verify_jwt = false
 
 # Tap calls this server-to-server and redirects browsers to it; it re-fetches every charge from Tap.
