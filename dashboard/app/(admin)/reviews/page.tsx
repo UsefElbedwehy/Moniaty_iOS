@@ -2,7 +2,8 @@ import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Chips, Empty, Flash } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
-import { fmtDateTime, param } from "@/lib/format";
+import { param } from "@/lib/format";
+import { i18n } from "@/lib/i18n";
 import { moderateReview, setBan } from "./actions";
 
 type Review = {
@@ -14,6 +15,7 @@ type Review = {
 export default async function Reviews({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
   const status = param(sp.status, "pending");
+  const { t, list, arrow, dateTime: fmtDateTime } = await i18n();
   const supabase = await supabaseServer();
   // Full author names: this RPC is for moderators only (the app only ever gets masked names).
   const { data, error } = await supabase.rpc("admin_get_reviews", { p_status: status, p_limit: 100, p_offset: 0 });
@@ -21,22 +23,22 @@ export default async function Reviews({ searchParams }: { searchParams: Promise<
 
   return (
     <>
-      <div className="topbar"><h1>التقييمات</h1></div>
+      <div className="topbar"><h1>{t("التقييمات", "Reviews")}</h1></div>
       <Flash sp={sp} />
-      <Chips base="/reviews" current={status} options={[["pending", "بانتظار المراجعة"], ["approved", "منشورة"], ["rejected", "مرفوضة"], ["hidden", "مخفية"]]} />
+      <Chips base="/reviews" current={status} options={[["pending", t("بانتظار المراجعة", "Pending")], ["approved", t("منشورة", "Published")], ["rejected", t("مرفوضة", "Rejected")], ["hidden", t("مخفية", "Hidden")]]} />
       {error && <div className="flash err">{error.message}</div>}
-      {rows.length === 0 ? <div className="card"><Empty text="لا توجد تقييمات هنا." /></div> : rows.map((r) => (
+      {rows.length === 0 ? <div className="card"><Empty text={t("لا توجد تقييمات هنا.", "No reviews here.")} /></div> : rows.map((r) => (
         <div key={r.id} className="card" style={{ marginBottom: 10 }}>
           <div style={{ display: "flex", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
             <div>
               <b style={{ color: "var(--gold)", fontSize: 18 }}>{"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}</b>{" "}
-              <span className="badge">{r.direction === "bride_to_provider" ? "عروس ← مقدّمة خدمة (عام)" : "مقدّمة خدمة ← عروس (خاص)"}</span>
+              <span className="badge">{r.direction === "bride_to_provider" ? `${t("عروس", "Bride")} ${arrow} ${t("مقدّمة خدمة (عام)", "provider (public)")}` : `${t("مقدّمة خدمة", "Provider")} ${arrow} ${t("عروس (خاص)", "bride (private)")}`}</span>
               <div className="small muted">
-                {r.author_name ?? "—"} عن <Link href={`/providers/${r.provider_id}`}>{r.provider_name ?? "—"}</Link> ·{" "}
-                <Link href={`/bookings/${r.booking_id}`}>الحجز</Link> · {fmtDateTime(r.created_at)}
+                {r.author_name ?? "—"} {t("عن", "about")} <Link href={`/providers/${r.provider_id}`}>{r.provider_name ?? "—"}</Link> ·{" "}
+                <Link href={`/bookings/${r.booking_id}`}>{t("الحجز", "Booking")}</Link> · {fmtDateTime(r.created_at)}
               </div>
             </div>
-            {r.flagged_words?.length ? <span className="badge bad">كلمات محظورة: {r.flagged_words.join("، ")}</span> : null}
+            {r.flagged_words?.length ? <span className="badge bad">{t("كلمات محظورة:", "Banned words:")} {list(r.flagged_words)}</span> : null}
           </div>
           {r.body && <p>{r.body}</p>}
           {r.photo_urls?.length > 0 && (
@@ -45,17 +47,17 @@ export default async function Reviews({ searchParams }: { searchParams: Promise<
           <form className="inline" action={moderateReview} style={{ marginTop: 10 }}>
             <input type="hidden" name="id" value={r.id} />
             <input type="hidden" name="back" value={status} />
-            <input name="note" placeholder="ملاحظة (تُرسل للكاتبة عند الرفض)" defaultValue={r.moderation_note ?? ""} style={{ flex: 1 }} />
-            {status !== "approved" && <button name="status" value="approved">نشر</button>}
-            {status !== "rejected" && <button className="secondary" name="status" value="rejected">رفض</button>}
-            {status === "approved" && <button className="secondary" name="status" value="hidden">إخفاء</button>}
+            <input name="note" placeholder={t("ملاحظة (تُرسل للكاتبة عند الرفض)", "Note (sent to the author if rejected)")} defaultValue={r.moderation_note ?? ""} style={{ flex: 1 }} />
+            {status !== "approved" && <button name="status" value="approved">{t("نشر", "Publish")}</button>}
+            {status !== "rejected" && <button className="secondary" name="status" value="rejected">{t("رفض", "Reject")}</button>}
+            {status === "approved" && <button className="secondary" name="status" value="hidden">{t("إخفاء", "Hide")}</button>}
           </form>
           {r.author_id && (
             <form className="inline" action={setBan} style={{ marginTop: 6 }}>
               <input type="hidden" name="user" value={r.author_id} />
               <input type="hidden" name="banned" value="true" />
               <input type="hidden" name="back_path" value={`/reviews?status=${status}`} />
-              <ConfirmButton message="منع هذا الحساب من كتابة التقييمات؟" className="ghost">منع الكاتبة من التقييم</ConfirmButton>
+              <ConfirmButton message={t("منع هذا الحساب من كتابة التقييمات؟", "Stop this account from writing reviews?")} className="ghost">{t("منع الكاتبة من التقييم", "Ban author from reviewing")}</ConfirmButton>
             </form>
           )}
         </div>

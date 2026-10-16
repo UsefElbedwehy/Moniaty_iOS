@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { i18n } from "@/lib/i18n";
+import type { StatusMap } from "@/lib/labels";
 
-export function Badge({ map, value }: { map: Record<string, [string, string]>; value?: string | null }) {
-  const [label, tone] = map[value ?? ""] ?? [value ?? "—", ""];
-  return <span className={`badge ${tone}`}>{label}</span>;
+export async function Badge({ map, value }: { map: StatusMap; value?: string | null }) {
+  const { label } = await i18n();
+  const tone = map[value ?? ""]?.[2] ?? "";
+  return <span className={`badge ${tone}`}>{label(map, value)}</span>;
 }
 
 export function Stat({ label, value, alert, href }: { label: string; value: React.ReactNode; alert?: boolean; href?: string }) {
@@ -36,18 +39,20 @@ export function Chips({ base, current, options, name = "status" }: {
   );
 }
 
-export function Pager({ base, page, hasMore, query }: { base: string; page: number; hasMore: boolean; query?: Record<string, string> }) {
+export async function Pager({ base, page, hasMore, query }: { base: string; page: number; hasMore: boolean; query?: Record<string, string> }) {
+  const { t } = await i18n();
   const link = (p: number) => `${base}?${new URLSearchParams({ ...(query ?? {}), page: String(p) })}`;
   if (page <= 1 && !hasMore) return null;
   return (
     <div className="pager">
-      {page > 1 && <Link className="button secondary" href={link(page - 1)}>السابق</Link>}
-      <span className="muted">صفحة {page}</span>
-      {hasMore && <Link className="button secondary" href={link(page + 1)}>التالي</Link>}
+      {page > 1 && <Link className="button secondary" href={link(page - 1)}>{t("السابق", "Previous")}</Link>}
+      <span className="muted">{t("صفحة", "Page")} {page}</span>
+      {hasMore && <Link className="button secondary" href={link(page + 1)}>{t("التالي", "Next")}</Link>}
     </div>
   );
 }
 
-export function Empty({ text = "لا توجد بيانات." }: { text?: string }) {
-  return <div className="empty">{text}</div>;
+export async function Empty({ text }: { text?: string }) {
+  const { t } = await i18n();
+  return <div className="empty">{text ?? t("لا توجد بيانات.", "No data.")}</div>;
 }

@@ -15,5 +15,5 @@ export async function savePlan(form: FormData) {
     is_featured: bool(form, "is_featured"), is_recommended: bool(form, "is_recommended"), is_active: bool(form, "is_active"),
     insights_level: str(form, "insights_level"), sort_order: num(form, "sort_order"),
   }).eq("id", str(form, "id"));
-  done("/plans", error);
+  return done("/plans", error);
 }

@@ -7,5 +7,5 @@ export async function replyTicket(form: FormData) {
   const result = await supabase.rpc("admin_reply_ticket", {
     p_ticket: str(form, "id"), p_reply: str(form, "reply"), p_close: bool(form, "close"),
   });
-  done("/support", rpcError(result), "تم إرسال الرد");
+  return done("/support", rpcError(result), ["تم إرسال الرد", "Reply sent"]);
 }

@@ -8,5 +8,5 @@ export async function resolveDispute(form: FormData) {
   const result = await supabase.rpc("admin_resolve_dispute", {
     p_dispute: str(form, "dispute"), p_outcome: str(form, "outcome"), p_note: str(form, "note"),
   });
-  done(`/bookings/${booking}`, rpcError(result), "تم إغلاق النزاع وإشعار الطرفين");
+  return done(`/bookings/${booking}`, rpcError(result), ["تم إغلاق النزاع وإشعار الطرفين", "Dispute closed and both parties notified"]);
 }

@@ -1,6 +1,6 @@
 # Munyati admin dashboard (منيتي — لوحة الإدارة)
 
-Next.js 15 (App Router) + `@supabase/ssr`, Arabic-first RTL, no UI library. It lives here for now
+Next.js 15 (App Router) + `@supabase/ssr`, Arabic-first RTL with an English (LTR) switch in the sidebar, no UI library. Text is written inline as `t("عربي", "English")` from `i18n()` (`lib/i18n.ts`); status labels live in `lib/labels.ts`. It lives here for now
 so it ships with the backend contract it depends on (`supabase/migrations`); it can move to its own
 `munyati_dashboard` repo later (`git subtree split --prefix dashboard`).
 

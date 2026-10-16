@@ -8,7 +8,7 @@ export async function savePage(form: FormData) {
   const { error } = await supabase.from("cms_pages").upsert({
     slug, lang: str(form, "lang"), title: str(form, "title"), body_markdown: str(form, "body"), is_published: bool(form, "is_published"),
   });
-  done(`/content?page=${slug}&lang=${str(form, "lang")}`, error);
+  return done(`/content?page=${slug}&lang=${str(form, "lang")}`, error);
 }
 
 export async function saveString(form: FormData) {
@@ -20,5 +20,5 @@ export async function saveString(form: FormData) {
   const { error } = value
     ? await supabase.from("app_strings").upsert({ key, lang, value })
     : await supabase.from("app_strings").delete().eq("key", key).eq("lang", lang);
-  done("/content?tab=strings", error);
+  return done("/content?tab=strings", error);
 }

@@ -10,5 +10,5 @@ export async function sendCampaign(form: FormData) {
     p_deep_link: optStr(form, "deep_link"),
   });
   const reached = (result.data as { recipients?: number } | null)?.recipients ?? 0;
-  done("/push", rpcError(result), `تم الإرسال إلى ${reached} مستخدم`);
+  return done("/push", rpcError(result), [`تم الإرسال إلى ${reached} مستخدم`, `Sent to ${reached} users`]);
 }

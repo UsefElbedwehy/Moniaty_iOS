@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Badge, Chips, Empty, Pager } from "@/components/ui";
-import { fmtDateTime, fmtSAR, param, pageRange, PAGE_SIZE } from "@/lib/format";
+import { param, pageRange, PAGE_SIZE } from "@/lib/format";
+import { i18n } from "@/lib/i18n";
 import { bookingStatus } from "@/lib/labels";
 
 type Row = {
@@ -15,6 +16,7 @@ export default async function Bookings({ searchParams }: { searchParams: Promise
   const q = param(sp.q).toUpperCase();
   const duplicate = param(sp.duplicate) === "1";
   const page = Math.max(1, Number(param(sp.page, "1")) || 1);
+  const { t, dateTime: fmtDateTime, sar: fmtSAR } = await i18n();
   const supabase = await supabaseServer();
   const select = "id, reference_code, status, price, starts_at, created_at, service_title, bride_name, is_demo, providers(business_name)"
     + (duplicate ? ", payment_receipts!inner(is_duplicate)" : "");
@@ -28,26 +30,26 @@ export default async function Bookings({ searchParams }: { searchParams: Promise
   return (
     <>
       <div className="topbar">
-        <h1>الحجوزات</h1>
+        <h1>{t("الحجوزات", "Bookings")}</h1>
         <form className="inline" action="/bookings">
-          <input name="q" placeholder="رقم الحجز MN-…" defaultValue={q} dir="ltr" />
-          <button className="secondary">بحث</button>
+          <input name="q" placeholder={t("رقم الحجز MN-…", "Booking code MN-…")} defaultValue={q} dir="ltr" />
+          <button className="secondary">{t("بحث", "Search")}</button>
         </form>
       </div>
       <Chips base="/bookings" current={duplicate ? "dup" : status} options={[
-        ["", "الكل"], ["requested", "بانتظار الموافقة"], ["awaiting_payment", "بانتظار الدفع"], ["payment_submitted", "إيصال مرفوع"],
-        ["payment_confirmed", "مؤكدة"], ["completed", "مكتملة"], ["disputed", "نزاع"], ["expired", "منتهية"],
+        ["", t("الكل", "All")], ["requested", t("بانتظار الموافقة", "Awaiting approval")], ["awaiting_payment", t("بانتظار الدفع", "Awaiting payment")], ["payment_submitted", t("إيصال مرفوع", "Receipt uploaded")],
+        ["payment_confirmed", t("مؤكدة", "Confirmed")], ["completed", t("مكتملة", "Completed")], ["disputed", t("نزاع", "Disputed")], ["expired", t("منتهية", "Expired")],
       ]} />
-      {duplicate && <p className="muted">حجوزات فيها إيصال استُخدم في حجز آخر.</p>}
+      {duplicate && <p className="muted">{t("حجوزات فيها إيصال استُخدم في حجز آخر.", "Bookings with a receipt that was used in another booking.")}</p>}
       {error && <div className="flash err">{error.message}</div>}
       <div className="table-wrap">
         {rows.length === 0 ? <Empty /> : (
           <table>
-            <thead><tr><th>الرقم</th><th>الخدمة</th><th>مقدّمة الخدمة</th><th>العروس</th><th>الموعد</th><th>المبلغ</th><th>الحالة</th></tr></thead>
+            <thead><tr><th>{t("الرقم", "Code")}</th><th>{t("الخدمة", "Service")}</th><th>{t("مقدّمة الخدمة", "Provider")}</th><th>{t("العروس", "Bride")}</th><th>{t("الموعد", "Appointment")}</th><th>{t("المبلغ", "Amount")}</th><th>{t("الحالة", "Status")}</th></tr></thead>
             <tbody>
               {rows.map((b) => (
                 <tr key={b.id}>
-                  <td><Link className="mono" href={`/bookings/${b.id}`}>{b.reference_code}</Link>{b.is_demo && <span className="badge"> تجريبي</span>}</td>
+                  <td><Link className="mono" href={`/bookings/${b.id}`}>{b.reference_code}</Link>{b.is_demo && <span className="badge"> {t("تجريبي", "Demo")}</span>}</td>
                   <td>{b.service_title}</td>
                   <td>{b.providers?.business_name ?? "—"}</td>
                   <td>{b.bride_name ?? "—"}</td>

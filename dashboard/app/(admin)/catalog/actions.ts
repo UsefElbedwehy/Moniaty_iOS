@@ -1,6 +1,6 @@
 "use server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { done, str, optStr, bool, num } from "@/lib/act";
+import { done, str, optStr, bool, num, tr } from "@/lib/act";
 
 const slug = (v: string) => v.toLowerCase().replace(/[^a-z0-9_]/g, "_");
 const optNum = (form: FormData, key: string) => (str(form, key) ? Number(str(form, key)) : null);
@@ -11,7 +11,7 @@ export async function saveCity(form: FormData) {
     id: slug(str(form, "id")), name_ar: str(form, "name_ar"), name_en: str(form, "name_en"),
     lat: optNum(form, "lat"), lng: optNum(form, "lng"), is_active: bool(form, "is_active"), sort_order: num(form, "sort_order"),
   });
-  done("/catalog", error);
+  return done("/catalog", error);
 }
 
 export async function saveCategory(form: FormData) {
@@ -22,12 +22,12 @@ export async function saveCategory(form: FormData) {
   // pick up the change without cache problems.
   const file = form.get("icon_file");
   if (file instanceof File && file.size > 0) {
-    if (file.size > 512 * 1024) done("/catalog", { message: "حجم الأيقونة أكبر من ٥١٢ كيلوبايت" });
+    if (file.size > 512 * 1024) return done("/catalog", { message: await tr("حجم الأيقونة أكبر من ٥١٢ كيلوبايت", "The icon is larger than 512 KB") });
     const ext = file.type === "image/svg+xml" ? "svg" : file.type === "image/png" ? "png" : null;
-    if (!ext) done("/catalog", { message: "الأيقونة يجب أن تكون PNG أو SVG" });
+    if (!ext) return done("/catalog", { message: await tr("الأيقونة يجب أن تكون PNG أو SVG", "The icon must be PNG or SVG") });
     const path = `categories/${id}/${Date.now()}.${ext}`;
     const { error: uploadError } = await supabase.storage.from("content").upload(path, file, { contentType: file.type, upsert: false });
-    if (uploadError) done("/catalog", uploadError);
+    if (uploadError) return done("/catalog", uploadError);
     iconUrl = supabase.storage.from("content").getPublicUrl(path).data.publicUrl;
   }
   const { error } = await supabase.from("categories").upsert({
@@ -36,5 +36,5 @@ export async function saveCategory(form: FormData) {
     is_active: bool(form, "is_active"), sort_order: num(form, "sort_order"),
     allows_parallel_bookings: bool(form, "allows_parallel_bookings"), is_store_category: bool(form, "is_store_category"),
   });
-  done("/catalog", error);
+  return done("/catalog", error);
 }

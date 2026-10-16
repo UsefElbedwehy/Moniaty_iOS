@@ -1,6 +1,6 @@
 "use server";
 import { supabaseServer } from "@/lib/supabase/server";
-import { done, str, bool, num } from "@/lib/act";
+import { done, str, bool, num, tr } from "@/lib/act";
 
 type Config = Record<string, unknown>;
 
@@ -13,7 +13,7 @@ async function current(): Promise<Config> {
 async function write(config: Config) {
   const supabase = await supabaseServer();
   const { error } = await supabase.from("app_config").update({ config }).eq("id", 1);
-  done("/settings", error);
+  return done("/settings", error);
 }
 
 const obj = (v: unknown) => (v && typeof v === "object" && !Array.isArray(v) ? (v as Config) : {});
@@ -58,8 +58,8 @@ export async function saveRawConfig(form: FormData) {
   try {
     parsed = JSON.parse(str(form, "json"));
   } catch {
-    done("/settings", { message: "JSON غير صالح" });
+    return done("/settings", { message: await tr("JSON غير صالح", "Invalid JSON") });
   }
-  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) done("/settings", { message: "يجب أن يكون كائن JSON" });
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return done("/settings", { message: await tr("يجب أن يكون كائن JSON", "Must be a JSON object") });
   await write(parsed as Config);
 }
