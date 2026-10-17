@@ -56,11 +56,18 @@ Postgres schema, security rules and edge functions for the Munyati app. Region: 
    ```sh
    supabase functions deploy send-otp verify-otp send-push send-sms delete-account tap-checkout tap-webhook
    ```
-7. **Push webhook:** Database → Webhooks → *Insert* on `public.notifications` → HTTP POST to the
-   `send-push` function URL with header `x-webhook-secret: <PUSH_WEBHOOK_SECRET>`.
-8. **SMS webhook:** Database → Webhooks → *Insert* on `public.sms_outbox` → `send-sms` URL with header
-   `x-webhook-secret: <SMS_WEBHOOK_SECRET>`. Which booking events also go by SMS is set in
-   `app_config.sms_events`.
+7. **Webhooks** (push and SMS): `20261017000000_webhooks.sql` adds `private.post_webhook()`, which
+   POSTs each inserted row in the Database Webhooks format. Create the two triggers once per project
+   in the SQL editor, with the function URL and the secrets from `secrets.env`:
+   ```sql
+   create trigger notifications_send_push after insert on public.notifications for each row
+     execute function private.post_webhook('https://<ref>.supabase.co/functions/v1/send-push', '<PUSH_WEBHOOK_SECRET>');
+   create trigger sms_outbox_send_sms after insert on public.sms_outbox for each row
+     execute function private.post_webhook('https://<ref>.supabase.co/functions/v1/send-sms', '<SMS_WEBHOOK_SECRET>');
+   ```
+   Responses are logged in `net._http_response` for a few hours. Which booking events also go by
+   SMS is set in `app_config.sms_events`.
+8. (Webhooks created in the dashboard, Database → Webhooks, work the same; don't create both.)
 9. **Tap:** nothing to configure in the Tap dashboard: each charge carries its own webhook and
    return URL (`functions/v1/tap-webhook`, deployed without JWT check, see `config.toml`). Set
    plan prices in `subscription_plans` (the seeded 99 / 249 / 499 SAR are placeholders) and test
