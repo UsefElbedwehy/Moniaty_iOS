@@ -39,6 +39,8 @@ npm run build && npm start     # production
 Deploy anywhere Next.js runs (Vercel is simplest). Set the two `NEXT_PUBLIC_*` variables there.
 
 ## First admin
-1. Supabase → Authentication → Users → **Invite user** with your email, then set a password.
+1. Supabase → Authentication → Users → **Add user → Create new user** with your email and a strong
+   password, and tick **Auto Confirm User**. (Don't use *Invite user*: the dashboard has no page for
+   accepting invites, so the invite link can't set a password.)
 2. In the SQL editor: `insert into admin_users (user_id, role_id) select id, 'owner' from auth.users where email = 'you@munyati.co';`
-3. Add teammates later from the Team page (invite them in Supabase first).
+3. Add teammates later from the Team page (create them in Supabase the same way first).
