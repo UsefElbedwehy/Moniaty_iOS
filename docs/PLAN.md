@@ -321,6 +321,7 @@ Bilingual static site in the Munyati brand:
 | **6. Dashboard** (parallel from phase 1) | Phase-1 modules first (cities, categories, plans, providers, bookings, receipts/disputes, users, settings, CMS), then reviews/reports/push, then analytics/errors/SMS | Admin can run the business |
 | **7. Website** (parallel) | Landing, legal pages, AASA, link fallbacks | munyati.co live |
 | **8. Launch** | TestFlight with real providers in the launch cities, App Review submission, ASO (name «منيتي - Munyati», subtitle «كل تجهيزات العروس في مكان واحد») | Live on App Store |
+| **9. Android** (after iOS works end to end on the real backend; build while iOS is in TestFlight / App Review) | Native **Kotlin + Jetpack Compose** app identical to iOS: same modules (Core, Networking, DesignSystem, Authentication, Catalog, ProviderStudio, Booking, Trust), Remote + Mock repositories, same screens, flows, RTL, brand tokens and ar/en strings. Same Supabase backend over HTTPS (no new tables). Android-specific: system back, FCM push, App Links (`website/.well-known/assetlinks.json`), Play Console listing. Check first whether Google Play allows Tap for provider plans or requires Play Billing (decision #12) | Live on Google Play |
 
 ### Progress
 - **Phase 1 — done:** app shell, design system, auth with roles, core database (`supabase/migrations/20261010*`).
@@ -403,3 +404,4 @@ SMS, not the server, becomes the biggest cost. Keep login sessions long so users
 | 9 | Guest browsing | Yes; login is needed only to book, favorite, review or report |
 | 10 | Name | **منيتي - Munyati** everywhere |
 | 11 | Design | Designed here: HTML mockups first, then the SwiftUI design system |
+| 12 | Android | **Yes**, identical to iOS in everything (owner, 2026-10-19). Native Kotlin + Compose, started after iOS works end to end (Phase 9). ⚠️ Open: Google Play payments policy for Tap-paid provider plans; the `source` column (decision #2) can take a `google_play` value if Play Billing is required. |
