@@ -27,9 +27,10 @@ in-memory mocks instead (sample catalog, OTP code `123456`).
 | `designsystem` | `Packages/DesignSystem` | `DS.colors` / `DS.type` / `DSSpacing` / `DSRadius`, components, brand marks, Amiri |
 | `authentication` | `Packages/Authentication` | role → phone → OTP → name |
 | `features/catalog` | `Packages/Features/Catalog` | bride discovery: Home, search, category lists, service/provider/store pages, favorites, budget, Explore map |
+| `features/providerstudio` | `Packages/Features/ProviderStudio` | provider Home: status, setup checklist, business profile (join form), services, stores, photo upload, plans with Tap checkout (Custom Tabs), insights |
 | `app` | `App/` | composition root (`AppEnvironment`), Supabase repositories, session, deep links, shells |
 
-Feature modules still to port: `providerstudio`, `booking`, `trust` (one per iOS package).
+Feature modules still to port: `booking`, `trust` (one per iOS package).
 
 ## Rules
 - **iOS is the source of truth for text.** Edit the iOS `.strings`, then run

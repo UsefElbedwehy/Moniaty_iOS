@@ -13,7 +13,6 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Map
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.PersonAddAlt
-import androidx.compose.material.icons.outlined.Storefront
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -43,6 +42,7 @@ import co.munyati.catalog.presentation.ProviderRoute
 import co.munyati.catalog.presentation.ServiceRoute
 import co.munyati.catalog.presentation.ServicesRoute
 import co.munyati.catalog.presentation.StoreRoute
+import co.munyati.providerstudio.presentation.PlansRoute
 import co.munyati.designsystem.components.EmptyStateView
 import co.munyati.designsystem.components.LargeHeaderBar
 import co.munyati.designsystem.theme.DS
@@ -70,18 +70,21 @@ fun BrideShell(environment: AppEnvironment) {
     }
 }
 
-/** The provider's tabs: the studio Home (ProviderStudio, coming next), Explore, Bookings, Profile. */
+/** The provider's tabs: the studio Home (ProviderStudio), Explore, Bookings, Profile. */
 @Composable
 fun ProviderShell(environment: AppEnvironment) {
     val catalog = environment.catalog
+    val studio = environment.studio
+    val destinations: NavGraphBuilder.() -> Unit = {
+        with(catalog) { destinations() }
+        with(studio) { destinations() }
+    }
     TabShell(environment, bookingsTitle = R.string.tab_providerBookings) { tab, controller ->
         when (tab) {
-            AppTab.Home -> TabNavHost(controller, {
-                ComingSoonTab(l10n(R.string.tab_home), Icons.Outlined.Storefront, R.string.provider_home_comingSoon_title, R.string.provider_home_comingSoon_message)
-            }) { with(catalog) { destinations() } }
-            AppTab.Explore -> TabNavHost(controller, { catalog.ExploreScreen() }) { with(catalog) { destinations() } }
-            AppTab.Bookings -> TabNavHost(controller, { BookingsTab(environment, R.string.tab_providerBookings) }) { with(catalog) { destinations() } }
-            AppTab.Profile -> TabNavHost(controller, { ProfileScreen(environment) }) { with(catalog) { destinations() } }
+            AppTab.Home -> TabNavHost(controller, { studio.HomeScreen() }, destinations)
+            AppTab.Explore -> TabNavHost(controller, { catalog.ExploreScreen() }, destinations)
+            AppTab.Bookings -> TabNavHost(controller, { BookingsTab(environment, R.string.tab_providerBookings) }, destinations)
+            AppTab.Profile -> TabNavHost(controller, { ProfileScreen(environment) }, destinations)
         }
     }
 }
@@ -119,7 +122,11 @@ private fun TabShell(
             is DeepLink.Service -> { tab = AppTab.Home; home.navigate(ServiceRoute(pending.id)) }
             is DeepLink.Store -> { tab = AppTab.Home; home.navigate(StoreRoute(pending.id)) }
             is DeepLink.Category -> { tab = AppTab.Home; home.navigate(ServicesRoute(categoryId = pending.id)) }
-            DeepLink.Plans, DeepLink.Notifications -> tab = AppTab.Home
+            DeepLink.Plans -> {
+                tab = AppTab.Home
+                if (environment.session.role == co.munyati.authentication.domain.UserRole.Provider) home.navigate(PlansRoute())
+            }
+            DeepLink.Notifications -> tab = AppTab.Home
         }
         environment.deepLink.pending = null
     }
@@ -161,17 +168,6 @@ private fun TabShell(
     }
 
     if (environment.session.isPickingCities) CityPickerDialog(environment) { environment.session.isPickingCities = false }
-}
-
-/** Placeholder for a tab whose feature module isn't ported yet. */
-@Composable
-private fun ComingSoonTab(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, titleRes: Int, messageRes: Int) {
-    Column(Modifier.fillMaxSize().background(DS.colors.background)) {
-        LargeHeaderBar(title, Modifier.statusBarsPadding())
-        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            EmptyStateView(icon = icon, title = l10n(titleRes), message = l10n(messageRes))
-        }
-    }
 }
 
 /** The bookings tab: the Booking feature's list for an account, a sign-in prompt for a guest. */

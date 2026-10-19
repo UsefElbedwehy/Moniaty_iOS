@@ -63,6 +63,7 @@ dependencies {
     implementation(project(":designsystem"))
     implementation(project(":authentication"))
     implementation(project(":features:catalog"))
+    implementation(project(":features:providerstudio"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

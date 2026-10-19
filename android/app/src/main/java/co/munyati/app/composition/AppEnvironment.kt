@@ -23,6 +23,13 @@ import co.munyati.catalog.data.MockCatalogRepository
 import co.munyati.catalog.data.RemoteCatalogRepository
 import co.munyati.catalog.presentation.CatalogContext
 import co.munyati.catalog.presentation.CatalogFeature
+import co.munyati.app.backend.MockMediaUploader
+import co.munyati.app.backend.SupabaseMediaUploader
+import co.munyati.app.backend.TapPlanCheckout
+import co.munyati.providerstudio.data.MockPlanCheckout
+import co.munyati.providerstudio.data.MockStudioRepository
+import co.munyati.providerstudio.data.RemoteStudioRepository
+import co.munyati.providerstudio.presentation.StudioFeature
 import co.munyati.core.configuration.ConfigurationRepository
 import co.munyati.networking.ApiClient
 import co.munyati.networking.ApiEndpoint
@@ -60,6 +67,7 @@ class AppEnvironment(private val context: Context) {
     val analytics: AnalyticsRecorder
     val catalog: CatalogFeature
     private val catalogRepository: CatalogRepository
+    val studio: StudioFeature
 
     init {
         val config = backendConfiguration()
@@ -72,6 +80,12 @@ class AppEnvironment(private val context: Context) {
             contentRepository = SupabaseContentRepository(dataClient)
             analytics = makeAnalytics(dataClient)
             catalogRepository = RemoteCatalogRepository(dataClient)
+            studio = StudioFeature(
+                repository = RemoteStudioRepository(dataClient),
+                uploader = SupabaseMediaUploader(config.baseUrl, BuildConfig.SUPABASE_ANON_KEY, { auth.currentAccessToken() }, { auth.currentUserId() }),
+                checkout = TapPlanCheckout(config.baseUrl, BuildConfig.SUPABASE_ANON_KEY, { auth.currentAccessToken() }),
+                mapsAvailable = BuildConfig.MAPS_API_KEY.isNotBlank(),
+            )
         } else {
             // No backend values: everything runs on in-memory mocks.
             supabaseAuth = null
@@ -80,6 +94,8 @@ class AppEnvironment(private val context: Context) {
             contentRepository = MockContentRepository()
             analytics = AnalyticsRecorder.disabled
             catalogRepository = MockCatalogRepository()
+            val studioRepository = MockStudioRepository()
+            studio = StudioFeature(studioRepository, MockMediaUploader(), MockPlanCheckout(studioRepository), BuildConfig.MAPS_API_KEY.isNotBlank())
         }
         catalog = CatalogFeature(
             repository = catalogRepository,

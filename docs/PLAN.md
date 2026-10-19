@@ -362,8 +362,10 @@ Bilingual static site in the Munyati brand:
   shells and a basic profile. Catalog ported (`android/features/catalog`): Home with budget card,
   categories and carousels, search and category lists with filters, sort and paging, service /
   provider / store pages, favorites, budget editor, Explore on Google Maps (needs an Android Maps
-  key). Next: ProviderStudio, Booking and Trust, then FCM push, App Links (`assetlinks.json`) and
-  the Play Console listing.
+  key). ProviderStudio ported (`android/features/providerstudio`): studio Home with status,
+  plan card and setup checklist, business profile, services and stores with photo upload and
+  plan limits, plans with Tap checkout in Custom Tabs, insights. Next: Booking and Trust, then FCM
+  push, App Links (`assetlinks.json`) and the Play Console listing.
 
 ## 13. Design approach (answer to "premium app or Claude Design?")
 - **I can design it here.** The brand already has a palette (burgundy `#8A0D3A`, gold `#DFC389`, cream `#F2E5D2`, ivory `#FAFAEC`) and a logo.

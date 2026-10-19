@@ -18,6 +18,7 @@ MODULES = [
     ("Packages/Shared/Sources/Shared/Resources", "shared", "shared_", False),
     ("Packages/Authentication/Sources/Authentication/Resources", "authentication", "", False),
     ("Packages/Features/Catalog/Sources/Catalog/Resources", "features/catalog", "catalog_", False),
+    ("Packages/Features/ProviderStudio/Sources/ProviderStudio/Resources", "features/providerstudio", "studio_", False),
     ("App/Localization", "app", "", True),
 ]
 
