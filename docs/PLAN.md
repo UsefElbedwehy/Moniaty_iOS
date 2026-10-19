@@ -355,6 +355,12 @@ Bilingual static site in the Munyati brand:
 - **Phase 7 — done (website):** static bilingual site in `website/` (landing, providers, legal pages
   from the CMS, support, account deletion, universal-link fallbacks, AASA). Owner steps in
   `docs/OWNER_TODO.md`; continuing locally: `docs/HANDOFF.md`.
+- **Phase 9 — started (Android, 2026-10-20):** foundation done in `android/`: Gradle modules
+  mirroring the Swift packages, the design system (same tokens, Amiri, brand vectors, adaptive
+  icon), networking over OkHttp, auth (role → phone → OTP → name, guest) against the real
+  Supabase, session in encrypted storage, remote config/strings, cities, deep-link parser, tab
+  shells and a basic profile. Next: Catalog, ProviderStudio, Booking and Trust, then FCM push,
+  App Links (`assetlinks.json`) and the Play Console listing.
 
 ## 13. Design approach (answer to "premium app or Claude Design?")
 - **I can design it here.** The brand already has a palette (burgundy `#8A0D3A`, gold `#DFC389`, cream `#F2E5D2`, ivory `#FAFAEC`) and a logo.

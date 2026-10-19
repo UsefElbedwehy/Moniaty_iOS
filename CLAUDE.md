@@ -38,6 +38,11 @@ upload the receipt. Repo name is `Moniaty_iOS`, but the brand is **Munyati / Ù…Ù
   type-checked here (`npm install && npm run build`).
 - The app talks to Supabase over plain HTTPS (PostgREST RPCs + edge functions); it does
   **not** use the Supabase SDK.
+- `android/` is the Android app (Kotlin + Jetpack Compose, Gradle), identical to iOS in screens,
+  flows and text; its modules mirror the Swift packages one to one (see `android/README.md`).
+  iOS `.strings` are the source of truth: after changing text run `python3 android/tools/sync_strings.py`.
+  When you change a flow on one platform, change it on the other. It **can** be built and tested
+  here (`cd android && ./gradlew :app:assembleDebug testDebugUnitTest`).
 
 ## Conventions
 - **Arabic first, RTL**, English second. Every user-facing string is localized (ar + en).
