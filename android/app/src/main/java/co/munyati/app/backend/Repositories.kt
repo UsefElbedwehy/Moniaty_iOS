@@ -12,13 +12,7 @@ import co.munyati.networking.send
 import co.munyati.shared.persistence.CacheStore
 import co.munyati.shared.persistence.FileCacheStore
 import kotlinx.serialization.Serializable
-import java.util.Locale
-
-/** A city the bride can browse (`get_cities`). */
-@Serializable
-data class City(val id: String, val nameAr: String, val nameEn: String, val lat: Double? = null, val lng: Double? = null) {
-    fun name(locale: Locale = Locale.getDefault()) = if (locale.language == "ar") nameAr else nameEn
-}
+import co.munyati.catalog.domain.City
 
 /** The signed-in person's profile: who they are, which side they're on, which cities they browse. */
 data class MyProfile(

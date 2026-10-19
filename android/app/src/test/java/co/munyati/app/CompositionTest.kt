@@ -1,6 +1,6 @@
 package co.munyati.app
 
-import co.munyati.app.backend.City
+import co.munyati.catalog.domain.City
 import co.munyati.app.composition.CityFilterStore
 import co.munyati.app.composition.DeepLink
 import co.munyati.app.composition.RemoteConfigStore

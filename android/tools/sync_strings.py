@@ -17,6 +17,7 @@ MODULES = [
     ("Packages/DesignSystem/Sources/DesignSystem/Resources", "designsystem", "ds_", False),
     ("Packages/Shared/Sources/Shared/Resources", "shared", "shared_", False),
     ("Packages/Authentication/Sources/Authentication/Resources", "authentication", "", False),
+    ("Packages/Features/Catalog/Sources/Catalog/Resources", "features/catalog", "catalog_", False),
     ("App/Localization", "app", "", True),
 ]
 

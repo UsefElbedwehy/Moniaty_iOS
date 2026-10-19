@@ -3,7 +3,7 @@ package co.munyati.app.composition
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import co.munyati.app.backend.City
+import co.munyati.catalog.domain.City
 import java.util.Locale
 
 /**

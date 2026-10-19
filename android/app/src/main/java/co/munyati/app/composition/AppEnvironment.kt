@@ -17,6 +17,12 @@ import co.munyati.authentication.domain.AuthState
 import co.munyati.authentication.domain.User
 import co.munyati.authentication.domain.UserRole
 import co.munyati.authentication.navigation.AuthenticationFeature
+import co.munyati.app.R
+import co.munyati.catalog.data.CatalogRepository
+import co.munyati.catalog.data.MockCatalogRepository
+import co.munyati.catalog.data.RemoteCatalogRepository
+import co.munyati.catalog.presentation.CatalogContext
+import co.munyati.catalog.presentation.CatalogFeature
 import co.munyati.core.configuration.ConfigurationRepository
 import co.munyati.networking.ApiClient
 import co.munyati.networking.ApiEndpoint
@@ -40,7 +46,7 @@ import java.util.Locale
  * the backend is Supabase (and, later, Firebase); features receive interfaces and callbacks. Mirrors
  * the iOS `AppEnvironment`.
  */
-class AppEnvironment(context: Context) {
+class AppEnvironment(private val context: Context) {
     val session = AppSession()
     val remoteConfig = RemoteConfigStore(BuildConfig.VERSION_NAME)
     val cities = CityFilterStore()
@@ -52,6 +58,8 @@ class AppEnvironment(context: Context) {
     private val profileRepository: ProfileRepository
     private val contentRepository: ContentRepository
     val analytics: AnalyticsRecorder
+    val catalog: CatalogFeature
+    private val catalogRepository: CatalogRepository
 
     init {
         val config = backendConfiguration()
@@ -63,6 +71,7 @@ class AppEnvironment(context: Context) {
             profileRepository = SupabaseProfileRepository(dataClient)
             contentRepository = SupabaseContentRepository(dataClient)
             analytics = makeAnalytics(dataClient)
+            catalogRepository = RemoteCatalogRepository(dataClient)
         } else {
             // No backend values: everything runs on in-memory mocks.
             supabaseAuth = null
@@ -70,7 +79,31 @@ class AppEnvironment(context: Context) {
             profileRepository = MockProfileRepository()
             contentRepository = MockContentRepository()
             analytics = AnalyticsRecorder.disabled
+            catalogRepository = MockCatalogRepository()
         }
+        catalog = CatalogFeature(
+            repository = catalogRepository,
+            context = CatalogContext(citySummary = allCitiesLabel()),
+            openCityPicker = { session.isPickingCities = true },
+            requireSignIn = { session.isPresentingAuth = true },
+            mapsAvailable = BuildConfig.MAPS_API_KEY.isNotBlank(),
+        )
+    }
+
+    private fun allCitiesLabel() = RemoteStrings.string("cities.all", context.getString(R.string.cities_all))
+
+    /**
+     * Mirrors who is signed in and which cities are chosen into the catalog, which reloads its
+     * screens when these change.
+     */
+    fun refreshCatalogContext() {
+        val ctx = catalog.context
+        val wasGuest = ctx.isGuest
+        ctx.isGuest = !session.hasAccount
+        ctx.displayName = session.user?.displayName
+        ctx.cityIds = cities.queryCityIds
+        ctx.citySummary = cities.summary(allCitiesLabel())
+        if (wasGuest != ctx.isGuest) catalog.accountChanged()
     }
 
     /** Supabase needs the anon key on every request plus a bearer (the anon key until sign-in). */
@@ -131,12 +164,14 @@ class AppEnvironment(context: Context) {
             is AuthState.Authenticated -> signedIn(state.user)
         }
         session.isPresentingAuth = false
+        refreshCatalogContext()
     }
 
     private suspend fun signedIn(user: User) {
         val isAnonymous = supabaseAuth?.currentUserIsAnonymous() ?: false
         session.state = AppSession.State.SignedIn(AppSession.SessionUser(user.id, user.role, isAnonymous, user.displayName))
         syncProfile()
+        refreshCatalogContext()
     }
 
     /** Refreshes the role, name and saved cities from the server profile. */
@@ -157,12 +192,14 @@ class AppEnvironment(context: Context) {
         )
         session.state = AppSession.State.SignedIn(current)
         cities.restore(profile.cityIds)
+        refreshCatalogContext()
     }
 
     suspend fun signOut() {
         supabaseAuth?.signOut()
         session.state = AppSession.State.SignedOut
         cities.restore(emptyList())
+        refreshCatalogContext()
     }
 
     // Remote config, strings, cities
@@ -180,12 +217,16 @@ class AppEnvironment(context: Context) {
     }
 
     suspend fun loadCities() {
-        runCatching { contentRepository.fetchCities() }.getOrNull()?.let { cities.available = it }
+        runCatching { contentRepository.fetchCities() }.getOrNull()?.let {
+            cities.available = it
+            refreshCatalogContext()
+        }
     }
 
     /** Saves the bride's city choice ("All" = empty list) to her profile. */
     fun saveCities() {
         val ids = if (cities.isAll) emptyList() else cities.selected.sorted()
+        refreshCatalogContext()
         analytics(AnalyticsEvent.CityFilterChanged, props = mapOf("cities" to if (cities.isAll) "all" else ids.joinToString(",")))
         if (!session.hasAccount) return
         scope.launch { runCatching { profileRepository.setMyCities(ids) } }

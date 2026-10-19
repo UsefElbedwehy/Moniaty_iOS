@@ -31,6 +31,9 @@ class AppSession {
     /** Set when a guest taps something that needs an account (book, favorite, review, report). */
     var isPresentingAuth by mutableStateOf(false)
 
+    /** Set when a screen asks for the city picker (Home's city button). */
+    var isPickingCities by mutableStateOf(false)
+
     val user: SessionUser? get() = (state as? State.SignedIn)?.user
 
     /** A real (non-anonymous) account. */

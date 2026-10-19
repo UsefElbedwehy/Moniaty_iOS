@@ -8,8 +8,11 @@ plugins {
 }
 
 // Backend values (the Android twin of App/Resources/BackendConfig.plist).
+// `./gradlew :app:installDebug -Pmock` builds without them: everything runs on in-memory mocks.
 val backend = Properties().apply {
-    rootProject.file("backend.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+    if (!project.hasProperty("mock")) {
+        rootProject.file("backend.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
+    }
 }
 
 android {
@@ -24,6 +27,10 @@ android {
         versionName = "1.0"
         buildConfigField("String", "SUPABASE_URL", "\"${backend.getProperty("SUPABASE_URL", "")}\"")
         buildConfigField("String", "SUPABASE_ANON_KEY", "\"${backend.getProperty("SUPABASE_ANON_KEY", "")}\"")
+        // Google Maps for Explore (an Android key restricted to co.munyati.app). Empty = no map.
+        val mapsKey = backend.getProperty("MAPS_API_KEY", "")
+        buildConfigField("String", "MAPS_API_KEY", "\"$mapsKey\"")
+        manifestPlaceholders["MAPS_API_KEY"] = mapsKey
     }
 
     buildTypes {
@@ -55,6 +62,7 @@ dependencies {
     implementation(project(":shared"))
     implementation(project(":designsystem"))
     implementation(project(":authentication"))
+    implementation(project(":features:catalog"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)

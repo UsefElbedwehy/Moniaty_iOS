@@ -13,11 +13,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.outlined.Language
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.LocationCity
 import androidx.compose.material.icons.outlined.PersonAddAlt
 import androidx.compose.material3.AlertDialog
@@ -43,6 +46,8 @@ import co.munyati.app.R
 import co.munyati.app.composition.AppEnvironment
 import co.munyati.app.composition.l10n
 import co.munyati.authentication.domain.UserRole
+import co.munyati.catalog.presentation.FavoritesRoute
+import co.munyati.shared.navigation.LocalNavigator
 import co.munyati.designsystem.components.DSCard
 import co.munyati.designsystem.components.LargeHeaderBar
 import co.munyati.designsystem.theme.DS
@@ -50,9 +55,8 @@ import co.munyati.designsystem.theme.DSSpacing
 import kotlinx.coroutines.launch
 
 /**
- * Profile & settings, shared by both roles. Foundation version: identity, cities, language, sign
- * out and version. Legal pages, support, favorites, budget and account deletion arrive with their
- * features (Catalog, Trust).
+ * Profile & settings, shared by both roles: identity, the bride's favorites, budget and cities,
+ * language, sign out and version. Legal pages, support and account deletion arrive with Trust.
  */
 @Composable
 fun ProfileScreen(environment: AppEnvironment) {
@@ -61,9 +65,11 @@ fun ProfileScreen(environment: AppEnvironment) {
     val scope = rememberCoroutineScope()
     var confirmSignOut by remember { mutableStateOf(false) }
     var showCities by remember { mutableStateOf(false) }
+    var showBudget by remember { mutableStateOf(false) }
+    val navigator = LocalNavigator.current
 
     Column(Modifier.fillMaxSize().background(DS.colors.background)) {
-        LargeHeaderBar(l10n(R.string.tab_profile))
+        LargeHeaderBar(l10n(R.string.tab_profile), Modifier.statusBarsPadding())
         Column(
             Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(DSSpacing.md),
             verticalArrangement = Arrangement.spacedBy(DSSpacing.md),
@@ -83,6 +89,13 @@ fun ProfileScreen(environment: AppEnvironment) {
             }
 
             if (session.role != UserRole.Provider) {
+                Section(l10n(R.string.profile_section_wedding)) {
+                    ProfileRow(l10n(R.string.profile_favorites), Icons.Outlined.FavoriteBorder) { navigator.navigate(FavoritesRoute) }
+                    HorizontalDivider(color = DS.colors.border)
+                    ProfileRow(l10n(R.string.profile_budget), Icons.Outlined.Payments) {
+                        if (session.hasAccount) showBudget = true else session.isPresentingAuth = true
+                    }
+                }
                 Section(l10n(R.string.profile_section_preferences)) {
                     ProfileRow(
                         l10n(R.string.profile_cities),
@@ -134,6 +147,7 @@ fun ProfileScreen(environment: AppEnvironment) {
     }
 
     if (showCities) CityPickerDialog(environment) { showCities = false }
+    if (showBudget) environment.catalog.BudgetEditor { showBudget = false }
 }
 
 @Composable
@@ -169,7 +183,7 @@ private fun ProfileRow(
 
 /** The bride's cities (`docs/PLAN.md` §4.9): «الكل» or any of the active cities. */
 @Composable
-private fun CityPickerDialog(environment: AppEnvironment, onDismiss: () -> Unit) {
+internal fun CityPickerDialog(environment: AppEnvironment, onDismiss: () -> Unit) {
     val cities = environment.cities
     AlertDialog(
         onDismissRequest = onDismiss,
