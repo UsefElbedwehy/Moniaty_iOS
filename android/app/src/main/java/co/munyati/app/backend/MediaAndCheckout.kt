@@ -108,3 +108,39 @@ class TapPlanCheckout(
         return json.decodeFromString(Response.serializer(), text)
     }
 }
+
+/**
+ * Payment receipts live in the private `receipts` bucket under `<bookingId>/`; the storage
+ * policies let only the booking's bride, its provider and admins read them. Same as iOS.
+ */
+class SupabaseReceiptStorage(
+    private val baseUrl: String,
+    private val anonKey: String,
+    private val accessToken: suspend () -> String?,
+    private val http: OkHttpClient = OkHttpClient(),
+) : co.munyati.booking.data.ReceiptStorage {
+    override suspend fun upload(jpeg: ByteArray, bookingId: String): String {
+        val path = "$bookingId/${UUID.randomUUID()}.jpg"
+        val request = authorized("storage/v1/object/receipts/$path").post(jpeg.toRequestBody("image/jpeg".toMediaType())).build()
+        execute(request, "Receipt upload failed.")
+        return path
+    }
+
+    override suspend fun download(path: String): ByteArray =
+        execute(authorized("storage/v1/object/authenticated/receipts/$path").get().build(), "Receipt download failed.")
+
+    private suspend fun authorized(path: String): Request.Builder {
+        val token = accessToken() ?: throw AppError.Authentication(AppError.AuthFailureReason.NotAuthenticated)
+        return Request.Builder().url("${baseUrl.trimEnd('/')}/$path").header("apikey", anonKey).header("Authorization", "Bearer $token")
+    }
+
+    private suspend fun execute(request: Request, failure: String): ByteArray = withContext(Dispatchers.IO) {
+        val (code, bytes) = try {
+            http.newCall(request).execute().use { it.code to (it.body?.bytes() ?: ByteArray(0)) }
+        } catch (e: IOException) {
+            throw AppError.Network(AppError.NetworkFailureReason.NoConnection)
+        }
+        if (code !in 200..299) throw AppError.Server(code, failure)
+        bytes
+    }
+}

@@ -32,3 +32,4 @@ include(":authentication")
 // Feature modules, one per iOS package under Packages/Features.
 include(":features:catalog")
 include(":features:providerstudio")
+include(":features:booking")

@@ -28,14 +28,16 @@ in-memory mocks instead (sample catalog, OTP code `123456`).
 | `authentication` | `Packages/Authentication` | role → phone → OTP → name |
 | `features/catalog` | `Packages/Features/Catalog` | bride discovery: Home, search, category lists, service/provider/store pages, favorites, budget, Explore map |
 | `features/providerstudio` | `Packages/Features/ProviderStudio` | provider Home: status, setup checklist, business profile (join form), services, stores, photo upload, plans with Tap checkout (Custom Tabs), insights |
+| `features/booking` | `Packages/Features/Booking` | requests with free slots, the booking lifecycle for both roles, receipts (private storage, SHA-256), disputes, working hours, payout methods |
 | `app` | `App/` | composition root (`AppEnvironment`), Supabase repositories, session, deep links, shells |
 
-Feature modules still to port: `booking`, `trust` (one per iOS package).
+Feature module still to port: `trust` (one per iOS package).
 
 ## Rules
 - **iOS is the source of truth for text.** Edit the iOS `.strings`, then run
   `python3 tools/sync_strings.py`; it regenerates every `strings_ios.xml` (Arabic in `values/`,
-  English in `values-en/`). Don't edit the generated files.
+  English in `values-en/`). Don't edit the generated files. Modules that build keys at run time
+  (Booking, App) also get a generated key map (`bookingKeys`, `l10nKeys`).
 - Brand vectors come from the iOS SVGs via `tools/svg_to_vector.py`.
 - Same conventions as iOS: DS tokens only, no literals; one `ViewState` per screen; the app module
   is the only place that knows the backend is Supabase; plain HTTPS, no Supabase SDK.

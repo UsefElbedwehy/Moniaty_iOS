@@ -30,6 +30,18 @@ import co.munyati.providerstudio.data.MockPlanCheckout
 import co.munyati.providerstudio.data.MockStudioRepository
 import co.munyati.providerstudio.data.RemoteStudioRepository
 import co.munyati.providerstudio.presentation.StudioFeature
+import co.munyati.providerstudio.presentation.StudioSettingsLink
+import co.munyati.app.backend.SupabaseReceiptStorage
+import co.munyati.booking.data.BookingRepository
+import co.munyati.booking.data.MockBookingRepository
+import co.munyati.booking.data.MockReceiptStorage
+import co.munyati.booking.data.ReceiptStorage
+import co.munyati.booking.data.RemoteBookingRepository
+import co.munyati.booking.domain.BookableService
+import co.munyati.booking.presentation.AvailabilityRoute
+import co.munyati.booking.presentation.BookingFeature
+import co.munyati.booking.presentation.PaymentMethodsRoute
+import co.munyati.catalog.domain.ServiceCard
 import co.munyati.core.configuration.ConfigurationRepository
 import co.munyati.networking.ApiClient
 import co.munyati.networking.ApiEndpoint
@@ -68,6 +80,9 @@ class AppEnvironment(private val context: Context) {
     val catalog: CatalogFeature
     private val catalogRepository: CatalogRepository
     val studio: StudioFeature
+    val booking: BookingFeature
+    private val bookingRepository: BookingRepository
+    private val receiptStorage: ReceiptStorage
 
     init {
         val config = backendConfiguration()
@@ -86,6 +101,8 @@ class AppEnvironment(private val context: Context) {
                 checkout = TapPlanCheckout(config.baseUrl, BuildConfig.SUPABASE_ANON_KEY, { auth.currentAccessToken() }),
                 mapsAvailable = BuildConfig.MAPS_API_KEY.isNotBlank(),
             )
+            bookingRepository = RemoteBookingRepository(dataClient)
+            receiptStorage = SupabaseReceiptStorage(config.baseUrl, BuildConfig.SUPABASE_ANON_KEY, { auth.currentAccessToken() })
         } else {
             // No backend values: everything runs on in-memory mocks.
             supabaseAuth = null
@@ -96,6 +113,9 @@ class AppEnvironment(private val context: Context) {
             catalogRepository = MockCatalogRepository()
             val studioRepository = MockStudioRepository()
             studio = StudioFeature(studioRepository, MockMediaUploader(), MockPlanCheckout(studioRepository), BuildConfig.MAPS_API_KEY.isNotBlank())
+            // One mock shared by both shells, so a bride's request reaches the provider inbox.
+            bookingRepository = MockBookingRepository()
+            receiptStorage = MockReceiptStorage()
         }
         catalog = CatalogFeature(
             repository = catalogRepository,
@@ -104,6 +124,30 @@ class AppEnvironment(private val context: Context) {
             requireSignIn = { session.isPresentingAuth = true },
             mapsAvailable = BuildConfig.MAPS_API_KEY.isNotBlank(),
         )
+        booking = BookingFeature(
+            repository = bookingRepository,
+            receipts = receiptStorage,
+            remainingBudget = { catalog.remainingBudget },
+            onBookingsChanged = { catalog.refreshBudget() },
+            onBookingCreated = { id -> open(DeepLink.Booking(id)) },
+        )
+        catalog.setBookingHandler(::requestBooking)
+        studio.setSettingsRoutes { link ->
+            when (link) {
+                StudioSettingsLink.Availability -> AvailabilityRoute
+                StudioSettingsLink.PaymentMethods -> PaymentMethodsRoute
+            }
+        }
+    }
+
+    /** "Book" on a service: guests sign in first, providers can't book, brides get the request. */
+    private fun requestBooking(card: ServiceCard) {
+        if (!session.hasAccount) {
+            session.isPresentingAuth = true
+            return
+        }
+        if (session.role == UserRole.Provider) return
+        session.bookingRequest = BookableService(card.id, card.title, card.price, card.providerName)
     }
 
     private fun allCitiesLabel() = RemoteStrings.string("cities.all", context.getString(R.string.cities_all))

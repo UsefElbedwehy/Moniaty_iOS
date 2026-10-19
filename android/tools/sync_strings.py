@@ -12,14 +12,17 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]          # repo root
 ANDROID = ROOT / "android"
 
-# iOS strings folder -> (Android module, resource-name prefix to avoid clashes, generate key map?)
+# iOS strings folder -> (Android module, resource-name prefix to avoid clashes, key map to generate)
+# A key map ("package.Name") is a Kotlin map from the iOS key to the resource id, for modules that
+# look strings up by a computed key (iOS `L10n.string("status.\(raw)")`).
 MODULES = [
-    ("Packages/DesignSystem/Sources/DesignSystem/Resources", "designsystem", "ds_", False),
-    ("Packages/Shared/Sources/Shared/Resources", "shared", "shared_", False),
-    ("Packages/Authentication/Sources/Authentication/Resources", "authentication", "", False),
-    ("Packages/Features/Catalog/Sources/Catalog/Resources", "features/catalog", "catalog_", False),
-    ("Packages/Features/ProviderStudio/Sources/ProviderStudio/Resources", "features/providerstudio", "studio_", False),
-    ("App/Localization", "app", "", True),
+    ("Packages/DesignSystem/Sources/DesignSystem/Resources", "designsystem", "ds_", None),
+    ("Packages/Shared/Sources/Shared/Resources", "shared", "shared_", None),
+    ("Packages/Authentication/Sources/Authentication/Resources", "authentication", "", None),
+    ("Packages/Features/Catalog/Sources/Catalog/Resources", "features/catalog", "catalog_", None),
+    ("Packages/Features/ProviderStudio/Sources/ProviderStudio/Resources", "features/providerstudio", "studio_", None),
+    ("Packages/Features/Booking/Sources/Booking/Resources", "features/booking", "booking_", "co.munyati.booking.presentation.bookingKeys"),
+    ("App/Localization", "app", "", "co.munyati.app.composition.l10nKeys"),
 ]
 
 ENTRY = re.compile(r'^\s*"((?:[^"\\]|\\.)+)"\s*=\s*"((?:[^"\\]|\\.)*)"\s*;', re.M)
@@ -63,14 +66,15 @@ def main():
         write(res / "values", {**en, **ar}, prefix, header)   # Arabic default; English fills gaps
         write(res / "values-en", en, prefix, header)
         if keymap:
-            # Dashboard overrides (RemoteStrings) are keyed by the iOS key; map resource ids back.
-            kt = ANDROID / module / "src/main/java/co/munyati/app/composition/L10nKeys.kt"
-            body = "\n".join(f'    R.string.{k.replace(".", "_")} to "{k}",' for k in sorted(en))
+            package, name = keymap.rsplit(".", 1)
+            r_package = {"app": "co.munyati.app"}.get(module, "co.munyati." + module.split("/")[-1])
+            kt = ANDROID / module / "src/main/java" / package.replace(".", "/") / (name[0].upper() + name[1:] + ".kt")
+            body = "\n".join(f'    "{k}" to R.string.{prefix}{k.replace(".", "_")},' for k in sorted(en))
             kt.parent.mkdir(parents=True, exist_ok=True)
             kt.write_text(
-                f"// {header}\npackage co.munyati.app.composition\n\nimport co.munyati.app.R\n\n"
-                "/** App string resource id -> the iOS/dashboard key used by `app_strings` overrides. */\n"
-                f"internal val l10nKeys: Map<Int, String> = mapOf(\n{body}\n)\n",
+                f"// {header}\npackage {package}\n\nimport {r_package}.R\n\n"
+                "/** iOS string key -> resource id, for keys built at run time. */\n"
+                f"internal val {name}: Map<String, Int> = mapOf(\n{body}\n)\n",
                 encoding="utf-8")
         print(f"{module}: {len(ar)} ar / {len(en)} en")
 

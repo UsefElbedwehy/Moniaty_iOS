@@ -34,6 +34,9 @@ class AppSession {
     /** Set when a screen asks for the city picker (Home's city button). */
     var isPickingCities by mutableStateOf(false)
 
+    /** The service a bride tapped "Book" on; the shell opens the request screen. */
+    var bookingRequest by mutableStateOf<co.munyati.booking.domain.BookableService?>(null)
+
     val user: SessionUser? get() = (state as? State.SignedIn)?.user
 
     /** A real (non-anonymous) account. */

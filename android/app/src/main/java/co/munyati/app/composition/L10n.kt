@@ -12,5 +12,8 @@ import co.munyati.shared.localization.RemoteStrings
 @Composable
 fun l10n(@StringRes id: Int): String {
     val bundled = stringResource(id)
-    return l10nKeys[id]?.let { RemoteStrings.string(it, bundled) } ?: bundled
+    return keyById[id]?.let { RemoteStrings.string(it, bundled) } ?: bundled
 }
+
+/** Resource id -> the iOS/dashboard key used by `app_strings` overrides. */
+private val keyById: Map<Int, String> by lazy { l10nKeys.entries.associate { (key, id) -> id to key } }

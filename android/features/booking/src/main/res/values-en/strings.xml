@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="booking_back">Back</string>
+    <string name="booking_close">Close</string>
+    <string name="booking_delete">Delete</string>
+    <string name="booking_delete_confirm">Delete permanently?</string>
+    <string name="booking_pickDate">Date</string>
+    <string name="booking_pickTime">Time</string>
+</resources>

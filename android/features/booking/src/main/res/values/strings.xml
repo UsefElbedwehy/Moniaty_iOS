@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android-only Booking strings (everything else comes from iOS via tools/sync_strings.py). -->
+<resources>
+    <string name="booking_back">رجوع</string>
+    <string name="booking_close">إغلاق</string>
+    <string name="booking_delete">حذف</string>
+    <string name="booking_delete_confirm">حذف نهائياً؟</string>
+    <string name="booking_pickDate">التاريخ</string>
+    <string name="booking_pickTime">الوقت</string>
+</resources>
