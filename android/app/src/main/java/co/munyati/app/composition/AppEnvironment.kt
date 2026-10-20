@@ -2,6 +2,10 @@ package co.munyati.app.composition
 
 import android.content.Context
 import android.os.Build
+import android.os.Bundle
+import co.munyati.app.push.Push
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import co.munyati.app.BuildConfig
 import co.munyati.app.backend.ContentRepository
 import co.munyati.app.backend.MockConfigurationRepository
@@ -223,9 +227,21 @@ class AppEnvironment(private val context: Context) {
 
     // Analytics
 
-    /** Curated events and handled errors → Postgres (Firebase joins when the Android app is added). */
+    /** Firebase Analytics, when the Android app's google-services.json is present. */
+    private val firebase: FirebaseAnalytics? =
+        if (Push.isAvailable(context)) FirebaseAnalytics.getInstance(context) else null
+
+    /** Curated events → Postgres + Firebase; screens → Firebase; errors → Crashlytics + Postgres (as iOS). */
     private fun makeAnalytics(client: ApiClient) = AnalyticsRecorder(
         onEvent = { event, entityId, context, props ->
+            firebase?.let { fb ->
+                val params = Bundle().apply {
+                    props.forEach { (key, value) -> putString(key, value) }
+                    entityId?.let { putString("entity_id", it) }
+                    context?.let { putString("context", it) }
+                }
+                fb.logEvent(event.rawValue, params)
+            }
             scope.launch {
                 runCatching {
                     client.send<RecordAnalyticsEventArgs, EmptyResponse>(
@@ -235,8 +251,13 @@ class AppEnvironment(private val context: Context) {
                 }
             }
         },
-        onScreen = { },
+        onScreen = { name ->
+            firebase?.logEvent(FirebaseAnalytics.Event.SCREEN_VIEW, Bundle().apply { putString(FirebaseAnalytics.Param.SCREEN_NAME, name) })
+        },
         onError = { code, message, screen ->
+            if (firebase != null) {
+                FirebaseCrashlytics.getInstance().recordException(RuntimeException("$code: $message (screen: ${screen ?: "-"})"))
+            }
             scope.launch {
                 runCatching {
                     client.send<LogClientErrorArgs, EmptyResponse>(
@@ -300,6 +321,16 @@ class AppEnvironment(private val context: Context) {
         session.state = AppSession.State.SignedIn(current)
         cities.restore(profile.cityIds)
         refreshCatalogContext()
+        firebase?.setUserProperty("role", current.role?.rawValue)
+        if (firebase != null) FirebaseCrashlytics.getInstance().setUserId(profile.id)
+        // A token that arrived before sign-in is registered again once a user exists.
+        Push.currentToken(context, ::registerDeviceToken)
+    }
+
+    /** Sends this device's FCM token to the server (`register_device_token`, platform "android"). */
+    fun registerDeviceToken(token: String) {
+        if (session.user == null) return
+        scope.launch { runCatching { profileRepository.registerDeviceToken(token) } }
     }
 
     suspend fun signOut() {

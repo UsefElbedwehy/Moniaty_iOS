@@ -1,4 +1,4 @@
-# What the owner must do (phases 0–7)
+# What the owner must do (phases 0–9)
 
 Everything below is outside the code: accounts, keys, uploads and decisions. Nothing here is done
 yet. Do them roughly in this order; items marked ⏳ take weeks, so start them first.
@@ -60,7 +60,11 @@ yet. Do them roughly in this order; items marked ⏳ take weeks, so start them f
 - [ ] Put the Supabase URL + anon key in `website/config.js`.
 - [ ] Deploy `website/` (Vercel or Cloudflare Pages, free) and point **munyati.co** DNS to it.
 - [ ] After the App Store listing exists, put the App Store link in `website/config.js`.
-- [ ] Deploy the dashboard (`dashboard/`, Vercel) on e.g. `admin.munyati.co`.
+- [x] Deploy the dashboard (`dashboard/`, Vercel): live at https://munyati-admin.vercel.app
+      (add `admin.munyati.co` with `vercel domains add admin.munyati.co` + the CNAME it shows).
+- [ ] After the first Play upload, put the **Play app signing SHA-256** in
+      `website/.well-known/assetlinks.json` (Play Console → Test and release → App integrity), so
+      munyati.co links open the Android app.
 
 ## 7. Before App Store submission (PLAN §11)
 - [ ] 3 demo accounts with fixed OTP (bride, subscribed provider, new provider) via `DEV_PHONES`.
@@ -69,3 +73,24 @@ yet. Do them roughly in this order; items marked ⏳ take weeks, so start them f
 - [ ] Privacy labels in App Store Connect, screenshots, name «منيتي - Munyati», subtitle.
 - [ ] Optional but recommended: book a free App Review consultation with Apple about Tap.
 - [ ] TestFlight with real providers in Dammam / Khobar / Qatif.
+
+## 8. Android (Phase 9) — see `android/README.md`
+- [ ] **Google Play developer account** for the company (25 USD once; needs the CR / D-U-N-S).
+- [ ] **Firebase:** in the same Firebase project as iOS, add an Android app with package
+      `co.munyati.app`, download **google-services.json** and put it in `android/app/`. That turns
+      on push, Firebase Analytics and Crashlytics; nothing else changes.
+- [ ] **Redeploy `send-push`** (it now names the Android notification channel):
+      `supabase functions deploy send-push`.
+- [ ] **Google Maps key** (Explore map + location pickers): Google Cloud → enable "Maps SDK for
+      Android" → create a key restricted to `co.munyati.app` + your signing SHA-1 → put it in
+      `android/backend.properties` as `MAPS_API_KEY`.
+- [ ] **Upload key** (keep it safe; it signs every Play upload):
+      `keytool -genkeypair -v -keystore munyati-upload.jks -alias upload -keyalg RSA -keysize 2048 -validity 10000`,
+      then create `android/keystore.properties` (storeFile, storePassword, keyAlias, keyPassword).
+      Both stay out of git. Turn on **Play App Signing** when you create the app.
+- [ ] Build the bundle: `cd android && ./gradlew :app:bundleRelease` → upload
+      `app/build/outputs/bundle/release/app-release.aab` to an internal testing track.
+- [ ] Play listing: name «منيتي - Munyati», short description, screenshots, **Data safety** form
+      (phone number, name, photos, payment receipts, approximate location; account deletion is
+      in the app and on munyati.co/delete-account), content rating, target audience.
+- [ ] Decide on Play Billing vs Tap for provider plans (PLAN §16 #12) before production.

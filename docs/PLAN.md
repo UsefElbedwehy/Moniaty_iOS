@@ -369,8 +369,10 @@ Bilingual static site in the Munyati brand:
   receipt upload, confirm or reject payment, completion, cancellation, disputes, working hours and
   payout methods. Trust ported (`android/features/trust`): reviews both ways, report and block,
   support tickets, blocked accounts; Profile gains the CMS legal pages and in-app account deletion.
-  All four feature packages are now on Android. Next: FCM push, App Links (`assetlinks.json`),
-  then the Play Console listing.
+  All four feature packages are now on Android. Push (FCM) and Firebase Analytics/Crashlytics are
+  wired and switch on with `google-services.json`; App Links and release signing are set up.
+  Remaining: the owner's Play account, Firebase Android app, Maps key and upload key
+  (`docs/OWNER_TODO.md` §8), then internal testing on Play.
 
 ## 13. Design approach (answer to "premium app or Claude Design?")
 - **I can design it here.** The brand already has a palette (burgundy `#8A0D3A`, gold `#DFC389`, cream `#F2E5D2`, ivory `#FAFAEC`) and a logo.

@@ -1,6 +1,11 @@
 package co.munyati.app
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.activity.result.contract.ActivityResultContracts
+import co.munyati.app.push.Push
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,7 +22,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        if (savedInstanceState == null) handle(intent)
+        if (savedInstanceState == null) {
+            handle(intent)
+            askForNotifications()
+        }
         setContent {
             MunyatiTheme {
                 CompositionLocalProvider(LocalAnalytics provides environment.analytics) {
@@ -32,9 +40,20 @@ class MainActivity : ComponentActivity() {
         handle(intent)
     }
 
+    private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) Push.currentToken(this, environment::registerDeviceToken)
+    }
+
+    /** Asks once at launch, like iOS (Android 13+ needs the runtime permission). */
+    private fun askForNotifications() {
+        if (!Push.isAvailable(this) || Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) return
+        notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
     /** App Links, `munyati://` links and (later) notification taps carrying `deep_link`. */
     private fun handle(intent: Intent?) {
-        val link = DeepLink.from(intent?.data) ?: DeepLink.from(intent?.getStringExtra("deep_link"))
+        val link = DeepLink.from(intent?.data) ?: DeepLink.from(intent?.getStringExtra(Push.EXTRA_DEEP_LINK))
         environment.open(link)
     }
 }

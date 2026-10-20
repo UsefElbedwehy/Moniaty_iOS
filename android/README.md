@@ -44,5 +44,7 @@ All four iOS feature packages are ported.
   is the only place that knows the backend is Supabase; plain HTTPS, no Supabase SDK.
 - Each tab has its own NavHost; features push their `@Serializable` routes through `LocalNavigator`
   (the App provides it per tab), like iOS pushing routes onto a tab's NavigationStack.
-- Not wired yet: Firebase (needs an Android app `co.munyati.app` in the Firebase project and its
-  `google-services.json`), push (FCM), App Links verification (`website/.well-known/assetlinks.json`).
+- Firebase (FCM push, Analytics, Crashlytics) switches on when `app/google-services.json` exists;
+  without it the app builds and runs with push off. Notifications carry `deep_link` like iOS.
+- App Links need the Play signing SHA-256 in `website/.well-known/assetlinks.json`.
+- Release signing reads `keystore.properties` (not in git). See `docs/OWNER_TODO.md` §8.

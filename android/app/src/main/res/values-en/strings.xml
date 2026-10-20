@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="launcher_name">Munyati</string>
+    <string name="push_channel_name">Bookings and alerts</string>
 </resources>

@@ -169,6 +169,13 @@ async function sendToToken(accessToken: string, deviceToken: string, record: Not
             ...(record.image_url ? { image: record.image_url } : {}),
             ...(record.subtitle ? { subtitle: record.subtitle } : {}),
           },
+          // Android: the channel the app creates (MunyatiApplication), so background
+          // notifications get its importance and sound. The tap opens the app with the data
+          // fields as extras, and the app reads `deep_link` from them.
+          android: {
+            priority: "HIGH",
+            notification: { channel_id: "munyati_default", sound: "default" },
+          },
           apns: {
             payload: {
               aps: {

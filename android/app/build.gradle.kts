@@ -7,12 +7,29 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
+// Firebase (push, analytics, Crashlytics) switches on once the Android app's
+// google-services.json is in app/ — the same Firebase project as iOS. Without it the app builds
+// and runs; push and Firebase analytics are simply off.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
+}
+
 // Backend values (the Android twin of App/Resources/BackendConfig.plist).
 // `./gradlew :app:installDebug -Pmock` builds without them: everything runs on in-memory mocks.
 val backend = Properties().apply {
     if (!project.hasProperty("mock")) {
         rootProject.file("backend.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
     }
+}
+
+// Release signing (the Play upload key) from keystore.properties, which stays out of git:
+//   storeFile=/absolute/path/munyati-upload.jks
+//   storePassword=…
+//   keyAlias=upload
+//   keyPassword=…
+val keystore = Properties().apply {
+    rootProject.file("keystore.properties").takeIf { it.exists() }?.inputStream()?.use { load(it) }
 }
 
 android {
@@ -33,8 +50,20 @@ android {
         manifestPlaceholders["MAPS_API_KEY"] = mapsKey
     }
 
+    signingConfigs {
+        if (keystore.getProperty("storeFile") != null) {
+            create("release") {
+                storeFile = file(keystore.getProperty("storeFile"))
+                storePassword = keystore.getProperty("storePassword")
+                keyAlias = keystore.getProperty("keyAlias")
+                keyPassword = keystore.getProperty("keyPassword")
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfigs.findByName("release")?.let { signingConfig = it }
             isMinifyEnabled = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
@@ -74,6 +103,12 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.security.crypto)
     implementation(libs.okhttp)
+    // Firebase pulls an old Fragment; ActivityResult (the notification permission) needs 1.3+.
+    implementation(libs.androidx.fragment)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
     testImplementation(libs.junit)
 }
