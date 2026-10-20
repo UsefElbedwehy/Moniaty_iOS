@@ -41,3 +41,37 @@ private struct SparkleShape: Shape {
         return p
     }
 }
+
+/// The burgundy brand header behind the top of Home and Profile: the primary gradient with
+/// rounded bottom corners, a faint gold ring watermark and two sparkles. Content sits on top in
+/// white (and gold for ornaments).
+public struct DSBrandHeroBackground: View {
+    public init() {}
+
+    public var body: some View {
+        let shape = UnevenRoundedRectangle(bottomLeadingRadius: DSRadius.sheet + 6, bottomTrailingRadius: DSRadius.sheet + 6)
+        shape
+            .fill(DSGradient.primary)
+            .overlay(alignment: .topTrailing) {
+                DSBrand.ring
+                    .renderingMode(.template)
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(Color.dsPremiumGold.opacity(0.14))
+                    .frame(width: 230, height: 230)
+                    .rotationEffect(.degrees(12))
+                    .offset(x: 60, y: -30)
+            }
+            // Sparkles on the ring's side, away from the text that starts at the leading edge.
+            .overlay(alignment: .bottomTrailing) {
+                VStack(alignment: .trailing, spacing: DSSpacing.sm) {
+                    DSSparkle(size: 14).opacity(0.8)
+                    DSSparkle(size: 9).opacity(0.6).padding(.trailing, DSSpacing.lg)
+                }
+                .padding(.trailing, 48)
+                .padding(.bottom, 64)
+            }
+            .clipShape(shape)
+            .accessibilityHidden(true)
+    }
+}

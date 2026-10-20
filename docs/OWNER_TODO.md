@@ -94,3 +94,9 @@ yet. Do them roughly in this order; items marked ⏳ take weeks, so start them f
       (phone number, name, photos, payment receipts, approximate location; account deletion is
       in the app and on munyati.co/delete-account), content rating, target audience.
 - [ ] Decide on Play Billing vs Tap for provider plans (PLAN §16 #12) before production.
+
+## 9. Home v2 and Profile v2 (carousel banners)
+- [ ] Apply `supabase/migrations/20261018000000_home_banners.sql` to the live project (SQL editor or `supabase db push`). Until then the apps show only the built-in brand slides.
+- [ ] Redeploy the dashboard (Vercel) so **بنرات الرئيسية / Home banners** appears; add banners there (image 2:1, up to 1 MB; link such as `https://munyati.co/c/makeup`).
+- [ ] Make sure `https://munyati.co/providers` explains how providers join: Home's "تقدّمين خدمات للعرائس؟" card opens it.
+- [ ] Optional: add `social_links` (instagram, tiktok, snapchat, x, whatsapp) in Settings → remote config to show the "تابعينا" icons in Profile.

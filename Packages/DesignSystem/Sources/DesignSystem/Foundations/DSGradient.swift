@@ -5,8 +5,11 @@ import SwiftUI
 /// and business-avatar circles. Fixed literal stops (not asset-catalog colors) since these
 /// are decorative accents layered over both light and dark surfaces alike.
 public enum DSGradient {
+    /// The first stop of `primary`: paints the status bar above a brand hero so the two meet seamlessly.
+    public static let primaryStart = Color(red: 0.604, green: 0.078, blue: 0.267)
+
     public static let primary = LinearGradient(
-        colors: [Color(red: 0.604, green: 0.078, blue: 0.267), Color(red: 0.431, green: 0.039, blue: 0.180)],
+        colors: [primaryStart, Color(red: 0.431, green: 0.039, blue: 0.180)],
         startPoint: .topLeading,
         endPoint: .bottomTrailing
     )

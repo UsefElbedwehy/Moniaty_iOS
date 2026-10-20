@@ -24,6 +24,7 @@ class AppSession {
         val role: UserRole?,
         val isAnonymous: Boolean,
         val displayName: String?,
+        val phone: String? = null,
     )
 
     var state: State by mutableStateOf(State.Checking)

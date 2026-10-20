@@ -40,7 +40,9 @@ object DSGradient {
     private fun diagonal(from: Color, to: Color) =
         Brush.linearGradient(listOf(from, to), start = Offset.Zero, end = Offset.Infinite)
 
-    val primary = diagonal(Color(0xFF9A1444), Color(0xFF6E0A2E))
+    /** The first stop of [primary]: paints the status bar above a brand hero so the two meet seamlessly. */
+    val primaryStart = Color(0xFF9A1444)
+    val primary = diagonal(primaryStart, Color(0xFF6E0A2E))
     val gold = diagonal(Color(0xFFE7CE9A), Color(0xFFCAAD71))
     val error = diagonal(Color(0xFFFF5952), Color(0xFFD60014))
 }

@@ -1,5 +1,7 @@
 package co.munyati.app.composition
 
+import android.net.Uri
+import android.content.Intent
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
@@ -84,6 +86,8 @@ class AppEnvironment(private val context: Context) {
     val session = AppSession()
     val remoteConfig = RemoteConfigStore(BuildConfig.VERSION_NAME)
     val cities = CityFilterStore()
+    /** Light, dark or follow the system, chosen in Profile. */
+    val appearance = AppearanceStore(context)
     val deepLink = DeepLinkStore()
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -160,6 +164,11 @@ class AppEnvironment(private val context: Context) {
             onBookingCreated = { id -> open(DeepLink.Booking(id)) },
         )
         catalog.setBookingHandler(::requestBooking)
+        // Home banners: app links go through the deep-link router, other pages to the browser.
+        catalog.setLinkHandlers(
+            openLink = { url -> DeepLink.from(url)?.let(::open) ?: openExternal(url) },
+            openProviderInvite = { openExternal("https://munyati.co/providers") },
+        )
         studio.setSettingsRoutes { link ->
             when (link) {
                 StudioSettingsLink.Availability -> AvailabilityRoute
@@ -317,6 +326,7 @@ class AppEnvironment(private val context: Context) {
             role = profile.role ?: (if (profile.isAnonymous) UserRole.Bride else current.role),
             isAnonymous = profile.isAnonymous,
             displayName = profile.displayName,
+            phone = profile.phone,
         )
         session.state = AppSession.State.SignedIn(current)
         cities.restore(profile.cityIds)
@@ -374,6 +384,13 @@ class AppEnvironment(private val context: Context) {
 
     fun open(link: DeepLink?) {
         link?.let { deepLink.pending = it }
+    }
+
+    /** Opens a web page (or the Play Store) outside the app. */
+    fun openExternal(url: String) {
+        runCatching {
+            context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+        }
     }
 
     val appVersionString: String get() = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"

@@ -1,5 +1,7 @@
 package co.munyati.catalog.presentation
 
+import co.munyati.designsystem.theme.DSGradient
+import androidx.compose.material.icons.outlined.Payments
 import android.icu.text.MeasureFormat
 import android.icu.util.Measure
 import android.icu.util.MeasureUnit
@@ -198,7 +200,11 @@ internal fun CategoryTile(category: CatalogCategory, modifier: Modifier = Modifi
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-        Box(Modifier.size(60.dp).clip(RoundedCornerShape(20.dp)).background(DS.colors.primaryMuted), contentAlignment = Alignment.Center) {
+        Box(
+            Modifier.size(64.dp).clip(CircleShape).background(DS.colors.primaryMuted)
+                .border(1.dp, DS.colors.premiumGold.copy(alpha = 0.55f), CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
             if (category.iconUrl != null) {
                 RemoteImage(category.iconUrl, Modifier.size(30.dp), contentScale = ContentScale.Fit)
             } else {
@@ -218,39 +224,44 @@ internal fun CategoryTile(category: CatalogCategory, modifier: Modifier = Modifi
     }
 }
 
-/** The burgundy budget card (mockup 2). Tapping it opens the editor. */
+/**
+ * The bride's budget card (Home v2): remaining amount and a gold progress bar on the surface color,
+ * so it stands apart from the burgundy hero above it. Tapping it opens the editor.
+ */
 @Composable
 internal fun BudgetCardView(budget: Budget?, onClick: () -> Unit) {
-    val foreground = DS.colors.background
+    val shape = RoundedCornerShape(DSRadius.card)
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(DSRadius.card))
-            .background(DS.colors.primary)
+            .fillMaxHeight()
+            .clip(shape)
+            .background(DS.colors.surface)
+            .border(1.dp, DS.colors.border, shape)
             .clickable(role = Role.Button, onClick = onClick)
-            .padding(DSSpacing.lg),
-        verticalArrangement = Arrangement.spacedBy(DSSpacing.sm),
+            .padding(DSSpacing.md),
+        verticalArrangement = Arrangement.spacedBy(DSSpacing.xs),
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(stringResource(R.string.catalog_budget_title), style = DS.type.subhead, color = foreground, modifier = Modifier.weight(1f))
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Icon(Icons.Outlined.Payments, contentDescription = null, tint = DS.colors.primary, modifier = Modifier.size(20.dp))
+            Text(stringResource(R.string.catalog_budget_title), style = DS.type.subhead, color = DS.colors.textSecondary, modifier = Modifier.weight(1f))
             Text(
                 stringResource(if (budget == null) R.string.catalog_budget_set else R.string.catalog_budget_edit),
                 style = DS.type.caption,
-                color = foreground,
-                modifier = Modifier.clip(RoundedCornerShape(DSRadius.pill)).background(Color.White.copy(alpha = 0.14f)).padding(horizontal = 10.dp, vertical = 4.dp),
+                color = DS.colors.primary,
+                modifier = Modifier.clip(RoundedCornerShape(DSRadius.pill)).background(DS.colors.primaryMuted).padding(horizontal = 10.dp, vertical = 4.dp),
             )
         }
         if (budget != null) {
-            Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
-                Text(formatSar(budget.remaining), style = DS.type.title2, color = foreground)
-                Text(stringResource(R.string.catalog_budget_remainingOf, formatSar(budget.total)), style = DS.type.footnote, color = foreground.copy(alpha = 0.85f))
+            Text(formatSar(budget.remaining), style = DS.type.title1, color = DS.colors.primary, maxLines = 1)
+            Text(stringResource(R.string.catalog_budget_remainingOf, formatSar(budget.total)), style = DS.type.footnote, color = DS.colors.textSecondary)
+            Spacer(Modifier.weight(1f))
+            Box(Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(DSRadius.pill)).background(DS.colors.primaryMuted)) {
+                Box(Modifier.fillMaxWidth(budget.usedFraction).fillMaxHeight().clip(RoundedCornerShape(DSRadius.pill)).background(DSGradient.gold))
             }
-            Box(Modifier.fillMaxWidth().height(8.dp).clip(RoundedCornerShape(DSRadius.pill)).background(Color.White.copy(alpha = 0.18f))) {
-                Box(Modifier.fillMaxWidth(budget.usedFraction).fillMaxHeight().clip(RoundedCornerShape(DSRadius.pill)).background(DS.colors.premiumGold))
-            }
-            Text(stringResource(R.string.catalog_budget_reserved, formatSar(budget.reserved)), style = DS.type.caption, color = foreground.copy(alpha = 0.9f))
+            Text(stringResource(R.string.catalog_budget_reserved, formatSar(budget.reserved)), style = DS.type.caption, color = DS.colors.textSecondary)
         } else {
-            Text(stringResource(R.string.catalog_budget_prompt), style = DS.type.footnote, color = foreground.copy(alpha = 0.9f))
+            Text(stringResource(R.string.catalog_budget_prompt), style = DS.type.footnote, color = DS.colors.textPrimary)
         }
     }
 }
@@ -264,7 +275,7 @@ internal fun ServiceCarousel(title: String, cards: List<ServiceCard>, feature: C
     val cardWidth = (170 * LocalConfiguration.current.fontScale).coerceAtMost(300f).dp
     Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.sm)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(title, style = DS.type.title2, color = DS.colors.textPrimary, modifier = Modifier.weight(1f))
+            HomeSectionTitle(title, Modifier.weight(1f))
             if (seeAll != null) {
                 Text(
                     stringResource(R.string.catalog_common_seeAll),

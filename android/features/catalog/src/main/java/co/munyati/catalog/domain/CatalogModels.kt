@@ -111,10 +111,33 @@ data class StoreDetail(
 
 @Serializable
 data class HomeContent(
+    /** Dashboard-managed carousel slides (absent from older responses). */
+    val banners: List<HomeBanner> = emptyList(),
     val categories: List<CatalogCategory> = emptyList(),
     val featured: List<ServiceCard> = emptyList(),
     val newest: List<ServiceCard> = emptyList(),
 )
+
+/**
+ * A Home carousel slide from the dashboard (`home_banners`). [linkUrl] is an app link
+ * (https://munyati.co/<p|s|store|c>/<id>) or an outside page.
+ */
+@Serializable
+data class HomeBanner(
+    val id: String,
+    val titleAr: String,
+    val titleEn: String,
+    val subtitleAr: String? = null,
+    val subtitleEn: String? = null,
+    val ctaAr: String? = null,
+    val ctaEn: String? = null,
+    val imageUrl: String? = null,
+    val linkUrl: String? = null,
+) {
+    val title: String get() = localized(titleAr, titleEn)
+    val subtitle: String? get() = localized(subtitleAr.orEmpty(), subtitleEn.orEmpty()).ifEmpty { null }
+    val cta: String? get() = localized(ctaAr.orEmpty(), ctaEn.orEmpty()).ifEmpty { null }
+}
 
 @Serializable
 data class MapPin(
@@ -129,6 +152,13 @@ data class MapPin(
 /** The bride's wedding budget (requirement 13). `reserved` is the sum of approved bookings. */
 @Serializable
 data class Budget(val total: Double, val reserved: Double, val remaining: Double, val weddingDate: String? = null) {
+    /** Whole days from today to the wedding date (0 on the day), null without a date or after it. */
+    fun daysUntilWedding(today: java.time.LocalDate = java.time.LocalDate.now()): Int? {
+        val day = weddingDate?.let { runCatching { java.time.LocalDate.parse(it) }.getOrNull() } ?: return null
+        val days = java.time.temporal.ChronoUnit.DAYS.between(today, day)
+        return if (days >= 0) days.toInt() else null
+    }
+
     /** 0…1, how much of the budget is reserved. */
     val usedFraction: Float get() = if (total <= 0) 0f else (reserved / total).toFloat().coerceIn(0f, 1f)
 }

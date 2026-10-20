@@ -2,6 +2,7 @@ package co.munyati.catalog.data
 
 import co.munyati.catalog.domain.Budget
 import co.munyati.catalog.domain.CatalogCategory
+import co.munyati.catalog.domain.HomeBanner
 import co.munyati.catalog.domain.HomeContent
 import co.munyati.catalog.domain.MapPin
 import co.munyati.catalog.domain.ProviderProfile
@@ -69,6 +70,13 @@ class MockCatalogRepository : CatalogRepository {
     override suspend fun home(cityIds: List<String>?, maxPrice: Double?) = mutex.withLock {
         val visible = services.filter { matches(it, cityIds) }
         HomeContent(
+            banners = listOf(
+                HomeBanner(
+                    id = "mock-banner", titleAr = "عروض موسم الأعراس", titleEn = "Wedding season offers",
+                    subtitleAr = "خصومات من مقدّمات خدمة مختارات", subtitleEn = "Discounts from selected providers",
+                    ctaAr = "تصفّحي المكياج", ctaEn = "Browse makeup", linkUrl = "https://munyati.co/c/makeup",
+                ),
+            ),
             categories = categories.map { c -> c.copy(serviceCount = visible.count { it.categoryId == c.id }) },
             featured = visible.filter { maxPrice == null || it.price <= maxPrice }.map(::card),
             newest = visible.reversed().map(::card),

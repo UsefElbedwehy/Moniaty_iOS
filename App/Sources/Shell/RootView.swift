@@ -7,6 +7,8 @@ import Authentication
 /// sign-in sheet a guest sees when she taps something that needs an account.
 struct RootView: View {
     let environment: AppEnvironment
+    /// Light, dark or follow the system, chosen in Profile.
+    @AppStorage(Appearance.storageKey) private var appearance: Appearance = .system
 
     var body: some View {
         @Bindable var session = environment.session
@@ -37,6 +39,7 @@ struct RootView: View {
         .sheet(isPresented: $session.isPresentingAuth) {
             AuthHost(environment: environment)
         }
+        .preferredColorScheme(appearance.colorScheme)
         .task {
             async let config: Void = environment.loadRemoteConfig()
             async let strings: Void = environment.loadRemoteStrings()
@@ -46,6 +49,23 @@ struct RootView: View {
             environment.analytics(.appOpen)
         }
     }
+}
+
+/// The app's color scheme setting (Profile → Appearance).
+enum Appearance: String, CaseIterable {
+    case system, light, dark
+
+    static let storageKey = "appearance"
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: nil
+        case .light: .light
+        case .dark: .dark
+        }
+    }
+
+    var titleKey: String { "profile.appearance.\(rawValue)" }
 }
 
 /// Owns one `AuthenticationFeature` for as long as it is on screen, so its navigation stack

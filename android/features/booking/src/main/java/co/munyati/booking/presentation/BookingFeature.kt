@@ -50,6 +50,15 @@ class BookingFeature(
 ) {
     internal var trustViews: BookingTrustViews? = null
 
+    /** How many bookings are in progress, for Profile's stats (null when it can't load). */
+    suspend fun activeBookingsCount(): Int? = try {
+        repository.bookings(active = true).size
+    } catch (e: kotlinx.coroutines.CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        null
+    }
+
     fun setTrustViews(views: BookingTrustViews) {
         trustViews = views
     }

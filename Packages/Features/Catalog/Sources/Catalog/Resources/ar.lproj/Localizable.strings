@@ -60,3 +60,26 @@
 "book.comingSoon.message" = "نعمل على إتاحة الحجز داخل التطبيق قريباً جداً.";
 "explore.title" = "استكشفي";
 "explore.all" = "الكل";
+
+/* Home v2 */
+"home.brand" = "منيتي";
+"home.greeting.morning" = "صباح الخير";
+"home.greeting.evening" = "مساء الخير";
+"home.tagline" = "كل تجهيزات العروس في مكان واحد";
+"home.countdown.title" = "الأيام المتبقية";
+"home.countdown.subtitle" = "على زفافك";
+"home.countdown.today" = "زفافك اليوم";
+"home.countdown.setDate" = "حدّدي موعد زفافك";
+"home.slide.budget.badge" = "جديد في منيتي";
+"home.slide.budget.title" = "احجزي ضمن ميزانيتك";
+"home.slide.budget.subtitle" = "حدّدي ميزانيتك ونرتّب لكِ الخدمات المناسبة لها";
+"home.slide.budget.cta" = "ابدئي الآن";
+"home.slide.discover.title" = "مقدّمات خدمة موثّقات في مدينتك";
+"home.slide.discover.subtitle" = "مكياج وتصوير وقاعات وحناء وأكثر";
+"home.slide.discover.cta" = "تصفّحي الخدمات";
+"home.why.title" = "لماذا منيتي؟";
+"home.why.verified" = "مقدّمات خدمة موثّقات";
+"home.why.direct" = "تدفعين لمقدّمة الخدمة مباشرة";
+"home.why.reviews" = "تقييمات من عرائس حقيقيات";
+"home.join.title" = "تقدّمين خدمات للعرائس؟";
+"home.join.subtitle" = "انضمي لمنيتي · أول شهرين مجاناً";

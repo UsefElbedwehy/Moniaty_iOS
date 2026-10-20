@@ -84,6 +84,35 @@ class CatalogFeature(
     /** Reviews and report/block menus from the Trust feature. */
     internal var trustViews: CatalogTrustViews? = null
 
+    /**
+     * Opens a Home banner's link: app links go through the App's deep-link router, other pages
+     * open in the browser. Set by the App.
+     */
+    internal var openLink: ((String) -> Unit)? = null
+
+    /** Opens the website page that invites providers to join. Set by the App. */
+    internal var openProviderInvite: (() -> Unit)? = null
+
+    fun setLinkHandlers(openLink: (String) -> Unit, openProviderInvite: () -> Unit) {
+        this.openLink = openLink
+        this.openProviderInvite = openProviderInvite
+    }
+
+    /** Days until the wedding (null without a date or once it has passed), for Home and Profile. */
+    val daysUntilWedding: Int? get() = budget.budget?.daysUntilWedding()
+
+    /** How many services the bride saved, for Profile (null for guests or on failure). */
+    suspend fun favoritesCount(): Int? {
+        if (context.isGuest) return null
+        return try {
+            repository.favorites().size
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     fun setBookingHandler(handler: (ServiceCard) -> Unit) {
         onBook = handler
     }

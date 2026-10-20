@@ -7,15 +7,20 @@ import ProviderStudio
 
 /// The four native tabs (`docs/PLAN.md` §3). Home and Explore come from the Catalog feature
 /// (bride) and the ProviderStudio feature (provider); Bookings from the Booking feature.
-enum AppTab: Hashable {
+enum AppTab: String, Hashable {
     case home, explore, bookings, profile
+
+    /// UI-test hook: `UITEST_START_TAB=profile` opens on that tab (screenshots, automated runs).
+    static var initial: AppTab {
+        ProcessInfo.processInfo.environment["UITEST_START_TAB"].flatMap(AppTab.init(rawValue:)) ?? .home
+    }
 }
 
 // MARK: - Bride
 
 struct BrideShell: View {
     let environment: AppEnvironment
-    @State private var tab: AppTab = .home
+    @State private var tab: AppTab = .initial
     @State private var homePath = NavigationPath()
     @State private var bookingsPath = NavigationPath()
     @State private var profilePath = NavigationPath()
@@ -101,7 +106,7 @@ struct BrideShell: View {
 
 struct ProviderShell: View {
     let environment: AppEnvironment
-    @State private var tab: AppTab = .home
+    @State private var tab: AppTab = .initial
     @State private var homePath = NavigationPath()
     @State private var bookingsPath = NavigationPath()
 

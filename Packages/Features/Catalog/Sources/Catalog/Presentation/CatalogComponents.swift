@@ -128,8 +128,9 @@ struct CategoryTile: View {
                             .foregroundStyle(Color.dsPrimary)
                     }
                 }
-                .frame(width: 60, height: 60)
-                .background(RoundedRectangle(cornerRadius: 20).fill(Color.dsPrimaryMuted))
+                .frame(width: 64, height: 64)
+                .background(Circle().fill(Color.dsPrimaryMuted))
+                .overlay(Circle().strokeBorder(Color.dsPremiumGold.opacity(0.55)))
                 .accessibilityHidden(true)
                 // Two lines reserved so every tile in a row is the same height, and a long single
                 // word ("photographers") shrinks a little rather than being cut off.
@@ -146,52 +147,64 @@ struct CategoryTile: View {
     }
 }
 
-/// The burgundy budget card (mockup 2). Tapping it opens the editor.
+/// The bride's budget card (Home v2): remaining amount and a gold progress bar on the surface
+/// color, so it stands apart from the burgundy hero above it. Tapping it opens the editor.
 struct BudgetCardView: View {
     let budget: Budget?
     let action: () -> Void
 
     var body: some View {
         Button(action: action) {
-            VStack(alignment: .leading, spacing: DSSpacing.sm) {
+            VStack(alignment: .leading, spacing: DSSpacing.xs) {
                 HStack {
-                    CatalogL10n.text("budget.title").font(.dsSubhead)
+                    Image(systemName: "banknote")
+                        .foregroundStyle(Color.dsPrimary)
+                        .accessibilityHidden(true)
+                    CatalogL10n.text("budget.title")
+                        .font(.dsSubhead)
+                        .foregroundStyle(Color.dsTextSecondary)
                     Spacer()
                     Text(verbatim: CatalogL10n.string(budget == nil ? "budget.set" : "budget.edit"))
                         .font(.dsCaption)
+                        .foregroundStyle(Color.dsPrimary)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
-                        .background(Capsule().fill(Color.white.opacity(0.14)))
+                        .background(Capsule().fill(Color.dsPrimaryMuted))
                 }
                 if let budget {
-                    HStack(alignment: .firstTextBaseline, spacing: DSSpacing.xs) {
-                        Text(verbatim: formatSAR(budget.remaining)).font(.dsTitle2)
-                        Text(verbatim: CatalogL10n.format("budget.remainingOf", formatSAR(budget.total)))
-                            .font(.dsFootnote)
-                            .opacity(0.85)
-                    }
+                    Text(verbatim: formatSAR(budget.remaining))
+                        .font(.dsTitle1)
+                        .foregroundStyle(Color.dsPrimary)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                    Text(verbatim: CatalogL10n.format("budget.remainingOf", formatSAR(budget.total)))
+                        .font(.dsFootnote)
+                        .foregroundStyle(Color.dsTextSecondary)
+                    Spacer(minLength: 0)
                     GeometryReader { proxy in
                         ZStack(alignment: .leading) {
-                            Capsule().fill(Color.white.opacity(0.18))
-                            Capsule().fill(Color.dsPremiumGold)
+                            Capsule().fill(Color.dsPrimaryMuted)
+                            Capsule().fill(DSGradient.gold)
                                 .frame(width: proxy.size.width * budget.usedFraction)
                         }
                     }
                     .frame(height: 8)
                     Text(verbatim: CatalogL10n.format("budget.reserved", formatSAR(budget.reserved)))
                         .font(.dsCaption)
-                        .opacity(0.9)
+                        .foregroundStyle(Color.dsTextSecondary)
                 } else {
                     CatalogL10n.text("budget.prompt")
                         .font(.dsFootnote)
-                        .opacity(0.9)
+                        .foregroundStyle(Color.dsTextPrimary)
                         .multilineTextAlignment(.leading)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Spacer(minLength: 0)
                 }
             }
-            .foregroundStyle(Color.dsBackground)
-            .padding(DSSpacing.lg)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(RoundedRectangle(cornerRadius: DSRadius.card).fill(Color.dsPrimary))
+            .padding(DSSpacing.md)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .background(RoundedRectangle(cornerRadius: DSRadius.card).fill(Color.dsSurface))
+            .overlay(RoundedRectangle(cornerRadius: DSRadius.card).strokeBorder(Color.dsBorder))
         }
         .buttonStyle(.plain)
         .accessibilityElement(children: .combine)
@@ -212,7 +225,7 @@ struct ServiceCarousel: View {
         if !cards.isEmpty {
             VStack(alignment: .leading, spacing: DSSpacing.sm) {
                 HStack {
-                    Text(verbatim: title).font(.dsTitle2)
+                    HomeSectionTitle(title: title)
                     Spacer()
                     if let seeAll {
                         NavigationLink(value: seeAll) {

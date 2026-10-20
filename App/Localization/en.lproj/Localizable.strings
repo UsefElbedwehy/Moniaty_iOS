@@ -53,3 +53,25 @@
 "profile.budget" = "Wedding budget";
 "common.retry" = "Try again";
 "profile.signOut.confirmTitle" = "Sign out of Munyati?";
+
+/* Profile v2 */
+"profile.guest.title" = "Welcome to Munyati";
+"profile.guest.message" = "Sign in to keep your favorites, budget and bookings.";
+"profile.stats.bookings" = "Active bookings";
+"profile.stats.favorites" = "Favorites";
+"profile.stats.days" = "Days to your wedding";
+"profile.stats.setDate" = "Set your wedding date";
+"profile.share.title" = "Share Munyati with your friends";
+"profile.share.titleProvider" = "Share Munyati with your clients";
+"profile.share.subtitle" = "Everything for the bride, in one place";
+"profile.share.message" = "Plan your wedding with Munyati: makeup, photography, venues and henna in one place.";
+"profile.language.current" = "English";
+"profile.appearance" = "Appearance";
+"profile.appearance.system" = "Automatic";
+"profile.appearance.light" = "Light";
+"profile.appearance.dark" = "Dark";
+"profile.section.help" = "Help";
+"profile.rate" = "Rate Munyati";
+"profile.followUs" = "Follow us";
+"profile.brand" = "Munyati";
+"profile.tagline" = "Everything for the bride, in one place";

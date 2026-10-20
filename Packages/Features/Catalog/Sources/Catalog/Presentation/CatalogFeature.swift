@@ -39,6 +39,9 @@ public final class CatalogFeature {
     var onBook: ((ServiceCard) -> Void)?
     /// Reviews and report/block menus from the Trust feature (Phase 5).
     var trustViews: CatalogTrustViews?
+    /// Opens a Home banner's link: app links go through the App's deep-link router, other
+    /// pages open in the browser. Set by the App.
+    var openLink: ((URL) -> Void)?
 
     public init(
         repository: CatalogRepository,
@@ -95,6 +98,23 @@ public final class CatalogFeature {
     /// Sets the reviews section and the report/block menu (Phase 5).
     public func setTrustViews(_ views: CatalogTrustViews) {
         trustViews = views
+    }
+
+    /// Sets how a banner's link opens (the App's deep-link router).
+    public func setLinkHandler(_ handler: @escaping (URL) -> Void) {
+        openLink = handler
+    }
+
+    /// The bride's budget, for Profile.
+    public var currentBudget: Budget? { budget.budget }
+
+    /// Days until the wedding (nil without a date or once it has passed), for Home and Profile.
+    public var daysUntilWedding: Int? { budget.budget?.daysUntilWedding() }
+
+    /// How many services the bride saved, for Profile.
+    public func favoritesCount() async -> Int? {
+        guard !context.isGuest else { return nil }
+        return try? await repository.favorites().count
     }
 
     /// Sets the booking entry point (Phase 3).

@@ -38,6 +38,11 @@ data class DSColors(
     val liveForeground: Color,
     val rejectedBackground: Color,
     val rejectedForeground: Color,
+    // Icon tiles in settings lists (Profile): the symbol in the hue, the tile in a light tint of it.
+    val accentRose: Color,
+    val accentGold: Color,
+    val accentBlue: Color,
+    val accentPurple: Color,
     val isDark: Boolean,
 )
 
@@ -63,6 +68,10 @@ val LightDSColors = DSColors(
     liveForeground = Color(0xFF1F5A2E),
     rejectedBackground = Color(0xFFF8E1E1),
     rejectedForeground = Color(0xFF8F1D1D),
+    accentRose = Color(0xFFC2335F),
+    accentGold = Color(0xFFA8823F),
+    accentBlue = Color(0xFF2F5E8C),
+    accentPurple = Color(0xFF5C4078),
     isDark = false,
 )
 
@@ -88,6 +97,10 @@ val DarkDSColors = DSColors(
     liveForeground = Color(0xFF8FD3A5),
     rejectedBackground = Color(0xFF3D1D20),
     rejectedForeground = Color(0xFFF2A0A0),
+    accentRose = Color(0xFFF2809E),
+    accentGold = Color(0xFFDEC28A),
+    accentBlue = Color(0xFF8CB8E6),
+    accentPurple = Color(0xFFB89EDB),
     isDark = true,
 )
 

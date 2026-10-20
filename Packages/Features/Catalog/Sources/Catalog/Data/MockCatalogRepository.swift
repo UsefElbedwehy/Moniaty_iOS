@@ -78,7 +78,12 @@ public actor MockCatalogRepository: CatalogRepository {
             return c
         }
         let featured = visible.filter { maxPrice == nil || price($0) <= maxPrice! }.map(card)
-        return try decode(["categories": categories, "featured": featured, "newest": visible.reversed().map(card)])
+        let banners: [[String: Any]] = [[
+            "id": "mock-banner", "title_ar": "عروض موسم الأعراس", "title_en": "Wedding season offers",
+            "subtitle_ar": "خصومات من مقدّمات خدمة مختارات", "subtitle_en": "Discounts from selected providers",
+            "cta_ar": "تصفّحي المكياج", "cta_en": "Browse makeup", "link_url": "https://munyati.co/c/makeup",
+        ]]
+        return try decode(["banners": banners, "categories": categories, "featured": featured, "newest": visible.reversed().map(card)])
     }
 
     public func search(_ filter: ServiceFilter, cityIds: [String]?, maxPrice: Decimal?, offset: Int) async throws -> [ServiceCard] {

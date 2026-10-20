@@ -48,6 +48,11 @@ public final class BookingFeature {
         self.onBookingsChanged = onBookingsChanged
     }
 
+    /// How many bookings are in progress, for Profile's stats (nil when it can't load).
+    public func activeBookingsCount() async -> Int? {
+        try? await repository.bookings(active: true).count
+    }
+
     public func setTrustViews(_ views: BookingTrustViews) {
         trustViews = views
     }

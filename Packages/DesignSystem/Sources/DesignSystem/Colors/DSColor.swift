@@ -75,6 +75,15 @@ public extension Color {
         #endif
     }
 
+    // MARK: Icon tiles
+
+    /// Accent hues for the icon tiles in settings lists (Profile): the symbol in the hue, the
+    /// tile behind it in a light tint of it. Brighter on dark backgrounds.
+    static let dsAccentRose = dsAdaptive(light: Color(red: 0.76, green: 0.20, blue: 0.37), dark: Color(red: 0.95, green: 0.50, blue: 0.62))
+    static let dsAccentGold = dsAdaptive(light: Color(red: 0.66, green: 0.51, blue: 0.25), dark: Color(red: 0.87, green: 0.76, blue: 0.54))
+    static let dsAccentBlue = dsAdaptive(light: Color(red: 0.18, green: 0.37, blue: 0.55), dark: Color(red: 0.55, green: 0.72, blue: 0.90))
+    static let dsAccentPurple = dsAdaptive(light: Color(red: 0.36, green: 0.25, blue: 0.47), dark: Color(red: 0.72, green: 0.62, blue: 0.86))
+
     static func dsAdaptive(light: Color, dark: Color) -> Color {
         #if canImport(UIKit)
         return Color(uiColor: UIColor { traits in

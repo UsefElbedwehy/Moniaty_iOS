@@ -53,3 +53,25 @@
 "profile.budget" = "ميزانية الزفاف";
 "common.retry" = "إعادة المحاولة";
 "profile.signOut.confirmTitle" = "تسجيل الخروج من منيتي؟";
+
+/* Profile v2 */
+"profile.guest.title" = "أهلاً بكِ في منيتي";
+"profile.guest.message" = "سجّلي دخولك لحفظ المفضلة وميزانيتك وحجوزاتك.";
+"profile.stats.bookings" = "حجوزات حالية";
+"profile.stats.favorites" = "في المفضلة";
+"profile.stats.days" = "يوم على زفافك";
+"profile.stats.setDate" = "حدّدي موعد زفافك";
+"profile.share.title" = "شاركي منيتي مع صديقاتك";
+"profile.share.titleProvider" = "شاركي منيتي مع عميلاتك";
+"profile.share.subtitle" = "كل تجهيزات العروس في مكان واحد";
+"profile.share.message" = "جهّزي لزفافك مع منيتي: مكياج وتصوير وقاعات وحناء في مكان واحد.";
+"profile.language.current" = "العربية";
+"profile.appearance" = "المظهر";
+"profile.appearance.system" = "تلقائي";
+"profile.appearance.light" = "فاتح";
+"profile.appearance.dark" = "داكن";
+"profile.section.help" = "المساعدة";
+"profile.rate" = "قيّمي منيتي";
+"profile.followUs" = "تابعينا";
+"profile.brand" = "منيتي";
+"profile.tagline" = "كل تجهيزات العروس في مكان واحد";

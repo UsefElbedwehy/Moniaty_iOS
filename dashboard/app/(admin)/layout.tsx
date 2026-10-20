@@ -47,6 +47,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <div className="nav-group">
             <span>{t("المحتوى", "Content")}</span>
             {item("/catalog", t("المدن والأقسام", "Cities & categories"))}
+            {item("/banners", t("بنرات الرئيسية", "Home banners"))}
             {item("/content", t("الصفحات والنصوص", "Pages & strings"))}
             {can(admin, "push.send") && item("/push", t("الإشعارات", "Push"))}
             {item("/settings", t("الإعدادات", "Settings"))}

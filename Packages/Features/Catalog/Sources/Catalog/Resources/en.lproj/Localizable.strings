@@ -60,3 +60,26 @@
 "book.comingSoon.message" = "In-app booking is coming very soon.";
 "explore.title" = "Explore";
 "explore.all" = "All";
+
+/* Home v2 */
+"home.brand" = "Munyati";
+"home.greeting.morning" = "Good morning";
+"home.greeting.evening" = "Good evening";
+"home.tagline" = "Everything for the bride, in one place";
+"home.countdown.title" = "Days to go";
+"home.countdown.subtitle" = "until your wedding";
+"home.countdown.today" = "Your wedding is today";
+"home.countdown.setDate" = "Set your wedding date";
+"home.slide.budget.badge" = "New on Munyati";
+"home.slide.budget.title" = "Book within your budget";
+"home.slide.budget.subtitle" = "Set your budget and we'll show the services that fit it";
+"home.slide.budget.cta" = "Get started";
+"home.slide.discover.title" = "Verified providers in your city";
+"home.slide.discover.subtitle" = "Makeup, photography, venues, henna and more";
+"home.slide.discover.cta" = "Browse services";
+"home.why.title" = "Why Munyati?";
+"home.why.verified" = "Verified providers";
+"home.why.direct" = "Pay the provider directly";
+"home.why.reviews" = "Reviews from real brides";
+"home.join.title" = "Do you serve brides?";
+"home.join.subtitle" = "Join Munyati · first two months free";

@@ -14,6 +14,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import co.munyati.app.composition.DeepLink
 import co.munyati.app.shell.RootView
 import co.munyati.designsystem.theme.MunyatiTheme
+import co.munyati.app.composition.Appearance
+import androidx.compose.foundation.isSystemInDarkTheme
 import co.munyati.shared.analytics.LocalAnalytics
 
 class MainActivity : ComponentActivity() {
@@ -27,7 +29,12 @@ class MainActivity : ComponentActivity() {
             askForNotifications()
         }
         setContent {
-            MunyatiTheme {
+            val darkTheme = when (environment.appearance.value) {
+                Appearance.System -> isSystemInDarkTheme()
+                Appearance.Light -> false
+                Appearance.Dark -> true
+            }
+            MunyatiTheme(darkTheme = darkTheme) {
                 CompositionLocalProvider(LocalAnalytics provides environment.analytics) {
                     RootView(environment)
                 }

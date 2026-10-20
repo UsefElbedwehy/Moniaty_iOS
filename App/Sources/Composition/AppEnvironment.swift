@@ -133,6 +133,10 @@ final class AppEnvironment {
             onBookingsChanged: { [weak self] in self?.catalog.refreshBudget() }
         )
         catalog.setBookingHandler { [weak self] card in self?.requestBooking(card) }
+        // Home banners: app links go through the deep-link router, other pages to the browser.
+        catalog.setLinkHandler { [weak self] url in
+            if let link = DeepLink(url: url) { self?.deepLink.pending = link } else { UIApplication.shared.open(url) }
+        }
 
         trust = TrustFeature(
             repository: trustRepository,
@@ -287,6 +291,7 @@ final class AppEnvironment {
         current.role = profile.role ?? (profile.isAnonymous ? .bride : current.role)
         current.isAnonymous = profile.isAnonymous
         current.displayName = profile.displayName
+        current.phone = profile.phone
         session.state = .signedIn(current)
         cities.restore(profile.cityIds)
         refreshCatalogContext()

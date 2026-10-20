@@ -22,6 +22,7 @@ final class AppSession {
         var role: UserRole?
         var isAnonymous: Bool
         var displayName: String?
+        var phone: String? = nil
     }
 
     var state: State = .checking

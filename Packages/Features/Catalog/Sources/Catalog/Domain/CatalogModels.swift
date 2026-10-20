@@ -155,9 +155,39 @@ public struct StoreDetail: Sendable, Decodable {
 }
 
 public struct HomeContent: Sendable, Decodable {
+    /// Dashboard-managed carousel slides (absent from older responses).
+    public let banners: [HomeBanner]
     public let categories: [CatalogCategory]
     public let featured: [ServiceCard]
     public let newest: [ServiceCard]
+
+    private enum CodingKeys: String, CodingKey { case banners, categories, featured, newest }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        banners = try c.decodeIfPresent([HomeBanner].self, forKey: .banners) ?? []
+        categories = try c.decode([CatalogCategory].self, forKey: .categories)
+        featured = try c.decode([ServiceCard].self, forKey: .featured)
+        newest = try c.decode([ServiceCard].self, forKey: .newest)
+    }
+}
+
+/// A Home carousel slide from the dashboard (`home_banners`). `linkUrl` is an app link
+/// (https://munyati.co/<p|s|store|c>/<id>) or an outside page.
+public struct HomeBanner: Identifiable, Hashable, Sendable, Decodable {
+    public let id: String
+    public let titleAr: String
+    public let titleEn: String
+    public let subtitleAr: String?
+    public let subtitleEn: String?
+    public let ctaAr: String?
+    public let ctaEn: String?
+    public let imageUrl: URL?
+    public let linkUrl: URL?
+
+    public var title: String { localized(ar: titleAr, en: titleEn) }
+    public var subtitle: String? { localized(ar: subtitleAr ?? "", en: subtitleEn ?? "").nilIfEmpty }
+    public var cta: String? { localized(ar: ctaAr ?? "", en: ctaEn ?? "").nilIfEmpty }
 }
 
 public struct MapPin: Identifiable, Hashable, Sendable, Decodable {
@@ -181,6 +211,20 @@ public struct Budget: Equatable, Sendable, Decodable {
         self.reserved = reserved
         self.remaining = remaining
         self.weddingDate = weddingDate
+    }
+
+    /// Whole days from today to the wedding date (0 on the day), nil without a date or after it.
+    public func daysUntilWedding(now: Date = .now) -> Int? {
+        guard let weddingDate else { return nil }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = .current
+        let formatter = DateFormatter()
+        formatter.calendar = calendar
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd"
+        guard let day = formatter.date(from: weddingDate) else { return nil }
+        let days = calendar.dateComponents([.day], from: calendar.startOfDay(for: now), to: day).day ?? -1
+        return days >= 0 ? days : nil
     }
 
     /// 0…1, how much of the budget is reserved.
