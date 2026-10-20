@@ -22,6 +22,7 @@ MODULES = [
     ("Packages/Features/Catalog/Sources/Catalog/Resources", "features/catalog", "catalog_", None),
     ("Packages/Features/ProviderStudio/Sources/ProviderStudio/Resources", "features/providerstudio", "studio_", None),
     ("Packages/Features/Booking/Sources/Booking/Resources", "features/booking", "booking_", "co.munyati.booking.presentation.bookingKeys"),
+    ("Packages/Features/Trust/Sources/Trust/Resources", "features/trust", "trust_", "co.munyati.trust.presentation.trustKeys"),
     ("App/Localization", "app", "", "co.munyati.app.composition.l10nKeys"),
 ]
 

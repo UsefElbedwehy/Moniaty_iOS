@@ -42,6 +42,17 @@ import co.munyati.booking.presentation.AvailabilityRoute
 import co.munyati.booking.presentation.BookingFeature
 import co.munyati.booking.presentation.PaymentMethodsRoute
 import co.munyati.catalog.domain.ServiceCard
+import co.munyati.app.backend.AccountDeleter
+import co.munyati.app.backend.CmsPageRepository
+import co.munyati.app.backend.MockCmsPageRepository
+import co.munyati.app.backend.SupabaseCmsPageRepository
+import co.munyati.core.error.AppError
+import co.munyati.shared.media.MediaUploading
+import co.munyati.trust.data.MockTrustRepository
+import co.munyati.trust.data.RemoteTrustRepository
+import co.munyati.trust.data.TrustRepository
+import co.munyati.trust.domain.SupportContact
+import co.munyati.trust.presentation.TrustFeature
 import co.munyati.core.configuration.ConfigurationRepository
 import co.munyati.networking.ApiClient
 import co.munyati.networking.ApiEndpoint
@@ -83,6 +94,11 @@ class AppEnvironment(private val context: Context) {
     val booking: BookingFeature
     private val bookingRepository: BookingRepository
     private val receiptStorage: ReceiptStorage
+    val trust: TrustFeature
+    private val trustRepository: TrustRepository
+    private val mediaUploader: MediaUploading
+    val cmsPageRepository: CmsPageRepository
+    private val accountDeleter: AccountDeleter?
 
     init {
         val config = backendConfiguration()
@@ -93,29 +109,37 @@ class AppEnvironment(private val context: Context) {
             configurationRepository = SupabaseConfigurationRepository(dataClient, context)
             profileRepository = SupabaseProfileRepository(dataClient)
             contentRepository = SupabaseContentRepository(dataClient)
+            cmsPageRepository = SupabaseCmsPageRepository(dataClient)
             analytics = makeAnalytics(dataClient)
             catalogRepository = RemoteCatalogRepository(dataClient)
+            mediaUploader = SupabaseMediaUploader(config.baseUrl, BuildConfig.SUPABASE_ANON_KEY, { auth.currentAccessToken() }, { auth.currentUserId() })
+            trustRepository = RemoteTrustRepository(dataClient)
             studio = StudioFeature(
                 repository = RemoteStudioRepository(dataClient),
-                uploader = SupabaseMediaUploader(config.baseUrl, BuildConfig.SUPABASE_ANON_KEY, { auth.currentAccessToken() }, { auth.currentUserId() }),
+                uploader = mediaUploader,
                 checkout = TapPlanCheckout(config.baseUrl, BuildConfig.SUPABASE_ANON_KEY, { auth.currentAccessToken() }),
                 mapsAvailable = BuildConfig.MAPS_API_KEY.isNotBlank(),
             )
             bookingRepository = RemoteBookingRepository(dataClient)
             receiptStorage = SupabaseReceiptStorage(config.baseUrl, BuildConfig.SUPABASE_ANON_KEY, { auth.currentAccessToken() })
+            accountDeleter = AccountDeleter(config.baseUrl, BuildConfig.SUPABASE_ANON_KEY, { auth.currentAccessToken() })
         } else {
             // No backend values: everything runs on in-memory mocks.
             supabaseAuth = null
             configurationRepository = MockConfigurationRepository()
             profileRepository = MockProfileRepository()
             contentRepository = MockContentRepository()
+            cmsPageRepository = MockCmsPageRepository()
             analytics = AnalyticsRecorder.disabled
             catalogRepository = MockCatalogRepository()
+            mediaUploader = MockMediaUploader()
+            trustRepository = MockTrustRepository()
             val studioRepository = MockStudioRepository()
-            studio = StudioFeature(studioRepository, MockMediaUploader(), MockPlanCheckout(studioRepository), BuildConfig.MAPS_API_KEY.isNotBlank())
+            studio = StudioFeature(studioRepository, mediaUploader, MockPlanCheckout(studioRepository), BuildConfig.MAPS_API_KEY.isNotBlank())
             // One mock shared by both shells, so a bride's request reaches the provider inbox.
             bookingRepository = MockBookingRepository()
             receiptStorage = MockReceiptStorage()
+            accountDeleter = null
         }
         catalog = CatalogFeature(
             repository = catalogRepository,
@@ -138,6 +162,29 @@ class AppEnvironment(private val context: Context) {
                 StudioSettingsLink.PaymentMethods -> PaymentMethodsRoute
             }
         }
+
+        trust = TrustFeature(
+            repository = trustRepository,
+            uploader = mediaUploader,
+            isSignedIn = { session.hasAccount },
+            requireSignIn = { session.isPresentingAuth = true },
+            supportInfo = { supportContacts() to remoteConfig.config?.support?.helpCenterUrl },
+        )
+        connectTrustViews(trust, catalog, booking)
+    }
+
+    /** Contact channels from remote config, with the published email as a fallback. */
+    private fun supportContacts(): List<SupportContact> {
+        val methods = remoteConfig.config?.support?.contactMethods.orEmpty()
+        val contacts = methods.mapNotNull { m -> SupportContact.Kind.entries.firstOrNull { it.rawValue == m.type }?.let { SupportContact(it, m.value) } }
+        return contacts.ifEmpty { listOf(SupportContact(SupportContact.Kind.Email, "contact@munyati.co")) }
+    }
+
+    /** Deletes the account on the server, then signs out. Throws when it can't. */
+    suspend fun deleteAccount() {
+        val deleter = accountDeleter ?: throw AppError.Authentication(AppError.AuthFailureReason.NotAuthenticated)
+        deleter.delete()
+        signOut()
     }
 
     /** "Book" on a service: guests sign in first, providers can't book, brides get the request. */

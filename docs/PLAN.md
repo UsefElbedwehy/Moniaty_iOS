@@ -367,8 +367,10 @@ Bilingual static site in the Munyati brand:
   plan limits, plans with Tap checkout in Custom Tabs, insights. Booking ported
   (`android/features/booking`): request with free slots, approve / propose / decline, payment with
   receipt upload, confirm or reject payment, completion, cancellation, disputes, working hours and
-  payout methods. Next: Trust, then FCM push, App Links (`assetlinks.json`) and the Play Console
-  listing.
+  payout methods. Trust ported (`android/features/trust`): reviews both ways, report and block,
+  support tickets, blocked accounts; Profile gains the CMS legal pages and in-app account deletion.
+  All four feature packages are now on Android. Next: FCM push, App Links (`assetlinks.json`),
+  then the Play Console listing.
 
 ## 13. Design approach (answer to "premium app or Claude Design?")
 - **I can design it here.** The brand already has a palette (burgundy `#8A0D3A`, gold `#DFC389`, cream `#F2E5D2`, ivory `#FAFAEC`) and a logo.

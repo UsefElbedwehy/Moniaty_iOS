@@ -35,6 +35,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import co.munyati.app.R
 import co.munyati.app.composition.AppEnvironment
 import co.munyati.app.composition.DeepLink
@@ -66,6 +67,7 @@ fun BrideShell(environment: AppEnvironment) {
     val destinations: NavGraphBuilder.() -> Unit = {
         with(catalog) { destinations() }
         with(booking) { destinations() }
+        appDestinations(environment)
     }
     TabShell(environment, BookingRole.Bride, bookingsTitle = R.string.tab_bookings) { tab, controller ->
         when (tab) {
@@ -87,6 +89,7 @@ fun ProviderShell(environment: AppEnvironment) {
         with(catalog) { destinations() }
         with(studio) { destinations() }
         with(booking) { destinations() }
+        appDestinations(environment)
     }
     TabShell(environment, BookingRole.Provider, bookingsTitle = R.string.tab_providerBookings) { tab, controller ->
         when (tab) {
@@ -96,6 +99,12 @@ fun ProviderShell(environment: AppEnvironment) {
             AppTab.Profile -> TabNavHost(controller, { ProfileScreen(environment) }, destinations)
         }
     }
+}
+
+/** Screens every tab can push: Trust (reviews, support, blocked accounts) and CMS pages. */
+private fun NavGraphBuilder.appDestinations(environment: AppEnvironment) {
+    with(environment.trust) { destinations() }
+    composable<CmsPageRoute> { CmsPageScreen(it.toRoute<CmsPageRoute>().slug, environment.cmsPageRepository) }
 }
 
 /**

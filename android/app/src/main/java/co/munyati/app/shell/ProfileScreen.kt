@@ -23,6 +23,15 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.LocationCity
 import androidx.compose.material.icons.outlined.PersonAddAlt
+import androidx.compose.material.icons.outlined.Block
+import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.HelpOutline
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Shield
+import androidx.compose.ui.res.stringResource
+import co.munyati.trust.presentation.BlockedUsersRoute
+import co.munyati.trust.presentation.SupportRoute
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
@@ -56,7 +65,8 @@ import kotlinx.coroutines.launch
 
 /**
  * Profile & settings, shared by both roles: identity, the bride's favorites, budget and cities,
- * language, sign out and version. Legal pages, support and account deletion arrive with Trust.
+ * language, legal pages, support, blocked accounts, sign out and in-app account deletion
+ * (App Store 5.1.1(v), Google Play's account deletion policy).
  */
 @Composable
 fun ProfileScreen(environment: AppEnvironment) {
@@ -66,6 +76,9 @@ fun ProfileScreen(environment: AppEnvironment) {
     var confirmSignOut by remember { mutableStateOf(false) }
     var showCities by remember { mutableStateOf(false) }
     var showBudget by remember { mutableStateOf(false) }
+    var confirmDelete by remember { mutableStateOf(false) }
+    var isDeleting by remember { mutableStateOf(false) }
+    var deleteFailed by remember { mutableStateOf(false) }
     val navigator = LocalNavigator.current
 
     Column(Modifier.fillMaxSize().background(DS.colors.background)) {
@@ -115,10 +128,26 @@ fun ProfileScreen(environment: AppEnvironment) {
                     }
                     context.startActivity(intent)
                 }
+                HorizontalDivider(color = DS.colors.border)
+                ProfileRow(l10n(R.string.profile_terms), Icons.Outlined.Description) { navigator.navigate(CmsPageRoute("terms")) }
+                HorizontalDivider(color = DS.colors.border)
+                ProfileRow(l10n(R.string.profile_privacy), Icons.Outlined.Shield) { navigator.navigate(CmsPageRoute("privacy")) }
+                HorizontalDivider(color = DS.colors.border)
+                ProfileRow(l10n(R.string.profile_about), Icons.Outlined.Info) { navigator.navigate(CmsPageRoute("about")) }
+                HorizontalDivider(color = DS.colors.border)
+                ProfileRow(l10n(R.string.profile_support), Icons.Outlined.HelpOutline) { navigator.navigate(SupportRoute) }
                 if (session.hasAccount) {
                     HorizontalDivider(color = DS.colors.border)
-                    ProfileRow(l10n(R.string.profile_signOut), Icons.AutoMirrored.Outlined.Logout, tint = DS.colors.error) {
-                        confirmSignOut = true
+                    ProfileRow(l10n(R.string.profile_blocked), Icons.Outlined.Block) { navigator.navigate(BlockedUsersRoute) }
+                }
+            }
+
+            if (session.hasAccount) {
+                DSCard(Modifier.fillMaxWidth(), padding = 0.dp) {
+                    ProfileRow(l10n(R.string.profile_signOut), Icons.AutoMirrored.Outlined.Logout) { confirmSignOut = true }
+                    HorizontalDivider(color = DS.colors.border)
+                    ProfileRow(l10n(R.string.profile_deleteAccount), Icons.Outlined.DeleteForever, tint = DS.colors.error) {
+                        if (!isDeleting) confirmDelete = true
                     }
                 }
             }
@@ -143,6 +172,32 @@ fun ProfileScreen(environment: AppEnvironment) {
                 }) { Text(l10n(R.string.profile_signOut), color = DS.colors.error) }
             },
             dismissButton = { TextButton(onClick = { confirmSignOut = false }) { Text(l10n(R.string.common_done)) } },
+        )
+    }
+
+    if (confirmDelete) {
+        AlertDialog(
+            onDismissRequest = { confirmDelete = false },
+            title = { Text(l10n(R.string.profile_deleteAccount_confirmTitle)) },
+            text = { Text(l10n(R.string.profile_deleteAccount_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    confirmDelete = false
+                    isDeleting = true
+                    scope.launch {
+                        runCatching { environment.deleteAccount() }.onFailure { deleteFailed = true }
+                        isDeleting = false
+                    }
+                }) { Text(l10n(R.string.profile_deleteAccount_confirm), color = DS.colors.error) }
+            },
+            dismissButton = { TextButton(onClick = { confirmDelete = false }) { Text(stringResource(android.R.string.cancel)) } },
+        )
+    }
+    if (deleteFailed) {
+        AlertDialog(
+            onDismissRequest = { deleteFailed = false },
+            title = { Text(l10n(R.string.profile_deleteAccount_failed)) },
+            confirmButton = { TextButton(onClick = { deleteFailed = false }) { Text(l10n(R.string.common_ok)) } },
         )
     }
 

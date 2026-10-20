@@ -65,6 +65,7 @@ dependencies {
     implementation(project(":features:catalog"))
     implementation(project(":features:providerstudio"))
     implementation(project(":features:booking"))
+    implementation(project(":features:trust"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.compose)
