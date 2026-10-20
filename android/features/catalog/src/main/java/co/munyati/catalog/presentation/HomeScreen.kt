@@ -73,6 +73,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import co.munyati.catalog.R
 import co.munyati.catalog.domain.CatalogCategory
 import co.munyati.catalog.domain.HomeBanner
@@ -302,7 +303,7 @@ private fun HomeCarousel(slides: List<HomeSlide>, onTap: (HomeSlide) -> Unit) {
             pager.animateScrollToPage(pager.currentPage + 1)
         }
     }
-    val height = (190 * LocalConfiguration.current.fontScale).coerceAtMost(260f).dp
+    val height = (200 * LocalConfiguration.current.fontScale).coerceAtMost(270f).dp
     Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
         HorizontalPager(pager, Modifier.fillMaxWidth().height(height), pageSpacing = DSSpacing.xs) { page ->
             val slide = slides[page % count]
@@ -369,9 +370,10 @@ private fun HomeSlideCard(slide: HomeSlide, onClick: () -> Unit) {
                     modifier = Modifier.clip(RoundedCornerShape(DSRadius.pill)).background(Color.White.copy(alpha = 0.45f)).padding(horizontal = 10.dp, vertical = 4.dp),
                 )
             }
-            Text(title, style = DS.type.title1, color = ink, maxLines = 2, overflow = TextOverflow.Ellipsis)
+            // Amiri's tall default line height would push the button out of the card on two lines.
+            Text(title, style = DS.type.title1.copy(fontSize = 22.sp, lineHeight = 30.sp), color = ink, maxLines = 2, overflow = TextOverflow.Ellipsis)
             if (subtitle != null) {
-                Text(subtitle, style = DS.type.footnote, color = ink.copy(alpha = 0.88f), maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(subtitle, style = DS.type.footnote, color = ink.copy(alpha = 0.88f), maxLines = if (badge != null) 1 else 2, overflow = TextOverflow.Ellipsis)
             }
             Spacer(Modifier.weight(1f))
             if (cta != null) {

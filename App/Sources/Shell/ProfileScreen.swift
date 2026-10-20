@@ -29,14 +29,12 @@ struct ProfileScreen: View {
         ScrollView {
             VStack(spacing: DSSpacing.lg) {
                 if session.hasAccount, isBride {
-                    // The stats card straddles the hero's bottom edge.
-                    hero
-                        .overlay(alignment: .bottom) {
-                            stats
-                                .padding(.horizontal, DSSpacing.lg)
-                                .alignmentGuide(.bottom) { $0[.bottom] - Self.statsOverhang }
-                        }
-                        .padding(.bottom, Self.statsOverhang)
+                    // The stats card overlaps the hero by a fixed amount and grows downward with
+                    // the text size, so it never covers the hero's content.
+                    VStack(spacing: -Self.statsOverlap) {
+                        hero
+                        stats.padding(.horizontal, DSSpacing.lg)
+                    }
                 } else {
                     hero
                 }
@@ -86,8 +84,8 @@ struct ProfileScreen: View {
         .trackScreen("profile")
     }
 
-    /// How far the stats card hangs below the hero.
-    private static let statsOverhang: CGFloat = 52
+    /// How far the stats card reaches up into the hero.
+    private static let statsOverlap: CGFloat = 40
 
     private func loadStats() async {
         guard session.hasAccount, isBride else { return }
@@ -154,7 +152,7 @@ struct ProfileScreen: View {
         }
         .padding(.horizontal, DSSpacing.lg)
         .padding(.top, DSSpacing.sm)
-        .padding(.bottom, session.hasAccount && isBride ? 72 : DSSpacing.xxl)
+        .padding(.bottom, session.hasAccount && isBride ? Self.statsOverlap + DSSpacing.lg : DSSpacing.xxl)
         .frame(maxWidth: .infinity)
         .background(DSBrandHeroBackground())
     }

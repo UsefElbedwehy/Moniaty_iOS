@@ -142,18 +142,22 @@ fun ProfileScreen(environment: AppEnvironment) {
             Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(bottom = DSSpacing.xl),
             verticalArrangement = Arrangement.spacedBy(DSSpacing.lg),
         ) {
-            Box {
-                ProfileHero(environment, Modifier.padding(bottom = if (showsStats) STATS_OVERHANG else 0.dp))
-                if (showsStats) {
+            if (showsStats) {
+                // The stats card overlaps the hero by a fixed amount and grows downward with
+                // the text size, so it never covers the hero's content.
+                OverlapBelow(STATS_OVERLAP) {
+                    ProfileHero(environment, Modifier)
                     StatsCard(
                         bookings = bookingsCount,
                         favorites = favoritesCount,
                         days = environment.catalog.daysUntilWedding,
                         onFavorites = { navigator.navigate(FavoritesRoute) },
                         onSetDate = { showBudget = true },
-                        modifier = Modifier.align(Alignment.BottomCenter).padding(horizontal = DSSpacing.lg),
+                        modifier = Modifier.padding(horizontal = DSSpacing.lg),
                     )
                 }
+            } else {
+                ProfileHero(environment, Modifier)
             }
             Column(Modifier.padding(horizontal = DSSpacing.lg), verticalArrangement = Arrangement.spacedBy(DSSpacing.lg)) {
                 val shareMessage = l10n(R.string.profile_share_message)
@@ -284,8 +288,24 @@ fun ProfileScreen(environment: AppEnvironment) {
 }
 
 
-/** How far the stats card hangs below the hero. */
-private val STATS_OVERHANG = 52.dp
+/** How far the stats card reaches up into the hero. */
+private val STATS_OVERLAP = 40.dp
+
+/** Places the second child under the first, pulled up by [overlap]. */
+@Composable
+private fun OverlapBelow(overlap: androidx.compose.ui.unit.Dp, content: @Composable () -> Unit) {
+    androidx.compose.ui.layout.Layout(content) { measurables, constraints ->
+        val loose = constraints.copy(minHeight = 0)
+        val top = measurables[0].measure(loose)
+        val bottom = measurables[1].measure(loose)
+        val pull = overlap.roundToPx()
+        val height = top.height + bottom.height - pull
+        layout(constraints.maxWidth, height) {
+            top.place(0, 0)
+            bottom.place((constraints.maxWidth - bottom.width) / 2, top.height - pull)
+        }
+    }
+}
 
 @Composable
 private fun appearanceTitle(appearance: Appearance): String = l10n(
@@ -311,7 +331,7 @@ private fun ProfileHero(environment: AppEnvironment, modifier: Modifier) {
     DSBrandHero(modifier.fillMaxWidth()) {
         Column(
             Modifier.fillMaxWidth().statusBarsPadding()
-                .padding(start = DSSpacing.lg, end = DSSpacing.lg, top = DSSpacing.sm, bottom = if (hasStats) 72.dp else DSSpacing.xxl),
+                .padding(start = DSSpacing.lg, end = DSSpacing.lg, top = DSSpacing.sm, bottom = if (hasStats) STATS_OVERLAP + DSSpacing.lg else DSSpacing.xxl),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(DSSpacing.xs),
         ) {
@@ -390,7 +410,7 @@ private fun StatsCard(
 
 @Composable
 private fun Stat(value: Int?, label: String, modifier: Modifier) {
-    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+    Column(modifier.padding(horizontal = DSSpacing.xxs), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(2.dp)) {
         Text(value?.let { NumberFormat.getIntegerInstance().format(it) } ?: "—", style = DS.type.title1, color = DS.colors.primary)
         Text(label, style = DS.type.caption, color = DS.colors.textSecondary, textAlign = TextAlign.Center, maxLines = 2)
     }
