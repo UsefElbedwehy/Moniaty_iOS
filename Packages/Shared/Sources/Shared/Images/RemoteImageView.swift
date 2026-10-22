@@ -54,6 +54,25 @@ enum RemoteImageDecodeCache {
     #endif
 }
 
+#if canImport(UIKit)
+extension RemoteImageLoading {
+    /// The decoded photo for `url`, through the same caches as `RemoteImageView` (used by the
+    /// full-screen viewer, which zooms a `UIImage`).
+    public static func uiImage(for url: URL) async -> UIImage? {
+        if let cached = RemoteImageDecodeCache.shared.object(forKey: url as NSURL) { return cached }
+        guard let (data, response) = try? await session.data(from: url) else { return nil }
+        if !url.isFileURL {
+            guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else { return nil }
+        }
+        guard let image = await decodeOffMain(data) else { return nil }
+        RemoteImageDecodeCache.shared.setObject(image, forKey: url as NSURL)
+        return image
+    }
+
+    nonisolated private static func decodeOffMain(_ data: Data) async -> UIImage? { UIImage(data: data) }
+}
+#endif
+
 /// Drives the fetch/cache/retry lifecycle for a single `RemoteImageView`.
 @Observable
 @MainActor

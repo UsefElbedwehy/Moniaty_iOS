@@ -1,5 +1,6 @@
 package co.munyati.catalog.data
 
+import co.munyati.shared.media.VideoAsset
 import co.munyati.catalog.domain.Budget
 import co.munyati.catalog.domain.HomeContent
 import co.munyati.catalog.domain.MapPin
@@ -58,7 +59,7 @@ class RemoteCatalogRepository(private val client: ApiClient) : CatalogRepository
         val card = decode(serializer<ServiceCard>(), raw)
         val extras = decode(ServiceExtras.serializer(), raw)
         ServiceDetail(card, extras.description, extras.durationMinutes, extras.atCustomerLocation, extras.imageUrls,
-            extras.provider, extras.store, extras.moreFromProvider)
+            extras.provider, extras.store, extras.moreFromProvider, extras.videos)
     }
 
     override suspend fun provider(id: String): ProviderProfile? = flattened(ApiEndpoint.rpc("get_provider"), id) { raw ->
@@ -122,6 +123,7 @@ private data class ServiceExtras(
     val provider: ProviderSummary,
     val store: StoreSummary? = null,
     val moreFromProvider: List<ServiceCard> = emptyList(),
+    val videos: List<VideoAsset> = emptyList(),
 )
 
 @Serializable

@@ -80,6 +80,7 @@
     <string name="studio_plans_sub_trial">أنتِ في الفترة المجانية حتى %s. إذا اشتركتِ الآن تبدأ باقتك بعد انتهائها.</string>
     <string name="studio_plans_terms">الشروط</string>
     <string name="studio_plans_title">الباقات</string>
+    <string name="studio_save_invalidMedia">تعذّر حفظ الفيديوهات. احذفيها وأضيفيها من جديد ثم احفظي.</string>
     <string name="studio_service_active">ظاهرة للعرائس</string>
     <string name="studio_service_active_footer">يمكنك إيقاف الخدمة مؤقتاً دون حذفها. الخدمات الموقوفة لا تُحسب ضمن حد باقتك.</string>
     <string name="studio_service_atLocation">أحضر إلى موقع العروس</string>
@@ -90,8 +91,10 @@
     <string name="studio_service_paused">موقوفة</string>
     <string name="studio_service_price">السعر (ر.س)</string>
     <string name="studio_service_section_photos">الصور</string>
+    <string name="studio_service_section_videos">الفيديوهات</string>
     <string name="studio_service_store">المتجر</string>
     <string name="studio_service_title">اسم الخدمة</string>
+    <string name="studio_service_videos_footer">حتى %1$d فيديوهات، مدة كل منها حتى %2$d ثانية. تشاهدها العرائس في صفحة خدمتك.</string>
     <string name="studio_services_add">إضافة خدمة</string>
     <string name="studio_services_edit">تعديل الخدمة</string>
     <string name="studio_services_empty_message">أضيفي خدمتك الأولى مع السعر والصور.</string>
@@ -136,4 +139,10 @@
     <string name="studio_studio_stores_count">المتاجر: %1$d من %2$d</string>
     <string name="studio_studio_title">نشاطي</string>
     <string name="studio_studio_verified">نشاط موثّق</string>
+    <string name="studio_video_failed">تعذّر رفع الفيديو. حاولي مرة أخرى.</string>
+    <string name="studio_video_pick">إضافة فيديو</string>
+    <string name="studio_video_preparing">جارٍ تجهيز الفيديو…</string>
+    <string name="studio_video_remove">حذف الفيديو</string>
+    <string name="studio_video_tooLarge">حجم الفيديو كبير حتى بعد ضغطه. جرّبي فيديو أقصر.</string>
+    <string name="studio_video_tooLong">مدة الفيديو أطول من %d ثانية. قصّيه وحاولي مرة أخرى.</string>
 </resources>

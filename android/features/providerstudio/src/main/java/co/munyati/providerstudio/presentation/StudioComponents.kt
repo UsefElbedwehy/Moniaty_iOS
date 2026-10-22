@@ -1,5 +1,8 @@
 package co.munyati.providerstudio.presentation
 
+import androidx.compose.material.icons.outlined.VideoCall
+import co.munyati.shared.media.VideoPreparer
+import co.munyati.shared.media.VideoAsset
 import android.icu.text.MeasureFormat
 import android.icu.util.Measure
 import android.icu.util.MeasureUnit
@@ -61,6 +64,67 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
+
+/** Picks one video, compresses it to 720p, makes its poster, and uploads both. Same as iOS. */
+@Composable
+internal fun VideoUploadButton(uploader: MediaUploading, folder: String, onUploaded: (VideoAsset) -> Unit) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var isWorking by remember { mutableStateOf(false) }
+    var failure by remember { mutableStateOf<String?>(null) }
+
+    fun upload(uri: android.net.Uri) {
+        isWorking = true
+        scope.launch {
+            try {
+                val prepared = VideoPreparer.prepare(context, uri)
+                try {
+                    val url = uploader.uploadFile(prepared.file, "video/mp4", "mp4", folder)
+                    // A missing poster only costs the preview frame; the video still works.
+                    val poster = prepared.poster?.let { jpeg -> runCatching { uploader.uploadJpeg(jpeg, folder) }.getOrNull() }
+                    onUploaded(VideoAsset(url, poster, prepared.durationSeconds))
+                } finally {
+                    prepared.file.delete()
+                }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: VideoPreparer.Failure.TooLong) {
+                failure = context.getString(R.string.studio_video_tooLong, e.maxSeconds)
+            } catch (e: VideoPreparer.Failure.TooLarge) {
+                failure = context.getString(R.string.studio_video_tooLarge)
+            } catch (e: Exception) {
+                failure = context.getString(R.string.studio_video_failed)
+            } finally {
+                isWorking = false
+            }
+        }
+    }
+
+    val picker = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { it?.let(::upload) }
+
+    Row(
+        Modifier.heightIn(min = 44.dp).clickable(enabled = !isWorking, role = Role.Button) {
+            picker.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.VideoOnly))
+        }.padding(horizontal = DSSpacing.xs),
+        horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (isWorking) {
+            CircularProgressIndicator(color = DS.colors.primary, strokeWidth = 2.dp, modifier = Modifier.size(20.dp))
+        } else {
+            Icon(Icons.Outlined.VideoCall, contentDescription = null, tint = DS.colors.primary)
+        }
+        Text(stringResource(if (isWorking) R.string.studio_video_preparing else R.string.studio_video_pick), style = DS.type.body, color = DS.colors.primary)
+    }
+
+    failure?.let { text ->
+        AlertDialog(
+            onDismissRequest = { failure = null },
+            title = { Text(text) },
+            confirmButton = { TextButton(onClick = { failure = null }) { Text(stringResource(R.string.studio_common_ok)) } },
+        )
+    }
+}
 
 /** Picks photos with the system photo picker, compresses and uploads them, reports the URLs. */
 @Composable

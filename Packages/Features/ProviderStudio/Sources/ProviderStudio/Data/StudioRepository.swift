@@ -1,6 +1,7 @@
 import Foundation
 import Core
 import Networking
+import Shared
 import Catalog
 
 public protocol StudioRepository: Sendable {
@@ -44,7 +45,8 @@ public struct RemoteStudioRepository: StudioRepository {
             pId: d.id, pTitle: d.title, pCategoryId: d.categoryId ?? "", pPrice: d.price ?? 0,
             pDescription: d.description.nilIfBlank, pDurationMinutes: d.durationMinutes,
             pFemaleStaffOnly: d.femaleStaffOnly, pAtCustomerLocation: d.atCustomerLocation, pStoreId: d.storeId,
-            pImageUrls: d.imageUrls.map(\.absoluteString), pStatus: d.isActive ? "active" : "paused"
+            pImageUrls: d.imageUrls.map(\.absoluteString), pStatus: d.isActive ? "active" : "paused",
+            pVideos: d.videos
         ))
         return result.toDomain(maxKey: result.maxServices)
     }
@@ -104,6 +106,7 @@ private struct SaveDTO: Decodable, Sendable {
 
     func toDomain(maxKey: Int?) -> SaveResult {
         if ok, let id { return .saved(id: id) }
+        if error == "invalid_video" { return .invalidMedia }
         return .limitReached(max: maxKey ?? 0)
     }
 }
@@ -137,6 +140,7 @@ private struct ServiceArgs: Encodable, Sendable {
     let pStoreId: String?
     let pImageUrls: [String]
     let pStatus: String
+    let pVideos: [VideoAsset]
 
     // p_id must be sent even when nil (it has no default in SQL), so encode it explicitly.
     func encode(to encoder: Encoder) throws {
@@ -152,11 +156,12 @@ private struct ServiceArgs: Encodable, Sendable {
         try c.encodeIfPresent(pStoreId, forKey: .pStoreId)
         try c.encode(pImageUrls, forKey: .pImageUrls)
         try c.encode(pStatus, forKey: .pStatus)
+        try c.encode(pVideos, forKey: .pVideos)
     }
 
     private enum CodingKeys: String, CodingKey {
         case pId, pTitle, pCategoryId, pPrice, pDescription, pDurationMinutes, pFemaleStaffOnly,
-             pAtCustomerLocation, pStoreId, pImageUrls, pStatus
+             pAtCustomerLocation, pStoreId, pImageUrls, pStatus, pVideos
     }
 }
 

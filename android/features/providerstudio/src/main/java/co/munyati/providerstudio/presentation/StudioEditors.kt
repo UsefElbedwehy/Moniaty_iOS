@@ -1,5 +1,8 @@
 package co.munyati.providerstudio.presentation
 
+import co.munyati.shared.media.VideoLimits
+import co.munyati.shared.media.GalleryTile
+import co.munyati.shared.media.GalleryItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -300,6 +303,7 @@ internal fun ServiceEditScreen(feature: StudioFeature, serviceId: String?) {
                 when (val result = store.repository.saveService(draft)) {
                     is SaveResult.Saved -> { store.reload(); navigator.back() }
                     is SaveResult.LimitReached -> navigator.navigate(PlansRoute(context.getString(R.string.studio_limit_services, result.max)))
+                    SaveResult.InvalidMedia -> message = context.getString(R.string.studio_save_invalidMedia)
                 }
             } catch (e: CancellationException) {
                 throw e
@@ -344,6 +348,31 @@ internal fun ServiceEditScreen(feature: StudioFeature, serviceId: String?) {
                     PhotoUploadButton(feature.uploader, "services", maxPhotos - draft.imageUrls.size) { draft = draft.copy(imageUrls = draft.imageUrls + it) }
                 } else {
                     Text(stringResource(R.string.studio_limit_photos, maxPhotos), style = DS.type.footnote, color = DS.colors.textSecondary, modifier = Modifier.padding(DSSpacing.sm))
+                }
+            }
+        }
+
+        DSFormSection(
+            stringResource(R.string.studio_service_section_videos),
+            footer = stringResource(R.string.studio_service_videos_footer, VideoLimits.PER_SERVICE, VideoLimits.MAX_SECONDS),
+        ) {
+            if (draft.videos.isNotEmpty()) {
+                Row(Modifier.horizontalScroll(rememberScrollState()).padding(DSSpacing.sm), horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
+                    draft.videos.forEach { video ->
+                        Box(Modifier.size(84.dp)) {
+                            GalleryTile(GalleryItem.Video(video), playSize = 30.dp, modifier = Modifier.size(84.dp).clip(RoundedCornerShape(12.dp)))
+                            Icon(
+                                Icons.Filled.Cancel, contentDescription = stringResource(R.string.studio_video_remove), tint = DS.colors.primary,
+                                modifier = Modifier.align(Alignment.TopEnd).padding(2.dp).background(DS.colors.surface, CircleShape)
+                                    .clickable { draft = draft.copy(videos = draft.videos.filter { it.url != video.url }) },
+                            )
+                        }
+                    }
+                }
+            }
+            if (draft.videos.size < VideoLimits.PER_SERVICE) {
+                Box(Modifier.padding(horizontal = DSSpacing.xs, vertical = DSSpacing.xxs)) {
+                    VideoUploadButton(feature.uploader, "services") { draft = draft.copy(videos = draft.videos + it) }
                 }
             }
         }
@@ -437,6 +466,7 @@ internal fun StoreEditScreen(feature: StudioFeature, storeId: String?) {
                 when (val result = store.repository.saveStore(draft)) {
                     is SaveResult.Saved -> { store.reload(); navigator.back() }
                     is SaveResult.LimitReached -> navigator.navigate(PlansRoute(context.getString(R.string.studio_limit_stores, result.max)))
+                    SaveResult.InvalidMedia -> message = saveFailed
                 }
             } catch (e: CancellationException) {
                 throw e

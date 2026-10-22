@@ -57,6 +57,7 @@ import co.munyati.designsystem.theme.DSSpacing
 import co.munyati.shared.analytics.AnalyticsEvent
 import co.munyati.shared.analytics.LocalAnalytics
 import co.munyati.shared.images.RemoteImage
+import co.munyati.shared.media.MediaGallery
 import co.munyati.shared.links.MunyatiLinks
 import co.munyati.shared.links.shareLink
 import co.munyati.shared.navigation.LocalNavigator
@@ -135,46 +136,30 @@ internal fun ServiceDetailScreen(feature: CatalogFeature, serviceId: String) {
 @Composable
 private fun ServiceContent(feature: CatalogFeature, detail: ServiceDetail) {
     val navigator = LocalNavigator.current
-    Column(Modifier.padding(DSSpacing.lg), verticalArrangement = Arrangement.spacedBy(DSSpacing.lg)) {
-        val urls = detail.imageUrls.ifEmpty { listOfNotNull(detail.card.imageUrl) }
-        Gallery(urls)
-        Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
-            Text(detail.card.title, style = DS.type.title1, color = DS.colors.textPrimary)
-            Text(formatSar(detail.card.price), style = DS.type.title2, color = DS.colors.primary)
-        }
-        ProviderRow(detail.provider) { navigator.navigate(ProviderRoute(detail.provider.id)) }
-        Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
-            detail.durationMinutes?.let { InfoRow(Icons.Outlined.Schedule, durationText(it), null) }
-            if (detail.atCustomerLocation) InfoRow(Icons.Outlined.Home, stringResource(R.string.catalog_detail_atLocation), null)
-            if (detail.card.femaleStaffOnly) InfoRow(Icons.Outlined.Groups, stringResource(R.string.catalog_detail_femaleOnly), null)
-        }
-        if (!detail.description.isNullOrEmpty()) {
+    // Full width at the top, like Lamha Ads; the rest keeps the page margins.
+    Column {
+        MediaGallery(detail.galleryItems)
+        Column(Modifier.padding(DSSpacing.lg), verticalArrangement = Arrangement.spacedBy(DSSpacing.lg)) {
             Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
-                Text(stringResource(R.string.catalog_detail_about), style = DS.type.headline, color = DS.colors.textPrimary)
-                Text(detail.description, style = DS.type.body, color = DS.colors.textSecondary)
+                Text(detail.card.title, style = DS.type.title1, color = DS.colors.textPrimary)
+                Text(formatSar(detail.card.price), style = DS.type.title2, color = DS.colors.primary)
             }
-        }
-        detail.store?.let { store ->
-            InfoRow(Icons.Outlined.Storefront, store.name, store.address) { navigator.navigate(StoreRoute(store.id)) }
-        }
-        ServiceCarousel(stringResource(R.string.catalog_detail_moreFromProvider), detail.moreFromProvider, feature)
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun Gallery(urls: List<String>) {
-    val pager = rememberPagerState { urls.size.coerceAtLeast(1) }
-    Box(Modifier.fillMaxWidth().height(260.dp).clip(RoundedCornerShape(DSRadius.card)).background(DS.colors.primaryMuted)) {
-        HorizontalPager(pager, Modifier.fillMaxSize()) { page ->
-            RemoteImage(urls.getOrNull(page), Modifier.fillMaxSize(), placeholder = DS.colors.primaryMuted)
-        }
-        if (urls.size > 1) {
-            Row(Modifier.align(Alignment.BottomCenter).padding(DSSpacing.xs), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                repeat(urls.size) { index ->
-                    Box(Modifier.size(7.dp).clip(CircleShape).background(if (index == pager.currentPage) DS.colors.surface else DS.colors.surface.copy(alpha = 0.5f)))
+            ProviderRow(detail.provider) { navigator.navigate(ProviderRoute(detail.provider.id)) }
+            Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
+                detail.durationMinutes?.let { InfoRow(Icons.Outlined.Schedule, durationText(it), null) }
+                if (detail.atCustomerLocation) InfoRow(Icons.Outlined.Home, stringResource(R.string.catalog_detail_atLocation), null)
+                if (detail.card.femaleStaffOnly) InfoRow(Icons.Outlined.Groups, stringResource(R.string.catalog_detail_femaleOnly), null)
+            }
+            if (!detail.description.isNullOrEmpty()) {
+                Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
+                    Text(stringResource(R.string.catalog_detail_about), style = DS.type.headline, color = DS.colors.textPrimary)
+                    Text(detail.description, style = DS.type.body, color = DS.colors.textSecondary)
                 }
             }
+            detail.store?.let { store ->
+                InfoRow(Icons.Outlined.Storefront, store.name, store.address) { navigator.navigate(StoreRoute(store.id)) }
+            }
+            ServiceCarousel(stringResource(R.string.catalog_detail_moreFromProvider), detail.moreFromProvider, feature)
         }
     }
 }

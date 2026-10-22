@@ -1,5 +1,6 @@
 package co.munyati.providerstudio.data
 
+import co.munyati.shared.media.VideoAsset
 import co.munyati.catalog.domain.CatalogCategory
 import co.munyati.catalog.domain.City
 import co.munyati.networking.ApiClient
@@ -62,6 +63,7 @@ class RemoteStudioRepository(private val client: ApiClient) : StudioRepository {
                 pDescription = d.description.nilIfBlank(), pDurationMinutes = d.durationMinutes,
                 pFemaleStaffOnly = d.femaleStaffOnly, pAtCustomerLocation = d.atCustomerLocation, pStoreId = d.storeId,
                 pImageUrls = d.imageUrls, pStatus = if (d.isActive) "active" else "paused",
+                pVideos = d.videos,
             ),
         )
         return result.toDomain(result.maxServices)
@@ -120,7 +122,11 @@ private data class SaveDto(
     val maxServices: Int? = null,
     val maxStores: Int? = null,
 ) {
-    fun toDomain(max: Int?): SaveResult = if (ok && id != null) SaveResult.Saved(id) else SaveResult.LimitReached(max ?: 0)
+    fun toDomain(max: Int?): SaveResult = when {
+        ok && id != null -> SaveResult.Saved(id)
+        error == "invalid_video" -> SaveResult.InvalidMedia
+        else -> SaveResult.LimitReached(max ?: 0)
+    }
 }
 
 @Serializable
@@ -154,6 +160,7 @@ private data class ServiceArgs(
     val pStoreId: String?,
     val pImageUrls: List<String>,
     val pStatus: String,
+    val pVideos: List<VideoAsset>,
 )
 
 @Serializable

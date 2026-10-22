@@ -1,4 +1,5 @@
 import Foundation
+import Shared
 
 // Wire models decode straight from the RPC JSON (the API client converts snake_case keys), so
 // there is no separate DTO layer for these read-only shapes.
@@ -91,12 +92,13 @@ public struct ServiceDetail: Sendable, Decodable {
     public let durationMinutes: Int?
     public let atCustomerLocation: Bool
     public let imageUrls: [URL]
+    public let videos: [VideoAsset]
     public let provider: ProviderSummary
     public let store: StoreSummary?
     public let moreFromProvider: [ServiceCard]
 
     private enum CodingKeys: String, CodingKey {
-        case description, durationMinutes, atCustomerLocation, imageUrls, provider, store, moreFromProvider
+        case description, durationMinutes, atCustomerLocation, imageUrls, videos, provider, store, moreFromProvider
     }
 
     public init(from decoder: Decoder) throws {
@@ -106,9 +108,15 @@ public struct ServiceDetail: Sendable, Decodable {
         durationMinutes = try c.decodeIfPresent(Int.self, forKey: .durationMinutes)
         atCustomerLocation = try c.decodeIfPresent(Bool.self, forKey: .atCustomerLocation) ?? false
         imageUrls = try c.decodeIfPresent([URL].self, forKey: .imageUrls) ?? []
+        videos = try c.decodeIfPresent([VideoAsset].self, forKey: .videos) ?? []
         provider = try c.decode(ProviderSummary.self, forKey: .provider)
         store = try c.decodeIfPresent(StoreSummary.self, forKey: .store)
         moreFromProvider = try c.decodeIfPresent([ServiceCard].self, forKey: .moreFromProvider) ?? []
+    }
+
+    /// The page's gallery: photos (or the card photo when there are none), then videos.
+    public var galleryItems: [GalleryItem] {
+        GalleryItem.items(images: imageUrls.isEmpty ? [card.imageUrl].compactMap { $0 } : imageUrls, videos: videos)
     }
 }
 

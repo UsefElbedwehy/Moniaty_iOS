@@ -334,6 +334,58 @@ struct PhotoUploadButton: View {
     }
 }
 
+/// Picks one video, compresses it to 720p, makes its poster, and uploads both.
+struct VideoUploadButton: View {
+    let uploader: MediaUploading
+    let folder: String
+    let onUploaded: (VideoAsset) -> Void
+    @State private var item: PhotosPickerItem?
+    @State private var isWorking = false
+    @State private var failure: String?
+
+    var body: some View {
+        // PhotosPicker's label closure is Sendable: read main-actor state outside it.
+        let isWorking = isWorking
+        PhotosPicker(selection: $item, matching: .videos, preferredItemEncoding: .compatible) {
+            HStack(spacing: DSSpacing.xs) {
+                if isWorking { ProgressView() } else { Image(systemName: "video.badge.plus") }
+                StudioL10n.text(isWorking ? "video.preparing" : "video.pick")
+            }
+        }
+        .disabled(isWorking)
+        .onChange(of: item) { _, picked in
+            guard let picked else { return }
+            Task { await upload(picked) }
+        }
+        .alert(failure ?? "", isPresented: Binding(get: { failure != nil }, set: { if !$0 { failure = nil } })) {
+            Button(StudioL10n.string("common.ok"), role: .cancel) {}
+        }
+    }
+
+    private func upload(_ picked: PhotosPickerItem) async {
+        isWorking = true
+        defer { isWorking = false; item = nil }
+        do {
+            guard let movie = try await picked.loadTransferable(type: PickedMovie.self) else {
+                throw VideoPreparer.Failure.unreadable
+            }
+            let prepared = try await VideoPreparer.prepare(movie.url)
+            defer { try? FileManager.default.removeItem(at: prepared.file) }
+            let url = try await uploader.uploadFile(prepared.file, contentType: "video/mp4", fileExtension: "mp4", folder: folder)
+            // A missing poster only costs the preview frame; the video still works.
+            var poster: URL?
+            if let jpeg = prepared.poster { poster = try? await uploader.uploadJPEG(jpeg, folder: folder) }
+            onUploaded(VideoAsset(url: url, posterUrl: poster, durationSeconds: prepared.durationSeconds))
+        } catch VideoPreparer.Failure.tooLong(let maxSeconds) {
+            failure = StudioL10n.format("video.tooLong", maxSeconds)
+        } catch VideoPreparer.Failure.tooLarge {
+            failure = StudioL10n.string("video.tooLarge")
+        } catch {
+            failure = StudioL10n.string("video.failed")
+        }
+    }
+}
+
 /// Map with a fixed centre pin: the provider moves the map under the pin to set a location.
 struct LocationPicker: View {
     @Binding var lat: Double?

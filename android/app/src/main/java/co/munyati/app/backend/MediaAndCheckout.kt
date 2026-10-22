@@ -13,32 +13,45 @@ import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import java.io.IOException
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 /**
- * Uploads picked images to the public `media` bucket under the signed-in user's own folder
- * (`<uid>/<folder>/<uuid>.jpg`), which the storage policies require. Same as iOS.
+ * Uploads picked images and videos to the public `media` bucket under the signed-in user's own
+ * folder (`<uid>/<folder>/<uuid>.<ext>`), which the storage policies require. Same as iOS.
  */
 class SupabaseMediaUploader(
     private val baseUrl: String,
     private val anonKey: String,
     private val accessToken: suspend () -> String?,
     private val currentUserId: suspend () -> String?,
-    private val http: OkHttpClient = OkHttpClient(),
+    private val http: OkHttpClient = OkHttpClient.Builder()
+        // Videos can take a while on mobile data.
+        .writeTimeout(5, TimeUnit.MINUTES)
+        .build(),
 ) : MediaUploading {
-    override suspend fun uploadJpeg(jpeg: ByteArray, folder: String): String {
+    override suspend fun uploadJpeg(jpeg: ByteArray, folder: String): String =
+        upload("jpg", folder, jpeg.toRequestBody("image/jpeg".toMediaType()))
+
+    override suspend fun uploadFile(file: File, contentType: String, fileExtension: String, folder: String): String =
+        upload(fileExtension, folder, file.asRequestBody(contentType.toMediaType()))
+
+    private suspend fun upload(fileExtension: String, folder: String, body: RequestBody): String {
         val uid = currentUserId() ?: throw AppError.Authentication(AppError.AuthFailureReason.NotAuthenticated)
         val token = accessToken() ?: throw AppError.Authentication(AppError.AuthFailureReason.NotAuthenticated)
-        val path = "$uid/$folder/${UUID.randomUUID()}.jpg"
+        val path = "$uid/$folder/${UUID.randomUUID()}.$fileExtension"
         val request = Request.Builder()
             .url("${baseUrl.trimEnd('/')}/storage/v1/object/media/$path")
             .header("apikey", anonKey)
             .header("Authorization", "Bearer $token")
             // Paths are never reused, so the bytes are immutable: cache for a year (cuts egress cost).
             .header("Cache-Control", "public, max-age=31536000, immutable")
-            .post(jpeg.toRequestBody("image/jpeg".toMediaType()))
+            .post(body)
             .build()
         val code = withContext(Dispatchers.IO) {
             try {
@@ -47,14 +60,24 @@ class SupabaseMediaUploader(
                 throw AppError.Network(AppError.NetworkFailureReason.NoConnection)
             }
         }
-        if (code !in 200..299) throw AppError.Server(code, "Image upload failed.")
+        if (code !in 200..299) throw AppError.Server(code, "Upload failed.")
         return "${baseUrl.trimEnd('/')}/storage/v1/object/public/media/$path"
     }
 }
 
-/** Offline stand-in: pretends the upload worked and returns a placeholder image URL. */
-class MockMediaUploader : MediaUploading {
+/**
+ * Offline stand-in: pretends the upload worked. Photos come back as a placeholder image; files
+ * are kept on the device so a picked video still plays back.
+ */
+class MockMediaUploader(private val keepDir: File) : MediaUploading {
     override suspend fun uploadJpeg(jpeg: ByteArray, folder: String) = "https://picsum.photos/seed/${UUID.randomUUID()}/800/600"
+
+    override suspend fun uploadFile(file: File, contentType: String, fileExtension: String, folder: String): String =
+        withContext(Dispatchers.IO) {
+            val kept = File(keepDir, "${UUID.randomUUID()}.$fileExtension")
+            file.copyTo(kept)
+            kept.toURI().toString()
+        }
 }
 
 /**

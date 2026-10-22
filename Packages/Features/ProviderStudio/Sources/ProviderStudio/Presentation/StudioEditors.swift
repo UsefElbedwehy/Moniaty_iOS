@@ -268,6 +268,39 @@ struct ServiceEditScreen: View {
             }
 
             Section {
+                if !draft.videos.isEmpty {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(draft.videos, id: \.url) { video in
+                                GalleryTile(item: .video(video), playSize: 30)
+                                    .frame(width: 84, height: 84)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                    .overlay(alignment: .topTrailing) {
+                                        Button {
+                                            draft.videos.removeAll { $0.url == video.url }
+                                        } label: {
+                                            Image(systemName: "xmark.circle.fill")
+                                                .symbolRenderingMode(.palette)
+                                                .foregroundStyle(.white, Color.dsPrimary)
+                                        }
+                                        .accessibilityLabel(StudioL10n.string("video.remove"))
+                                    }
+                            }
+                        }
+                    }
+                }
+                if draft.videos.count < VideoLimits.perService {
+                    VideoUploadButton(uploader: feature.uploader, folder: "services") { video in
+                        draft.videos.append(video)
+                    }
+                }
+            } header: {
+                StudioL10n.text("service.section.videos")
+            } footer: {
+                Text(verbatim: StudioL10n.format("service.videos.footer", VideoLimits.perService, VideoLimits.maxSeconds))
+            }
+
+            Section {
                 Toggle(StudioL10n.string("service.femaleOnly"), isOn: $draft.femaleStaffOnly)
                 Toggle(StudioL10n.string("service.atLocation"), isOn: $draft.atCustomerLocation)
                 if let stores = store.business?.stores, !stores.isEmpty {
@@ -323,6 +356,8 @@ struct ServiceEditScreen: View {
                     dismiss()
                 case .limitReached(let max):
                     paywallReason = StudioL10n.format("limit.services", max)
+                case .invalidMedia:
+                    message = StudioL10n.string("save.invalidMedia")
                 }
             } catch {
                 message = StudioL10n.string("common.saveFailed")
@@ -479,6 +514,8 @@ struct StoreEditScreen: View {
                     dismiss()
                 case .limitReached(let max):
                     paywallReason = StudioL10n.format("limit.stores", max)
+                case .invalidMedia:
+                    message = StudioL10n.string("common.saveFailed")
                 }
             } catch {
                 message = StudioL10n.string("common.saveFailed")

@@ -1,5 +1,6 @@
 import Foundation
 import Catalog
+import Shared
 
 /// In-memory studio for running without a backend. Starts as a fresh, pending provider; saving
 /// the business profile counts as the admin's approval, which starts the 60-day trial.
@@ -52,6 +53,12 @@ public actor MockStudioRepository: StudioRepository {
                 "id": s.id ?? "", "title": s.title, "description": s.description, "category_id": s.categoryId ?? "",
                 "price": NSDecimalNumber(decimal: s.price ?? 0), "female_staff_only": s.femaleStaffOnly,
                 "at_customer_location": s.atCustomerLocation, "image_urls": s.imageUrls.map(\.absoluteString),
+                "videos": s.videos.map { v -> [String: Any] in
+                    var video: [String: Any] = ["url": v.url.absoluteString]
+                    if let poster = v.posterUrl { video["poster_url"] = poster.absoluteString }
+                    if let seconds = v.durationSeconds { video["duration_seconds"] = seconds }
+                    return video
+                },
                 "status": s.isActive ? "active" : "paused"
             ]
             if let minutes = s.durationMinutes { row["duration_minutes"] = minutes }

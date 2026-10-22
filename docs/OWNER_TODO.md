@@ -100,3 +100,9 @@ yet. Do them roughly in this order; items marked ⏳ take weeks, so start them f
 - [ ] Redeploy the dashboard (Vercel) so **بنرات الرئيسية / Home banners** appears; add banners there (image 2:1, up to 1 MB; link such as `https://munyati.co/c/makeup`).
 - [ ] Make sure `https://munyati.co/providers` explains how providers join: Home's "تقدّمين خدمات للعرائس؟" card opens it.
 - [ ] Optional: add `social_links` (instagram, tiktok, snapchat, x, whatsapp) in Settings → remote config to show the "تابعينا" icons in Profile.
+
+## 10. Service videos and the photo viewer
+- [ ] Apply `supabase/migrations/20261019000000_service_videos.sql` to the live project (after §9's migration). Until then the apps keep working with photos only, and the video upload fails to save.
+- [ ] Redeploy the dashboard: each service on a provider's page now opens **الصور والفيديوهات / Photos and videos**, where admins watch, add (MP4 up to 60 s and 50 MB) and remove media. Reported services open there too.
+- [ ] Keep an eye on Supabase **egress**: videos are far heavier than photos (a 60-second 720p clip is roughly 5–15 MB, streamed each time a bride watches it). The free plan includes 5 GB of egress a month and Pro 250 GB. If it grows, move videos to a video CDN (e.g. Cloudflare Stream or Bunny); only the upload path changes.
+- [ ] Supabase's per-file upload limit must stay at least 50 MB (Storage settings), the size the apps allow.

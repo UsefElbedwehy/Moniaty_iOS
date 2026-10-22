@@ -13,3 +13,11 @@
 "common.viewAll" = "View All";
 "common.seeMore" = "See More";
 
+
+/* Photo and video viewer */
+"media.close" = "Close";
+"media.share" = "Share";
+"media.openHint" = "Opens full screen";
+"media.empty" = "No photos yet";
+"media.photo" = "Photo %1$d of %2$d";
+"media.video" = "Video %1$d of %2$d";

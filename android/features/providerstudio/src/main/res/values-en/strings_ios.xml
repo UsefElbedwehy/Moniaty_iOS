@@ -80,6 +80,7 @@
     <string name="studio_plans_sub_trial">You\'re on the free trial until %s. If you subscribe now, your plan starts when it ends.</string>
     <string name="studio_plans_terms">Terms</string>
     <string name="studio_plans_title">Plans</string>
+    <string name="studio_save_invalidMedia">The videos couldn\'t be saved. Remove them, add them again, then save.</string>
     <string name="studio_service_active">Visible to brides</string>
     <string name="studio_service_active_footer">You can pause a service without deleting it. Paused services don\'t count toward your plan limit.</string>
     <string name="studio_service_atLocation">I come to the bride\'s location</string>
@@ -90,8 +91,10 @@
     <string name="studio_service_paused">Paused</string>
     <string name="studio_service_price">Price (SAR)</string>
     <string name="studio_service_section_photos">Photos</string>
+    <string name="studio_service_section_videos">Videos</string>
     <string name="studio_service_store">Store</string>
     <string name="studio_service_title">Service name</string>
+    <string name="studio_service_videos_footer">Up to %1$d videos, each up to %2$d seconds. Brides watch them on your service page.</string>
     <string name="studio_services_add">Add service</string>
     <string name="studio_services_edit">Edit service</string>
     <string name="studio_services_empty_message">Add your first service with a price and photos.</string>
@@ -136,4 +139,10 @@
     <string name="studio_studio_stores_count">%1$d of %2$d stores</string>
     <string name="studio_studio_title">My studio</string>
     <string name="studio_studio_verified">Verified business</string>
+    <string name="studio_video_failed">Couldn\'t upload the video. Please try again.</string>
+    <string name="studio_video_pick">Add a video</string>
+    <string name="studio_video_preparing">Preparing the video…</string>
+    <string name="studio_video_remove">Remove video</string>
+    <string name="studio_video_tooLarge">The video is too large even after compressing. Try a shorter one.</string>
+    <string name="studio_video_tooLong">The video is longer than %d seconds. Trim it and try again.</string>
 </resources>

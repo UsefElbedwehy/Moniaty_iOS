@@ -20,7 +20,7 @@ export default async function ProviderDetail({ params, searchParams }: {
     supabase.from("profiles").select("phone, display_name, created_at, is_banned, deleted_at").eq("id", id).maybeSingle(),
     supabase.from("provider_categories").select("category_id").eq("provider_id", id),
     supabase.from("provider_cities").select("city_id").eq("provider_id", id),
-    supabase.from("services").select("id, title, price, status, category_id, image_urls, created_at").eq("provider_id", id).order("created_at"),
+    supabase.from("services").select("id, title, price, status, category_id, image_urls, videos, created_at").eq("provider_id", id).order("created_at"),
     supabase.from("stores").select("id, name, is_active, address").eq("provider_id", id),
     supabase.from("provider_subscriptions").select("plan_id, source, status, starts_at, ends_at, note").eq("provider_id", id).order("starts_at", { ascending: false }).limit(10),
     supabase.from("bookings").select("id, reference_code, status, price, starts_at, is_demo").eq("provider_id", id).order("created_at", { ascending: false }).limit(10),
@@ -99,7 +99,12 @@ export default async function ProviderDetail({ params, searchParams }: {
             {(services.data ?? []).map((s) => (
               <tr key={s.id}>
                 <td>{s.image_urls?.[0] && <img className="thumb" src={s.image_urls[0]} alt="" />}</td>
-                <td>{s.title}</td>
+                <td>
+                  <Link href={`/providers/${id}/services/${s.id}`}>{s.title}</Link>
+                  <div className="muted small">
+                    {t(`${s.image_urls?.length ?? 0} صور · ${s.videos?.length ?? 0} فيديو`, `${s.image_urls?.length ?? 0} photos · ${s.videos?.length ?? 0} videos`)}
+                  </div>
+                </td>
                 <td>{s.category_id}</td>
                 <td>{fmtSAR(s.price)}</td>
                 <td>{s.status === "active" ? <span className="badge good">{t("نشطة", "Active")}</span> : <span className="badge">{t("موقوفة", "Paused")}</span>}</td>

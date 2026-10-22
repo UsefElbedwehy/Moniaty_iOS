@@ -1,4 +1,5 @@
 import Foundation
+import Shared
 
 /// The provider's own business as returned by `get_my_business` (all statuses, incl. paused).
 public struct MyBusiness: Sendable, Decodable {
@@ -67,6 +68,8 @@ public struct MyService: Identifiable, Hashable, Sendable, Decodable {
     public let atCustomerLocation: Bool
     public let storeId: String?
     public let imageUrls: [URL]
+    /// Missing from backends older than the videos migration.
+    public let videos: [VideoAsset]?
     public let status: Status
 }
 
@@ -133,6 +136,7 @@ public struct ServiceDraft: Sendable, Equatable {
     public var atCustomerLocation = false
     public var storeId: String?
     public var imageUrls: [URL] = []
+    public var videos: [VideoAsset] = []
     public var isActive = true
 
     public init() {}
@@ -148,6 +152,7 @@ public struct ServiceDraft: Sendable, Equatable {
         atCustomerLocation = service.atCustomerLocation
         storeId = service.storeId
         imageUrls = service.imageUrls
+        videos = service.videos ?? []
         isActive = service.status == .active
     }
 
@@ -198,4 +203,6 @@ public struct StoreDraft: Sendable, Equatable {
 public enum SaveResult: Sendable, Equatable {
     case saved(id: String)
     case limitReached(max: Int)
+    /// The backend refused the media (e.g. a video URL that isn't the provider's own upload).
+    case invalidMedia
 }

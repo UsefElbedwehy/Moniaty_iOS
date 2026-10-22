@@ -110,6 +110,9 @@ public actor MockCatalogRepository: CatalogRepository {
         let providerId = service["provider_id"] as? String ?? ""
         detail["provider"] = providerSummary(providerId)
         detail["image_urls"] = (1...3).map { "https://picsum.photos/seed/\(id)-\($0)/1200/900" }
+        // A public sample clip, so the gallery and viewer can be tried without a backend.
+        detail["videos"] = [["url": "https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4",
+                             "poster_url": "https://picsum.photos/seed/\(id)-video/1200/900", "duration_seconds": 10]]
         detail["more_from_provider"] = Self.services
             .filter { $0["provider_id"] as? String == providerId && $0["id"] as? String != id }
             .map(card)

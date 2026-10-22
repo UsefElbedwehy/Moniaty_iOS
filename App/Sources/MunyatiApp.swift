@@ -28,6 +28,11 @@ struct MunyatiApp: App {
                 }
                 .task {
                     environment.bindPush(appDelegate.pushService)
+                    // UI-test hook: `UITEST_OPEN_URL=munyati://s/<id>` opens that link at launch
+                    // (no "Open in Munyati?" prompt, which simctl openurl shows).
+                    if let raw = ProcessInfo.processInfo.environment["UITEST_OPEN_URL"], let url = URL(string: raw) {
+                        environment.open(url: url)
+                    }
                     if ProcessInfo.processInfo.environment["UITEST_NO_PUSH"] != "1" {
                         await appDelegate.pushService.requestAuthorizationAndRegister()
                     }

@@ -1,5 +1,7 @@
 package co.munyati.catalog.domain
 
+import co.munyati.shared.media.GalleryItem
+import co.munyati.shared.media.VideoAsset
 import kotlinx.serialization.Serializable
 import java.math.RoundingMode
 import java.text.NumberFormat
@@ -87,7 +89,12 @@ data class ServiceDetail(
     val provider: ProviderSummary,
     val store: StoreSummary?,
     val moreFromProvider: List<ServiceCard>,
-)
+    val videos: List<VideoAsset> = emptyList(),
+) {
+    /** The page's gallery: photos (or the card photo when there are none), then videos. */
+    val galleryItems: List<GalleryItem>
+        get() = GalleryItem.items(imageUrls.ifEmpty { listOfNotNull(card.imageUrl) }, videos)
+}
 
 /** A provider page; summary fields at the top level, beside the extras. */
 data class ProviderProfile(

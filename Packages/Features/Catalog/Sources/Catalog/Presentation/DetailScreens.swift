@@ -49,48 +49,35 @@ struct ServiceDetailScreen: View {
 
     @ViewBuilder
     private func content(_ detail: ServiceDetail) -> some View {
-        VStack(alignment: .leading, spacing: DSSpacing.lg) {
-            gallery(detail)
-            VStack(alignment: .leading, spacing: DSSpacing.xs) {
-                Text(verbatim: detail.card.title).font(.dsTitle1)
-                Text(verbatim: formatSAR(detail.card.price)).font(.dsTitle2).foregroundStyle(Color.dsPrimary)
-            }
-            NavigationLink(value: CatalogRoute.provider(id: detail.provider.id)) {
-                ProviderRow(provider: detail.provider)
-            }
-            .buttonStyle(.plain)
-            facts(detail)
-            if let description = detail.description, !description.isEmpty {
+        // Full width at the top, like Lamha Ads; the rest keeps the page margins.
+        VStack(spacing: 0) {
+            MediaGallery(items: detail.galleryItems)
+            VStack(alignment: .leading, spacing: DSSpacing.lg) {
                 VStack(alignment: .leading, spacing: DSSpacing.xs) {
-                    CatalogL10n.text("detail.about").font(.dsHeadline)
-                    Text(verbatim: description).font(.dsBody).foregroundStyle(Color.dsTextSecondary)
+                    Text(verbatim: detail.card.title).font(.dsTitle1)
+                    Text(verbatim: formatSAR(detail.card.price)).font(.dsTitle2).foregroundStyle(Color.dsPrimary)
                 }
-            }
-            if let store = detail.store {
-                NavigationLink(value: CatalogRoute.store(id: store.id)) {
-                    InfoRow(systemImage: "storefront", title: store.name, subtitle: store.address)
+                NavigationLink(value: CatalogRoute.provider(id: detail.provider.id)) {
+                    ProviderRow(provider: detail.provider)
                 }
                 .buttonStyle(.plain)
+                facts(detail)
+                if let description = detail.description, !description.isEmpty {
+                    VStack(alignment: .leading, spacing: DSSpacing.xs) {
+                        CatalogL10n.text("detail.about").font(.dsHeadline)
+                        Text(verbatim: description).font(.dsBody).foregroundStyle(Color.dsTextSecondary)
+                    }
+                }
+                if let store = detail.store {
+                    NavigationLink(value: CatalogRoute.store(id: store.id)) {
+                        InfoRow(systemImage: "storefront", title: store.name, subtitle: store.address)
+                    }
+                    .buttonStyle(.plain)
+                }
+                ServiceCarousel(title: CatalogL10n.string("detail.moreFromProvider"), cards: detail.moreFromProvider, feature: feature)
             }
-            ServiceCarousel(title: CatalogL10n.string("detail.moreFromProvider"), cards: detail.moreFromProvider, feature: feature)
+            .padding(DSSpacing.lg)
         }
-        .padding(DSSpacing.lg)
-    }
-
-    private func gallery(_ detail: ServiceDetail) -> some View {
-        let urls = detail.imageUrls.isEmpty ? [detail.card.imageUrl].compactMap { $0 } : detail.imageUrls
-        return TabView {
-            if urls.isEmpty {
-                Color.dsPrimaryMuted
-            }
-            ForEach(urls, id: \.self) { url in
-                RemoteImageView(url: url)
-            }
-        }
-        .tabViewStyle(.page)
-        .frame(height: 260)
-        .clipShape(RoundedRectangle(cornerRadius: DSRadius.card))
-        .accessibilityHidden(true)
     }
 
     private func facts(_ detail: ServiceDetail) -> some View {

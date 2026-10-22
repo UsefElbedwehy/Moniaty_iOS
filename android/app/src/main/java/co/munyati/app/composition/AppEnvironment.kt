@@ -140,7 +140,7 @@ class AppEnvironment(private val context: Context) {
             cmsPageRepository = MockCmsPageRepository()
             analytics = AnalyticsRecorder.disabled
             catalogRepository = MockCatalogRepository()
-            mediaUploader = MockMediaUploader()
+            mediaUploader = MockMediaUploader(context.filesDir)
             trustRepository = MockTrustRepository()
             val studioRepository = MockStudioRepository()
             studio = StudioFeature(studioRepository, mediaUploader, MockPlanCheckout(studioRepository), BuildConfig.MAPS_API_KEY.isNotBlank())

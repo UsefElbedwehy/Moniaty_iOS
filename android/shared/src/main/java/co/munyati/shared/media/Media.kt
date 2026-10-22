@@ -9,12 +9,15 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * Uploads an image the user picked (service photos, logos) and returns its public URL. Implemented
+ * Uploads an image or video the user picked (service photos, logos) and returns its public URL. Implemented
  * in the App against Supabase Storage; features stay storage-agnostic. Same as iOS `MediaUploading`.
  */
-fun interface MediaUploading {
+interface MediaUploading {
     /** `jpeg` is already resized/compressed. `folder` is a short label such as "services" or "logos". */
     suspend fun uploadJpeg(jpeg: ByteArray, folder: String): String
+
+    /** Uploads a file already on disk (a prepared video), streamed rather than read into memory. */
+    suspend fun uploadFile(file: java.io.File, contentType: String, fileExtension: String, folder: String): String
 }
 
 /**

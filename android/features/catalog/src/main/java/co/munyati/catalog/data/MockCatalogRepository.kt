@@ -1,5 +1,6 @@
 package co.munyati.catalog.data
 
+import co.munyati.shared.media.VideoAsset
 import co.munyati.catalog.domain.Budget
 import co.munyati.catalog.domain.CatalogCategory
 import co.munyati.catalog.domain.HomeBanner
@@ -111,6 +112,9 @@ class MockCatalogRepository : CatalogRepository {
             provider = summary(s.providerId),
             store = null,
             moreFromProvider = services.filter { it.providerId == s.providerId && it.id != id }.map(::card),
+            // A public sample clip, so the gallery and viewer can be tried without a backend.
+            videos = listOf(VideoAsset("https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4",
+                "https://picsum.photos/seed/$id-video/1200/900", 10)),
         )
     }
 

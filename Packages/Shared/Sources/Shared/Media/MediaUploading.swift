@@ -9,6 +9,8 @@ public protocol MediaUploading: Sendable {
     /// `jpeg` is already resized/compressed by the caller. `folder` is a short label such as
     /// "services" or "logos"; the implementation prefixes the user's own folder.
     func uploadJPEG(_ jpeg: Data, folder: String) async throws -> URL
+    /// Uploads a file already on disk (a prepared video), streamed rather than read into memory.
+    func uploadFile(_ file: URL, contentType: String, fileExtension: String, folder: String) async throws -> URL
 }
 
 /// Downscales and JPEG-encodes picked photos before upload (keeps uploads small and avoids

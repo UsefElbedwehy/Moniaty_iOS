@@ -66,7 +66,7 @@ class MockStudioRepository : StudioRepository {
             services = services.values.map {
                 MyService(it.id!!, it.title, it.description, it.categoryId.orEmpty(), it.price ?: 0.0, it.durationMinutes,
                     it.femaleStaffOnly, it.atCustomerLocation, it.storeId, it.imageUrls,
-                    if (it.isActive) MyService.Status.Active else MyService.Status.Paused)
+                    if (it.isActive) MyService.Status.Active else MyService.Status.Paused, it.videos)
             },
             stores = stores.values.map { MyStore(it.id!!, it.name, it.description, it.logoUrl, it.address, it.cityId, it.lat, it.lng, it.instagram, it.isActive) },
         )

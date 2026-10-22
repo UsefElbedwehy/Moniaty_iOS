@@ -141,3 +141,14 @@
 "insights.days.30" = "Last 30 days";
 "insights.days.90" = "Last 90 days";
 "studio.greeting" = "Welcome";
+
+/* Service videos */
+"service.section.videos" = "Videos";
+"service.videos.footer" = "Up to %1$d videos, each up to %2$d seconds. Brides watch them on your service page.";
+"video.pick" = "Add a video";
+"video.preparing" = "Preparing the video…";
+"video.remove" = "Remove video";
+"video.tooLong" = "The video is longer than %d seconds. Trim it and try again.";
+"video.tooLarge" = "The video is too large even after compressing. Try a shorter one.";
+"video.failed" = "Couldn't upload the video. Please try again.";
+"save.invalidMedia" = "The videos couldn't be saved. Remove them, add them again, then save.";

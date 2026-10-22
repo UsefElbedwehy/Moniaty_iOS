@@ -1,5 +1,6 @@
 package co.munyati.providerstudio.domain
 
+import co.munyati.shared.media.VideoAsset
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -69,6 +70,8 @@ data class MyService(
     val storeId: String? = null,
     val imageUrls: List<String> = emptyList(),
     val status: Status = Status.Active,
+    /** Missing from backends older than the videos migration. */
+    val videos: List<VideoAsset> = emptyList(),
 ) {
     @Serializable
     enum class Status {
@@ -141,6 +144,7 @@ data class ServiceDraft(
     val storeId: String? = null,
     val imageUrls: List<String> = emptyList(),
     val isActive: Boolean = true,
+    val videos: List<VideoAsset> = emptyList(),
 ) {
     constructor(s: MyService) : this(
         id = s.id,
@@ -154,6 +158,7 @@ data class ServiceDraft(
         storeId = s.storeId,
         imageUrls = s.imageUrls,
         isActive = s.status == MyService.Status.Active,
+        videos = s.videos,
     )
 
     /** The price typed in Arabic or Latin digits ("٢٥٠٫٥" or "250.5"). */
@@ -198,4 +203,6 @@ data class StoreDraft(
 sealed interface SaveResult {
     data class Saved(val id: String) : SaveResult
     data class LimitReached(val max: Int) : SaveResult
+    /** The backend refused the media (e.g. a video URL that isn't the provider's own upload). */
+    data object InvalidMedia : SaveResult
 }
