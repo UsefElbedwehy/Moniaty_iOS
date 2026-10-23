@@ -1,8 +1,9 @@
 # Store listing and review paperwork (draft)
 
 Ready-to-paste text for App Store Connect and Google Play Console, plus the privacy answers.
-Screenshots: `design/store/ios/` (6.9" iPhone, Arabic and English; retake with real providers'
-photos before launch: `StoreScreenshotsTests`). Check every answer against how you actually run
+Screenshots: `design/store/ios/` (6.9" iPhone, 1320×2868, Arabic and English; retake with real
+providers' photos before launch: `StoreScreenshotsTests`) and `design/store/android/` (phone,
+1080×2400, Arabic and English). Check every answer against how you actually run
 the business; the privacy answers must match the privacy policy in the dashboard.
 
 ---
