@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android-only Trust strings (everything else comes from iOS via tools/sync_strings.py). -->
+<resources>
+    <string name="trust_back">رجوع</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalog_explore_mapUnavailable_title">Map unavailable</string>
+    <string name="catalog_explore_mapUnavailable_message">Google Maps isn\'t set up for this build yet.</string>
+    <string name="catalog_back">Back</string>
+    <string name="catalog_search_clear">Clear search</string>
+</resources>

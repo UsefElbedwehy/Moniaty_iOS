@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>منيتي — طلب الحجز</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#8A0D3A}a:hover{color:#5E0827}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; height: 844px; box-sizing: border-box; background: #FAFAEC; color: #2A1420; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="flex: none; display: flex; align-items: center; gap: 8px; padding: 52px 12px 8px">
+    <a href="Provider.dc.html" aria-label="رجوع" style="width: 44px; height: 44px; display: flex; align-items: center; justify-content: center">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2A1420" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M9 6 L15 12 L9 18"></path></svg>
+    </a>
+    <h1 style="margin: 0; font-size: 18px; font-weight: 700">طلب حجز</h1>
+  </div>
+
+  <div style="flex: 1; overflow: hidden; padding: 4px 20px 0; display: flex; flex-direction: column; gap: 18px">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 18px; background: #FFFFFF; border: 1px solid #E9DCC6">
+      <span style="width: 44px; height: 44px; border-radius: 14px; background: #8A0D3A; color: #DFC389; font-family: Amiri, serif; font-size: 22px; display: flex; align-items: center; justify-content: center">ل</span>
+      <span style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 15px; font-weight: 600">مكياج العروس</span>
+        <span style="font-size: 12.5px; color: #6B5560">لمسة جمال · ٣ ساعات</span>
+      </span>
+      <span style="font-size: 16px; font-weight: 700; color: #8A0D3A">٢٬٨٠٠ ر.س</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 15px; font-weight: 700">اختاري اليوم · نوفمبر</h2>
+      <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{days}}" as="d" hint-placeholder-count="6">
+          <button type="button" onClick="{{d.pick}}" style="{{d.style}}">
+            <span style="font-size: 11px">{{d.wd}}</span>
+            <span style="font-size: 17px; font-weight: 700">{{d.n}}</span>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 10px">
+      <h2 style="margin: 0; font-size: 15px; font-weight: 700">الأوقات المتاحة</h2>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{times}}" as="t" hint-placeholder-count="8">
+          <button type="button" onClick="{{t.pick}}" disabled="{{t.off}}" style="{{t.style}}">{{t.label}}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <label style="display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 600">
+      ملاحظة لمقدّمة الخدمة (اختياري)
+      <textarea rows="2" placeholder="مثال: الموقع في الخبر، حي العليا" style="resize: none; padding: 12px 14px; border-radius: 14px; border: 1px solid #E9DCC6; background: #FFFFFF; font: 400 14px 'IBM Plex Sans Arabic', sans-serif; color: #2A1420"></textarea>
+    </label>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; padding: 14px 16px; border-radius: 18px; background: #F2E5D2; font-size: 13px; line-height: 1.6">
+      <span style="display: flex; justify-content: space-between"><span>ميزانيتك المتبقية بعد القبول</span><strong>١٣٬٧٠٠ ر.س</strong></span>
+      <span style="color: #5A4650">الدفع يتم مباشرة لمقدّمة الخدمة بعد قبول الطلب، ثم ترفعين الإيصال في التطبيق.</span>
+    </div>
+  </div>
+
+  <div style="flex: none; padding: 12px 20px 30px; display: flex; flex-direction: column; gap: 8px">
+    <span style="font-size: 12px; color: #6B5560; text-align: center">يُسمح بحجز نشط واحد من قسم «المكياج» حتى يكتمل</span>
+    <a href="Bookings.dc.html" style="min-height: 52px; border-radius: 26px; background: #8A0D3A; color: #FAFAEC; font-size: 16px; font-weight: 700; display: flex; align-items: center; justify-content: center; text-decoration: none">إرسال الطلب · {{summary}}</a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  constructor(p) { super(p); this.state = { day: 2, time: '٤:٠٠ م' }; }
+  renderVals() {
+    const base = 'min-height: 64px; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-family: inherit; cursor: pointer; ';
+    const wds = ['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'];
+    const ns = ['٩','١٠','١١','١٢','١٣','١٤'];
+    const days = wds.map((wd, i) => ({
+      wd, n: ns[i],
+      style: base + (i === this.state.day ? 'background: #8A0D3A; color: #FAFAEC; border: 1px solid #8A0D3A' : 'background: #FFFFFF; color: #2A1420; border: 1px solid #E9DCC6'),
+      pick: () => this.setState({ day: i })
+    }));
+    const slots = [['١٠:٠٠ ص', false], ['١٢:٠٠ م', true], ['٢:٠٠ م', false], ['٤:٠٠ م', false], ['٥:٠٠ م', true], ['٦:٠٠ م', false], ['٨:٠٠ م', false], ['٩:٠٠ م', true]];
+    const tb = 'min-height: 44px; border-radius: 14px; font: 500 13.5px "IBM Plex Sans Arabic", sans-serif; cursor: pointer; ';
+    const times = slots.map(([label, off]) => ({
+      label, off,
+      style: tb + (off ? 'background: transparent; color: #A99AA0; border: 1px dashed #E0D3BF; text-decoration: line-through; cursor: default'
+        : label === this.state.time ? 'background: #2A1420; color: #FAFAEC; border: 1px solid #2A1420'
+        : 'background: #FFFFFF; color: #2A1420; border: 1px solid #E9DCC6'),
+      pick: () => { if (!off) this.setState({ time: label }); }
+    }));
+    return { days, times, summary: wds[this.state.day] + ' ' + ns[this.state.day] + ' · ' + this.state.time };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+"CFBundleDisplayName" = "Munyati";
+"NSLocationWhenInUseUsageDescription" = "Your location is used to show nearby providers on the map.";
+"NSPhotoLibraryUsageDescription" = "To attach transfer receipts and photos of your services.";
+"NSCameraUsageDescription" = "To photograph a transfer receipt.";

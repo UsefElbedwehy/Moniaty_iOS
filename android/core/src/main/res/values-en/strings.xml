@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_network_timedOut">The request timed out. Please try again.</string>
+    <string name="error_network_noConnection">You\'re offline. Check your connection and try again.</string>
+    <string name="error_network_cancelled">The request was cancelled.</string>
+    <string name="error_network_invalidResponse">Something went wrong on our end. Please try again.</string>
+    <string name="error_auth_invalidCredentials">Those credentials don\'t look right.</string>
+    <string name="error_auth_sessionExpired">Your session expired. Please sign in again.</string>
+    <string name="error_auth_otpExpired">That code expired. Request a new one.</string>
+    <string name="error_auth_otpIncorrect">That code isn\'t correct.</string>
+    <string name="error_auth_notAuthenticated">Please sign in to continue.</string>
+    <string name="error_server_generic">Our servers had a problem. Please try again shortly.</string>
+    <string name="error_offline">You\'re offline. Some content may be out of date.</string>
+    <string name="error_unknown">Something unexpected happened.</string>
+</resources>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Launcher label (iOS CFBundleDisplayName). -->
+    <string name="launcher_name">منيتي</string>
+    <string name="push_channel_name">الحجوزات والتنبيهات</string>
+</resources>

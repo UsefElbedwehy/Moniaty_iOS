@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android-only ProviderStudio strings (everything else comes from iOS via tools/sync_strings.py). -->
+<resources>
+    <string name="studio_back">رجوع</string>
+    <string name="studio_none">—</string>
+    <string name="studio_delete">حذف</string>
+    <string name="studio_delete_confirm">حذف نهائياً؟</string>
+</resources>

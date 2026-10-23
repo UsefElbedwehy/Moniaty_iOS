@@ -1,0 +1,790 @@
+kotlin version: 2.0.21
+error message: org.jetbrains.kotlin.backend.common.BackendException: Backend Internal error: Exception during IR lowering
+File being compiled: /Users/usefelbedwehy/Documents/Work/Freelance/Moniaty/Moniaty_iOS/android/app/src/main/java/co/munyati/app/composition/AppEnvironment.kt
+The root cause java.lang.RuntimeException was thrown at: org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:47)
+	at org.jetbrains.kotlin.backend.common.CodegenUtil.reportBackendException(CodegenUtil.kt:253)
+	at org.jetbrains.kotlin.backend.common.CodegenUtil.reportBackendException$default(CodegenUtil.kt:236)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invokeSequential(performByIrFile.kt:65)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invoke(performByIrFile.kt:52)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invoke(performByIrFile.kt:38)
+	at org.jetbrains.kotlin.backend.common.phaser.NamedCompilerPhase.phaseBody(CompilerPhase.kt:166)
+	at org.jetbrains.kotlin.backend.common.phaser.AbstractNamedCompilerPhase.invoke(CompilerPhase.kt:113)
+	at org.jetbrains.kotlin.backend.common.phaser.CompositePhase.invoke(PhaseBuilders.kt:27)
+	at org.jetbrains.kotlin.backend.common.phaser.CompositePhase.invoke(PhaseBuilders.kt:14)
+	at org.jetbrains.kotlin.backend.common.phaser.NamedCompilerPhase.phaseBody(CompilerPhase.kt:166)
+	at org.jetbrains.kotlin.backend.common.phaser.AbstractNamedCompilerPhase.invoke(CompilerPhase.kt:113)
+	at org.jetbrains.kotlin.backend.common.phaser.CompilerPhaseKt.invokeToplevel(CompilerPhase.kt:62)
+	at org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory.invokeCodegen(JvmIrCodegenFactory.kt:371)
+	at org.jetbrains.kotlin.codegen.CodegenFactory.generateModule(CodegenFactory.kt:47)
+	at org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory.generateModuleInFrontendIRMode(JvmIrCodegenFactory.kt:433)
+	at org.jetbrains.kotlin.cli.jvm.compiler.pipeline.JvmCompilerPipelineKt.generateCodeFromIr(jvmCompilerPipeline.kt:246)
+	at org.jetbrains.kotlin.cli.jvm.compiler.pipeline.JvmCompilerPipelineKt.compileModulesUsingFrontendIrAndLightTree(jvmCompilerPipeline.kt:142)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:148)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecute(K2JVMCompiler.kt:43)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:103)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:49)
+	at org.jetbrains.kotlin.cli.common.CLITool.exec(CLITool.kt:101)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:464)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunner.runCompiler(IncrementalJvmCompilerRunner.kt:73)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.doCompile(IncrementalCompilerRunner.kt:506)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:423)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally$lambda$9$compile(IncrementalCompilerRunner.kt:249)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally(IncrementalCompilerRunner.kt:267)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:120)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:675)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:92)
+	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1660)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:714)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:598)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:844)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:721)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:400)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:720)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.lang.RuntimeException: Exception while generating code for:
+FUN CLASS_STATIC_INITIALIZER name:<clinit> visibility:public/*package*/ modality:FINAL <> () returnType:kotlin.Unit
+  BLOCK_BODY
+    SET_FIELD 'FIELD FIELD_FOR_OBJECT_INSTANCE name:INSTANCE type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt visibility:public [final,static] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt' type=kotlin.Unit origin=INITIALIZE_FIELD
+      value: CONSTRUCTOR_CALL 'public constructor <init> () [primary] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt origin=null
+    SET_FIELD 'FIELD name:lambda-1 type:kotlin.Function3<kotlin.String, androidx.compose.runtime.Composer, kotlin.Int, kotlin.Unit> visibility:internal [static] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt' type=kotlin.Unit origin=INITIALIZE_FIELD
+      value: CALL 'public final fun composableLambdaInstance (key: kotlin.Int, tracked: kotlin.Boolean, block: kotlin.Any): androidx.compose.runtime.internal.ComposableLambda declared in androidx.compose.runtime.internal.ComposableLambdaKt' type=androidx.compose.runtime.internal.ComposableLambda origin=null
+        key: CONST Int type=kotlin.Int value=-1617811866
+        tracked: CONST Boolean type=kotlin.Boolean value=false
+        block: BLOCK type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+          CLASS LAMBDA_IMPL CLASS name:<no name provided> modality:FINAL visibility:public/*package*/ superTypes:[kotlin.Any; kotlin.Function3<kotlin.String, androidx.compose.runtime.Composer, kotlin.Int, kotlin.Unit>]
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+            CONSTRUCTOR GENERATED_MEMBER_IN_CALLABLE_REFERENCE visibility:public/*package*/ <> ($trustFeature:co.munyati.trust.presentation.TrustFeature) returnType:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> [primary]
+              VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$trustFeature index:0 type:co.munyati.trust.presentation.TrustFeature
+              BLOCK_BODY
+                SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                  receiver: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                  value: GET_VAR '$trustFeature: co.munyati.trust.presentation.TrustFeature declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.<init>' type=co.munyati.trust.presentation.TrustFeature origin=null
+                DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () [primary] declared in kotlin.Any'
+                BLOCK type=kotlin.Unit origin=null
+            FUN name:invoke visibility:public modality:FINAL <> ($this:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>, providerId:kotlin.String, $composer:androidx.compose.runtime.Composer?, $changed:kotlin.Int) returnType:kotlin.Unit
+              annotations:
+                Composable
+                ComposableTarget(applier = "androidx.compose.ui.UiComposable")
+              overridden:
+                public abstract fun invoke (p1: P1 of kotlin.Function3, p2: P2 of kotlin.Function3, p3: P3 of kotlin.Function3): R of kotlin.Function3 [operator] declared in kotlin.Function3
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+              VALUE_PARAMETER name:providerId index:0 type:kotlin.String
+              VALUE_PARAMETER name:$composer index:1 type:androidx.compose.runtime.Composer? [assignable]
+              VALUE_PARAMETER name:$changed index:2 type:kotlin.Int
+              BLOCK_BODY
+                CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                  sourceInformation: CONST String type=kotlin.String value="C180@9069L26:AppEnvironment.kt#kzwmr4"
+                VAR name:$dirty type:kotlin.Int [val]
+                  GET_VAR '$changed: kotlin.Int declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                WHEN type=kotlin.Unit origin=IF
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                      arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                        $this: GET_VAR '$changed: kotlin.Int declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        other: CONST Int type=kotlin.Int value=6
+                      arg1: CONST Int type=kotlin.Int value=0
+                    then: SET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Unit origin=null
+                      CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                        $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        other: WHEN type=kotlin.Int origin=IF
+                          BRANCH
+                            if: CALL 'public abstract fun changed (value: kotlin.Any?): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                              $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                              value: GET_VAR 'providerId: kotlin.String declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.String origin=null
+                            then: CONST Int type=kotlin.Int value=4
+                          BRANCH
+                            if: CONST Boolean type=kotlin.Boolean value=true
+                            then: CONST Int type=kotlin.Int value=2
+                WHEN type=kotlin.Unit origin=IF
+                  BRANCH
+                    if: CALL 'public final fun OROR (arg0: kotlin.Boolean, arg1: kotlin.Boolean): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                      arg0: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                        $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                          arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                            $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                            other: CONST Int type=kotlin.Int value=19
+                          arg1: CONST Int type=kotlin.Int value=18
+                      arg1: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                        $this: CALL 'public abstract fun <get-skipping> (): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                          $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                    then: BLOCK type=kotlin.Unit origin=null
+                      WHEN type=kotlin.Unit origin=IF
+                        BRANCH
+                          if: CALL 'public final fun isTraceInProgress (): kotlin.Boolean declared in androidx.compose.runtime.ComposerKt' type=kotlin.Boolean origin=null
+                          then: CALL 'public final fun traceEventStart (key: kotlin.Int, dirty1: kotlin.Int, dirty2: kotlin.Int, info: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                            key: CONST Int type=kotlin.Int value=-1617811866
+                            dirty1: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                            dirty2: CONST Int type=kotlin.Int value=-1
+                            info: CONST String type=kotlin.String value="co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.lambda-1.<anonymous> (AppEnvironment.kt:180)"
+                      CALL 'public final fun ReviewsSection (providerId: kotlin.String, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int): kotlin.Unit declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Unit origin=null
+                        $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.trust.presentation.TrustFeature origin=null
+                          receiver: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                        providerId: GET_VAR 'providerId: kotlin.String declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.String origin=null
+                        $composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                        $changed: CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                          $this: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                            $this: CONST Int type=kotlin.Int value=14
+                            other: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                          other: CALL 'public final fun shl (bitCount: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                            $this: GET_FIELD 'FIELD name:$stable type:kotlin.Int visibility:public [final,static] declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Int origin=null
+                            bitCount: CONST Int type=kotlin.Int value=3
+                      WHEN type=kotlin.Unit origin=IF
+                        BRANCH
+                          if: CALL 'public final fun isTraceInProgress (): kotlin.Boolean declared in androidx.compose.runtime.ComposerKt' type=kotlin.Boolean origin=null
+                          then: CALL 'public final fun traceEventEnd (): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: CALL 'public abstract fun skipToGroupEnd (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                      $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+            FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final]
+            FUN BRIDGE name:invoke visibility:public modality:OPEN <> ($this:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>, p1:kotlin.Any?, p2:kotlin.Any?, p3:kotlin.Any?) returnType:kotlin.Any?
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+              VALUE_PARAMETER BRIDGE name:p1 index:0 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p2 index:1 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p3 index:2 type:kotlin.Any?
+              EXPRESSION_BODY
+                RETURN type=kotlin.Nothing from='public open fun invoke (p1: kotlin.Any?, p2: kotlin.Any?, p3: kotlin.Any?): kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>'
+                  CALL 'public final fun invoke (providerId: kotlin.String, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int): kotlin.Unit declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=kotlin.Unit origin=BRIDGE_DELEGATION
+                    $this: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                    providerId: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
+                      GET_VAR 'p1: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    $composer: TYPE_OP type=androidx.compose.runtime.Composer origin=IMPLICIT_CAST typeOperand=androidx.compose.runtime.Composer
+                      GET_VAR 'p2: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    $changed: TYPE_OP type=kotlin.Int origin=IMPLICIT_CAST typeOperand=kotlin.Int
+                      GET_VAR 'p3: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+          CONSTRUCTOR_CALL 'public/*package*/ constructor <init> ($trustFeature: co.munyati.trust.presentation.TrustFeature) [primary] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+            $trustFeature: GET_VAR 'val trustFeature: co.munyati.trust.presentation.TrustFeature [val] declared in co.munyati.app.composition.AppEnvironment' type=co.munyati.trust.presentation.TrustFeature origin=null
+    SET_FIELD 'FIELD name:lambda-2 type:kotlin.Function3<co.munyati.catalog.presentation.CatalogContentRef, androidx.compose.runtime.Composer, kotlin.Int, kotlin.Unit> visibility:internal [static] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt' type=kotlin.Unit origin=INITIALIZE_FIELD
+      value: CALL 'public final fun composableLambdaInstance (key: kotlin.Int, tracked: kotlin.Boolean, block: kotlin.Any): androidx.compose.runtime.internal.ComposableLambda declared in androidx.compose.runtime.internal.ComposableLambdaKt' type=androidx.compose.runtime.internal.ComposableLambda origin=null
+        key: CONST Int type=kotlin.Int value=-1602811269
+        tracked: CONST Boolean type=kotlin.Boolean value=false
+        block: BLOCK type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+          CLASS LAMBDA_IMPL CLASS name:<no name provided> modality:FINAL visibility:public/*package*/ superTypes:[kotlin.Any; kotlin.Function3<co.munyati.catalog.presentation.CatalogContentRef, androidx.compose.runtime.Composer, kotlin.Int, kotlin.Unit>]
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+            CONSTRUCTOR GENERATED_MEMBER_IN_CALLABLE_REFERENCE visibility:public/*package*/ <> ($trustFeature:co.munyati.trust.presentation.TrustFeature) returnType:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> [primary]
+              VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$trustFeature index:0 type:co.munyati.trust.presentation.TrustFeature
+              BLOCK_BODY
+                SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                  receiver: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                  value: GET_VAR '$trustFeature: co.munyati.trust.presentation.TrustFeature declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.<init>' type=co.munyati.trust.presentation.TrustFeature origin=null
+                DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () [primary] declared in kotlin.Any'
+                BLOCK type=kotlin.Unit origin=null
+            FUN name:invoke visibility:public modality:FINAL <> ($this:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>, ref:co.munyati.catalog.presentation.CatalogContentRef, $composer:androidx.compose.runtime.Composer?, $changed:kotlin.Int) returnType:kotlin.Unit
+              annotations:
+                Composable
+                ComposableTarget(applier = "androidx.compose.ui.UiComposable")
+              overridden:
+                public abstract fun invoke (p1: P1 of kotlin.Function3, p2: P2 of kotlin.Function3, p3: P3 of kotlin.Function3): R of kotlin.Function3 [operator] declared in kotlin.Function3
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+              VALUE_PARAMETER name:ref index:0 type:co.munyati.catalog.presentation.CatalogContentRef
+              VALUE_PARAMETER name:$composer index:1 type:androidx.compose.runtime.Composer? [assignable]
+              VALUE_PARAMETER name:$changed index:2 type:kotlin.Int
+              BLOCK_BODY
+                CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                  sourceInformation: CONST String type=kotlin.String value="C:AppEnvironment.kt#kzwmr4"
+                COMPOSITE type=kotlin.Unit origin=null
+                  WHEN type=kotlin.Unit origin=IF
+                    BRANCH
+                      if: CALL 'public final fun isTraceInProgress (): kotlin.Boolean declared in androidx.compose.runtime.ComposerKt' type=kotlin.Boolean origin=null
+                      then: CALL 'public final fun traceEventStart (key: kotlin.Int, dirty1: kotlin.Int, dirty2: kotlin.Int, info: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                        key: CONST Int type=kotlin.Int value=-1602811269
+                        dirty1: GET_VAR '$changed: kotlin.Int declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        dirty2: CONST Int type=kotlin.Int value=-1
+                        info: CONST String type=kotlin.String value="co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.lambda-2.<anonymous> (AppEnvironment.kt:182)"
+                  BLOCK type=kotlin.Unit origin=WHEN
+                    VAR IR_TEMPORARY_VARIABLE name:tmp0_subject type:co.munyati.catalog.presentation.CatalogContentRef [val]
+                      GET_VAR 'ref: co.munyati.catalog.presentation.CatalogContentRef declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.catalog.presentation.CatalogContentRef origin=null
+                    WHEN type=kotlin.Unit origin=WHEN
+                      BRANCH
+                        if: TYPE_OP type=kotlin.Boolean origin=INSTANCEOF typeOperand=co.munyati.catalog.presentation.CatalogContentRef.Provider
+                          GET_VAR 'val tmp0_subject: co.munyati.catalog.presentation.CatalogContentRef [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.catalog.presentation.CatalogContentRef origin=null
+                        then: BLOCK type=kotlin.Unit origin=null
+                          BLOCK type=kotlin.Unit origin=null
+                            CALL 'public abstract fun startReplaceGroup (key: kotlin.Int): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                              $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                              key: CONST Int type=kotlin.Int value=-1967140022
+                            CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                              composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                              sourceInformation: CONST String type=kotlin.String value="184@9322L61"
+                          CALL 'public final fun MoreMenu (target: co.munyati.trust.domain.ReportTarget, blockUserId: kotlin.String?, blockBookingId: kotlin.String?, onBlocked: kotlin.Function0<kotlin.Unit>?, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int, $default: kotlin.Int): kotlin.Unit declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Unit origin=null
+                            $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.trust.presentation.TrustFeature origin=null
+                              receiver: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                            target: CONSTRUCTOR_CALL 'public constructor <init> (id: kotlin.String) [primary] declared in co.munyati.trust.domain.ReportTarget.Provider' type=co.munyati.trust.domain.ReportTarget.Provider origin=null
+                              id: CALL 'public final fun <get-id> (): kotlin.String declared in co.munyati.catalog.presentation.CatalogContentRef.Provider' type=kotlin.String origin=GET_PROPERTY
+                                $this: TYPE_OP type=co.munyati.catalog.presentation.CatalogContentRef.Provider origin=IMPLICIT_CAST typeOperand=co.munyati.catalog.presentation.CatalogContentRef.Provider
+                                  GET_VAR 'ref: co.munyati.catalog.presentation.CatalogContentRef declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.catalog.presentation.CatalogContentRef origin=null
+                            blockUserId: CALL 'public final fun <get-id> (): kotlin.String declared in co.munyati.catalog.presentation.CatalogContentRef.Provider' type=kotlin.String origin=GET_PROPERTY
+                              $this: TYPE_OP type=co.munyati.catalog.presentation.CatalogContentRef.Provider origin=IMPLICIT_CAST typeOperand=co.munyati.catalog.presentation.CatalogContentRef.Provider
+                                GET_VAR 'ref: co.munyati.catalog.presentation.CatalogContentRef declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.catalog.presentation.CatalogContentRef origin=null
+                            blockBookingId: COMPOSITE type=kotlin.Nothing? origin=DEFAULT_VALUE
+                              CONST Null type=kotlin.Nothing? value=null
+                            onBlocked: COMPOSITE type=kotlin.Nothing? origin=DEFAULT_VALUE
+                              CONST Null type=kotlin.Nothing? value=null
+                            $composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                            $changed: CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                              $this: GET_FIELD 'FIELD name:$stable type:kotlin.Int visibility:public [final,static] declared in co.munyati.trust.domain.ReportTarget.Provider' type=kotlin.Int origin=null
+                              other: CALL 'public final fun shl (bitCount: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                                $this: GET_FIELD 'FIELD name:$stable type:kotlin.Int visibility:public [final,static] declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Int origin=null
+                                bitCount: CONST Int type=kotlin.Int value=12
+                            $default: CONST Int type=kotlin.Int value=12
+                          CALL 'public abstract fun endReplaceGroup (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                            $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                      BRANCH
+                        if: TYPE_OP type=kotlin.Boolean origin=INSTANCEOF typeOperand=co.munyati.catalog.presentation.CatalogContentRef.Service
+                          GET_VAR 'val tmp0_subject: co.munyati.catalog.presentation.CatalogContentRef [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.catalog.presentation.CatalogContentRef origin=null
+                        then: BLOCK type=kotlin.Unit origin=null
+                          BLOCK type=kotlin.Unit origin=null
+                            CALL 'public abstract fun startReplaceGroup (key: kotlin.Int): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                              $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                              key: CONST Int type=kotlin.Int value=-1967135981
+                            CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                              composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                              sourceInformation: CONST String type=kotlin.String value="185@9449L38"
+                          CALL 'public final fun MoreMenu (target: co.munyati.trust.domain.ReportTarget, blockUserId: kotlin.String?, blockBookingId: kotlin.String?, onBlocked: kotlin.Function0<kotlin.Unit>?, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int, $default: kotlin.Int): kotlin.Unit declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Unit origin=null
+                            $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.trust.presentation.TrustFeature origin=null
+                              receiver: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                            target: CONSTRUCTOR_CALL 'public constructor <init> (id: kotlin.String) [primary] declared in co.munyati.trust.domain.ReportTarget.Service' type=co.munyati.trust.domain.ReportTarget.Service origin=null
+                              id: CALL 'public final fun <get-id> (): kotlin.String declared in co.munyati.catalog.presentation.CatalogContentRef.Service' type=kotlin.String origin=GET_PROPERTY
+                                $this: TYPE_OP type=co.munyati.catalog.presentation.CatalogContentRef.Service origin=IMPLICIT_CAST typeOperand=co.munyati.catalog.presentation.CatalogContentRef.Service
+                                  GET_VAR 'ref: co.munyati.catalog.presentation.CatalogContentRef declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.catalog.presentation.CatalogContentRef origin=null
+                            blockUserId: COMPOSITE type=kotlin.Nothing? origin=DEFAULT_VALUE
+                              CONST Null type=kotlin.Nothing? value=null
+                            blockBookingId: COMPOSITE type=kotlin.Nothing? origin=DEFAULT_VALUE
+                              CONST Null type=kotlin.Nothing? value=null
+                            onBlocked: COMPOSITE type=kotlin.Nothing? origin=DEFAULT_VALUE
+                              CONST Null type=kotlin.Nothing? value=null
+                            $composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                            $changed: CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                              $this: GET_FIELD 'FIELD name:$stable type:kotlin.Int visibility:public [final,static] declared in co.munyati.trust.domain.ReportTarget.Service' type=kotlin.Int origin=null
+                              other: CALL 'public final fun shl (bitCount: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                                $this: GET_FIELD 'FIELD name:$stable type:kotlin.Int visibility:public [final,static] declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Int origin=null
+                                bitCount: CONST Int type=kotlin.Int value=12
+                            $default: CONST Int type=kotlin.Int value=14
+                          CALL 'public abstract fun endReplaceGroup (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                            $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                      BRANCH
+                        if: TYPE_OP type=kotlin.Boolean origin=INSTANCEOF typeOperand=co.munyati.catalog.presentation.CatalogContentRef.Store
+                          GET_VAR 'val tmp0_subject: co.munyati.catalog.presentation.CatalogContentRef [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.catalog.presentation.CatalogContentRef origin=null
+                        then: BLOCK type=kotlin.Unit origin=null
+                          BLOCK type=kotlin.Unit origin=null
+                            CALL 'public abstract fun startReplaceGroup (key: kotlin.Int): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                              $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                              key: CONST Int type=kotlin.Int value=-1967132719
+                            CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                              composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                              sourceInformation: CONST String type=kotlin.String value="186@9551L36"
+                          CALL 'public final fun MoreMenu (target: co.munyati.trust.domain.ReportTarget, blockUserId: kotlin.String?, blockBookingId: kotlin.String?, onBlocked: kotlin.Function0<kotlin.Unit>?, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int, $default: kotlin.Int): kotlin.Unit declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Unit origin=null
+                            $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.trust.presentation.TrustFeature origin=null
+                              receiver: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                            target: CONSTRUCTOR_CALL 'public constructor <init> (id: kotlin.String) [primary] declared in co.munyati.trust.domain.ReportTarget.Store' type=co.munyati.trust.domain.ReportTarget.Store origin=null
+                              id: CALL 'public final fun <get-id> (): kotlin.String declared in co.munyati.catalog.presentation.CatalogContentRef.Store' type=kotlin.String origin=GET_PROPERTY
+                                $this: TYPE_OP type=co.munyati.catalog.presentation.CatalogContentRef.Store origin=IMPLICIT_CAST typeOperand=co.munyati.catalog.presentation.CatalogContentRef.Store
+                                  GET_VAR 'ref: co.munyati.catalog.presentation.CatalogContentRef declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.catalog.presentation.CatalogContentRef origin=null
+                            blockUserId: COMPOSITE type=kotlin.Nothing? origin=DEFAULT_VALUE
+                              CONST Null type=kotlin.Nothing? value=null
+                            blockBookingId: COMPOSITE type=kotlin.Nothing? origin=DEFAULT_VALUE
+                              CONST Null type=kotlin.Nothing? value=null
+                            onBlocked: COMPOSITE type=kotlin.Nothing? origin=DEFAULT_VALUE
+                              CONST Null type=kotlin.Nothing? value=null
+                            $composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                            $changed: CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                              $this: GET_FIELD 'FIELD name:$stable type:kotlin.Int visibility:public [final,static] declared in co.munyati.trust.domain.ReportTarget.Store' type=kotlin.Int origin=null
+                              other: CALL 'public final fun shl (bitCount: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                                $this: GET_FIELD 'FIELD name:$stable type:kotlin.Int visibility:public [final,static] declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Int origin=null
+                                bitCount: CONST Int type=kotlin.Int value=12
+                            $default: CONST Int type=kotlin.Int value=14
+                          CALL 'public abstract fun endReplaceGroup (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                            $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                      BRANCH
+                        if: CONST Boolean type=kotlin.Boolean value=true
+                        then: BLOCK type=kotlin.Nothing origin=null
+                          CALL 'public abstract fun startReplaceGroup (key: kotlin.Int): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                            $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                            key: CONST Int type=kotlin.Int value=-1967145225
+                          CALL 'public abstract fun endReplaceGroup (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                            $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                          BLOCK type=kotlin.Nothing origin=null
+                            CALL 'public final fun noWhenBranchMatchedException (): kotlin.Nothing declared in kotlin.internal.ir' type=kotlin.Nothing origin=null
+                            CALL 'public final fun throwKotlinNothingValueException (): kotlin.Nothing declared in kotlin.jvm.internal.Intrinsics' type=kotlin.Nothing origin=null
+                  WHEN type=kotlin.Unit origin=IF
+                    BRANCH
+                      if: CALL 'public final fun isTraceInProgress (): kotlin.Boolean declared in androidx.compose.runtime.ComposerKt' type=kotlin.Boolean origin=null
+                      then: CALL 'public final fun traceEventEnd (): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+            FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final]
+            FUN BRIDGE name:invoke visibility:public modality:OPEN <> ($this:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>, p1:kotlin.Any?, p2:kotlin.Any?, p3:kotlin.Any?) returnType:kotlin.Any?
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+              VALUE_PARAMETER BRIDGE name:p1 index:0 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p2 index:1 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p3 index:2 type:kotlin.Any?
+              EXPRESSION_BODY
+                RETURN type=kotlin.Nothing from='public open fun invoke (p1: kotlin.Any?, p2: kotlin.Any?, p3: kotlin.Any?): kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>'
+                  CALL 'public final fun invoke (ref: co.munyati.catalog.presentation.CatalogContentRef, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int): kotlin.Unit declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=kotlin.Unit origin=BRIDGE_DELEGATION
+                    $this: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                    ref: TYPE_OP type=co.munyati.catalog.presentation.CatalogContentRef origin=IMPLICIT_CAST typeOperand=co.munyati.catalog.presentation.CatalogContentRef
+                      GET_VAR 'p1: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    $composer: TYPE_OP type=androidx.compose.runtime.Composer origin=IMPLICIT_CAST typeOperand=androidx.compose.runtime.Composer
+                      GET_VAR 'p2: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    $changed: TYPE_OP type=kotlin.Int origin=IMPLICIT_CAST typeOperand=kotlin.Int
+                      GET_VAR 'p3: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+          CONSTRUCTOR_CALL 'public/*package*/ constructor <init> ($trustFeature: co.munyati.trust.presentation.TrustFeature) [primary] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+            $trustFeature: GET_VAR 'val trustFeature: co.munyati.trust.presentation.TrustFeature [val] declared in co.munyati.app.composition.AppEnvironment' type=co.munyati.trust.presentation.TrustFeature origin=null
+    SET_FIELD 'FIELD name:lambda-3 type:kotlin.Function4<kotlin.String, co.munyati.booking.domain.BookingRole, androidx.compose.runtime.Composer, kotlin.Int, kotlin.Unit> visibility:internal [static] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt' type=kotlin.Unit origin=INITIALIZE_FIELD
+      value: CALL 'public final fun composableLambdaInstance (key: kotlin.Int, tracked: kotlin.Boolean, block: kotlin.Any): androidx.compose.runtime.internal.ComposableLambda declared in androidx.compose.runtime.internal.ComposableLambdaKt' type=androidx.compose.runtime.internal.ComposableLambda origin=null
+        key: CONST Int type=kotlin.Int value=861257676
+        tracked: CONST Boolean type=kotlin.Boolean value=false
+        block: BLOCK type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+          CLASS LAMBDA_IMPL CLASS name:<no name provided> modality:FINAL visibility:public/*package*/ superTypes:[kotlin.Any; kotlin.Function4<kotlin.String, co.munyati.booking.domain.BookingRole, androidx.compose.runtime.Composer, kotlin.Int, kotlin.Unit>]
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+            CONSTRUCTOR GENERATED_MEMBER_IN_CALLABLE_REFERENCE visibility:public/*package*/ <> ($trustFeature:co.munyati.trust.presentation.TrustFeature) returnType:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> [primary]
+              VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$trustFeature index:0 type:co.munyati.trust.presentation.TrustFeature
+              BLOCK_BODY
+                SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                  receiver: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                  value: GET_VAR '$trustFeature: co.munyati.trust.presentation.TrustFeature declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.<init>' type=co.munyati.trust.presentation.TrustFeature origin=null
+                DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () [primary] declared in kotlin.Any'
+                BLOCK type=kotlin.Unit origin=null
+            FUN name:invoke visibility:public modality:FINAL <> ($this:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>, id:kotlin.String, role:co.munyati.booking.domain.BookingRole, $composer:androidx.compose.runtime.Composer?, $changed:kotlin.Int) returnType:kotlin.Unit
+              annotations:
+                Composable
+                ComposableTarget(applier = "androidx.compose.ui.UiComposable")
+              overridden:
+                public abstract fun invoke (p1: P1 of kotlin.Function4, p2: P2 of kotlin.Function4, p3: P3 of kotlin.Function4, p4: P4 of kotlin.Function4): R of kotlin.Function4 [operator] declared in kotlin.Function4
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+              VALUE_PARAMETER name:id index:0 type:kotlin.String
+              VALUE_PARAMETER name:role index:1 type:co.munyati.booking.domain.BookingRole
+              VALUE_PARAMETER name:$composer index:2 type:androidx.compose.runtime.Composer? [assignable]
+              VALUE_PARAMETER name:$changed index:3 type:kotlin.Int
+              BLOCK_BODY
+                CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                  sourceInformation: CONST String type=kotlin.String value="C191@9729L101:AppEnvironment.kt#kzwmr4"
+                VAR name:$dirty type:kotlin.Int [val]
+                  GET_VAR '$changed: kotlin.Int declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                WHEN type=kotlin.Unit origin=IF
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                      arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                        $this: GET_VAR '$changed: kotlin.Int declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        other: CONST Int type=kotlin.Int value=6
+                      arg1: CONST Int type=kotlin.Int value=0
+                    then: SET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Unit origin=null
+                      CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                        $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        other: WHEN type=kotlin.Int origin=IF
+                          BRANCH
+                            if: CALL 'public abstract fun changed (value: kotlin.Any?): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                              $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                              value: GET_VAR 'id: kotlin.String declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.String origin=null
+                            then: CONST Int type=kotlin.Int value=4
+                          BRANCH
+                            if: CONST Boolean type=kotlin.Boolean value=true
+                            then: CONST Int type=kotlin.Int value=2
+                WHEN type=kotlin.Unit origin=IF
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                      arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                        $this: GET_VAR '$changed: kotlin.Int declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        other: CONST Int type=kotlin.Int value=48
+                      arg1: CONST Int type=kotlin.Int value=0
+                    then: SET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Unit origin=null
+                      CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                        $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        other: WHEN type=kotlin.Int origin=IF
+                          BRANCH
+                            if: CALL 'public abstract fun changed (value: kotlin.Any?): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                              $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                              value: GET_VAR 'role: co.munyati.booking.domain.BookingRole declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.booking.domain.BookingRole origin=null
+                            then: CONST Int type=kotlin.Int value=32
+                          BRANCH
+                            if: CONST Boolean type=kotlin.Boolean value=true
+                            then: CONST Int type=kotlin.Int value=16
+                WHEN type=kotlin.Unit origin=IF
+                  BRANCH
+                    if: CALL 'public final fun OROR (arg0: kotlin.Boolean, arg1: kotlin.Boolean): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                      arg0: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                        $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                          arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                            $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                            other: CONST Int type=kotlin.Int value=147
+                          arg1: CONST Int type=kotlin.Int value=146
+                      arg1: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                        $this: CALL 'public abstract fun <get-skipping> (): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                          $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                    then: BLOCK type=kotlin.Unit origin=null
+                      WHEN type=kotlin.Unit origin=IF
+                        BRANCH
+                          if: CALL 'public final fun isTraceInProgress (): kotlin.Boolean declared in androidx.compose.runtime.ComposerKt' type=kotlin.Boolean origin=null
+                          then: CALL 'public final fun traceEventStart (key: kotlin.Int, dirty1: kotlin.Int, dirty2: kotlin.Int, info: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                            key: CONST Int type=kotlin.Int value=861257676
+                            dirty1: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                            dirty2: CONST Int type=kotlin.Int value=-1
+                            info: CONST String type=kotlin.String value="co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.lambda-3.<anonymous> (AppEnvironment.kt:191)"
+                      CALL 'public final fun BookingReviewSection (bookingId: kotlin.String, role: co.munyati.trust.domain.ReviewRole, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int): kotlin.Unit declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Unit origin=null
+                        $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.trust.presentation.TrustFeature origin=null
+                          receiver: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                        bookingId: GET_VAR 'id: kotlin.String declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.String origin=null
+                        role: WHEN type=co.munyati.trust.domain.ReviewRole origin=IF
+                          BRANCH
+                            if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=EQEQ
+                              arg0: GET_VAR 'role: co.munyati.booking.domain.BookingRole declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.booking.domain.BookingRole origin=null
+                              arg1: GET_FIELD 'FIELD FIELD_FOR_ENUM_ENTRY name:Provider type:co.munyati.booking.domain.BookingRole visibility:public [final,static] declared in co.munyati.booking.domain.BookingRole' type=co.munyati.booking.domain.BookingRole origin=null
+                            then: GET_FIELD 'FIELD FIELD_FOR_ENUM_ENTRY name:Provider type:co.munyati.trust.domain.ReviewRole visibility:public [final,static] declared in co.munyati.trust.domain.ReviewRole' type=co.munyati.trust.domain.ReviewRole origin=null
+                          BRANCH
+                            if: CONST Boolean type=kotlin.Boolean value=true
+                            then: GET_FIELD 'FIELD FIELD_FOR_ENUM_ENTRY name:Bride type:co.munyati.trust.domain.ReviewRole visibility:public [final,static] declared in co.munyati.trust.domain.ReviewRole' type=co.munyati.trust.domain.ReviewRole origin=null
+                        $composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                        $changed: CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                          $this: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                            $this: CONST Int type=kotlin.Int value=14
+                            other: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                          other: CALL 'public final fun shl (bitCount: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                            $this: GET_FIELD 'FIELD name:$stable type:kotlin.Int visibility:public [final,static] declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Int origin=null
+                            bitCount: CONST Int type=kotlin.Int value=6
+                      WHEN type=kotlin.Unit origin=IF
+                        BRANCH
+                          if: CALL 'public final fun isTraceInProgress (): kotlin.Boolean declared in androidx.compose.runtime.ComposerKt' type=kotlin.Boolean origin=null
+                          then: CALL 'public final fun traceEventEnd (): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: CALL 'public abstract fun skipToGroupEnd (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                      $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+            FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final]
+            FUN BRIDGE name:invoke visibility:public modality:OPEN <> ($this:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>, p1:kotlin.Any?, p2:kotlin.Any?, p3:kotlin.Any?, p4:kotlin.Any?) returnType:kotlin.Any?
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+              VALUE_PARAMETER BRIDGE name:p1 index:0 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p2 index:1 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p3 index:2 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p4 index:3 type:kotlin.Any?
+              EXPRESSION_BODY
+                RETURN type=kotlin.Nothing from='public open fun invoke (p1: kotlin.Any?, p2: kotlin.Any?, p3: kotlin.Any?, p4: kotlin.Any?): kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>'
+                  CALL 'public final fun invoke (id: kotlin.String, role: co.munyati.booking.domain.BookingRole, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int): kotlin.Unit declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=kotlin.Unit origin=BRIDGE_DELEGATION
+                    $this: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                    id: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
+                      GET_VAR 'p1: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    role: TYPE_OP type=co.munyati.booking.domain.BookingRole origin=IMPLICIT_CAST typeOperand=co.munyati.booking.domain.BookingRole
+                      GET_VAR 'p2: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    $composer: TYPE_OP type=androidx.compose.runtime.Composer origin=IMPLICIT_CAST typeOperand=androidx.compose.runtime.Composer
+                      GET_VAR 'p3: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    $changed: TYPE_OP type=kotlin.Int origin=IMPLICIT_CAST typeOperand=kotlin.Int
+                      GET_VAR 'p4: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+          CONSTRUCTOR_CALL 'public/*package*/ constructor <init> ($trustFeature: co.munyati.trust.presentation.TrustFeature) [primary] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+            $trustFeature: GET_VAR 'val trustFeature: co.munyati.trust.presentation.TrustFeature [val] declared in co.munyati.app.composition.AppEnvironment' type=co.munyati.trust.presentation.TrustFeature origin=null
+    SET_FIELD 'FIELD name:lambda-4 type:kotlin.Function3<kotlin.String, androidx.compose.runtime.Composer, kotlin.Int, kotlin.Unit> visibility:internal [static] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt' type=kotlin.Unit origin=INITIALIZE_FIELD
+      value: CALL 'public final fun composableLambdaInstance (key: kotlin.Int, tracked: kotlin.Boolean, block: kotlin.Any): androidx.compose.runtime.internal.ComposableLambda declared in androidx.compose.runtime.internal.ComposableLambdaKt' type=androidx.compose.runtime.internal.ComposableLambda origin=null
+        key: CONST Int type=kotlin.Int value=1921070416
+        tracked: CONST Boolean type=kotlin.Boolean value=false
+        block: BLOCK type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+          CLASS LAMBDA_IMPL CLASS name:<no name provided> modality:FINAL visibility:public/*package*/ superTypes:[kotlin.Any; kotlin.Function3<kotlin.String, androidx.compose.runtime.Composer, kotlin.Int, kotlin.Unit>]
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+            CONSTRUCTOR GENERATED_MEMBER_IN_CALLABLE_REFERENCE visibility:public/*package*/ <> ($trustFeature:co.munyati.trust.presentation.TrustFeature) returnType:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> [primary]
+              VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$trustFeature index:0 type:co.munyati.trust.presentation.TrustFeature
+              BLOCK_BODY
+                SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                  receiver: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                  value: GET_VAR '$trustFeature: co.munyati.trust.presentation.TrustFeature declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.<init>' type=co.munyati.trust.presentation.TrustFeature origin=null
+                DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () [primary] declared in kotlin.Any'
+                BLOCK type=kotlin.Unit origin=null
+            FUN name:invoke visibility:public modality:FINAL <> ($this:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>, id:kotlin.String, $composer:androidx.compose.runtime.Composer?, $changed:kotlin.Int) returnType:kotlin.Unit
+              annotations:
+                Composable
+                ComposableTarget(applier = "androidx.compose.ui.UiComposable")
+              overridden:
+                public abstract fun invoke (p1: P1 of kotlin.Function3, p2: P2 of kotlin.Function3, p3: P3 of kotlin.Function3): R of kotlin.Function3 [operator] declared in kotlin.Function3
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+              VALUE_PARAMETER name:id index:0 type:kotlin.String
+              VALUE_PARAMETER name:$composer index:1 type:androidx.compose.runtime.Composer? [assignable]
+              VALUE_PARAMETER name:$changed index:2 type:kotlin.Int
+              BLOCK_BODY
+                CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                  sourceInformation: CONST String type=kotlin.String value="C192@9878L55:AppEnvironment.kt#kzwmr4"
+                VAR name:$dirty type:kotlin.Int [val]
+                  GET_VAR '$changed: kotlin.Int declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                WHEN type=kotlin.Unit origin=IF
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                      arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                        $this: GET_VAR '$changed: kotlin.Int declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        other: CONST Int type=kotlin.Int value=6
+                      arg1: CONST Int type=kotlin.Int value=0
+                    then: SET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Unit origin=null
+                      CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                        $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        other: WHEN type=kotlin.Int origin=IF
+                          BRANCH
+                            if: CALL 'public abstract fun changed (value: kotlin.Any?): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                              $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                              value: GET_VAR 'id: kotlin.String declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.String origin=null
+                            then: CONST Int type=kotlin.Int value=4
+                          BRANCH
+                            if: CONST Boolean type=kotlin.Boolean value=true
+                            then: CONST Int type=kotlin.Int value=2
+                WHEN type=kotlin.Unit origin=IF
+                  BRANCH
+                    if: CALL 'public final fun OROR (arg0: kotlin.Boolean, arg1: kotlin.Boolean): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                      arg0: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                        $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                          arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                            $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                            other: CONST Int type=kotlin.Int value=19
+                          arg1: CONST Int type=kotlin.Int value=18
+                      arg1: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                        $this: CALL 'public abstract fun <get-skipping> (): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                          $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                    then: BLOCK type=kotlin.Unit origin=null
+                      WHEN type=kotlin.Unit origin=IF
+                        BRANCH
+                          if: CALL 'public final fun isTraceInProgress (): kotlin.Boolean declared in androidx.compose.runtime.ComposerKt' type=kotlin.Boolean origin=null
+                          then: CALL 'public final fun traceEventStart (key: kotlin.Int, dirty1: kotlin.Int, dirty2: kotlin.Int, info: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                            key: CONST Int type=kotlin.Int value=1921070416
+                            dirty1: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                            dirty2: CONST Int type=kotlin.Int value=-1
+                            info: CONST String type=kotlin.String value="co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.lambda-4.<anonymous> (AppEnvironment.kt:192)"
+                      CALL 'public final fun MoreMenu (target: co.munyati.trust.domain.ReportTarget, blockUserId: kotlin.String?, blockBookingId: kotlin.String?, onBlocked: kotlin.Function0<kotlin.Unit>?, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int, $default: kotlin.Int): kotlin.Unit declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Unit origin=null
+                        $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.trust.presentation.TrustFeature origin=null
+                          receiver: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                        target: CONSTRUCTOR_CALL 'public constructor <init> (id: kotlin.String) [primary] declared in co.munyati.trust.domain.ReportTarget.Booking' type=co.munyati.trust.domain.ReportTarget.Booking origin=null
+                          id: GET_VAR 'id: kotlin.String declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.String origin=null
+                        blockUserId: COMPOSITE type=kotlin.Nothing? origin=DEFAULT_VALUE
+                          CONST Null type=kotlin.Nothing? value=null
+                        blockBookingId: GET_VAR 'id: kotlin.String declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.String origin=null
+                        onBlocked: COMPOSITE type=kotlin.Nothing? origin=DEFAULT_VALUE
+                          CONST Null type=kotlin.Nothing? value=null
+                        $composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                        $changed: CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                          $this: CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                            $this: GET_FIELD 'FIELD name:$stable type:kotlin.Int visibility:public [final,static] declared in co.munyati.trust.domain.ReportTarget.Booking' type=kotlin.Int origin=null
+                            other: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                              $this: CONST Int type=kotlin.Int value=896
+                              other: CALL 'public final fun shl (bitCount: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                                $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                                bitCount: CONST Int type=kotlin.Int value=6
+                          other: CALL 'public final fun shl (bitCount: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                            $this: GET_FIELD 'FIELD name:$stable type:kotlin.Int visibility:public [final,static] declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Int origin=null
+                            bitCount: CONST Int type=kotlin.Int value=12
+                        $default: CONST Int type=kotlin.Int value=10
+                      WHEN type=kotlin.Unit origin=IF
+                        BRANCH
+                          if: CALL 'public final fun isTraceInProgress (): kotlin.Boolean declared in androidx.compose.runtime.ComposerKt' type=kotlin.Boolean origin=null
+                          then: CALL 'public final fun traceEventEnd (): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: CALL 'public abstract fun skipToGroupEnd (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                      $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+            FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final]
+            FUN BRIDGE name:invoke visibility:public modality:OPEN <> ($this:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>, p1:kotlin.Any?, p2:kotlin.Any?, p3:kotlin.Any?) returnType:kotlin.Any?
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+              VALUE_PARAMETER BRIDGE name:p1 index:0 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p2 index:1 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p3 index:2 type:kotlin.Any?
+              EXPRESSION_BODY
+                RETURN type=kotlin.Nothing from='public open fun invoke (p1: kotlin.Any?, p2: kotlin.Any?, p3: kotlin.Any?): kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>'
+                  CALL 'public final fun invoke (id: kotlin.String, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int): kotlin.Unit declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=kotlin.Unit origin=BRIDGE_DELEGATION
+                    $this: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                    id: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
+                      GET_VAR 'p1: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    $composer: TYPE_OP type=androidx.compose.runtime.Composer origin=IMPLICIT_CAST typeOperand=androidx.compose.runtime.Composer
+                      GET_VAR 'p2: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    $changed: TYPE_OP type=kotlin.Int origin=IMPLICIT_CAST typeOperand=kotlin.Int
+                      GET_VAR 'p3: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+          CONSTRUCTOR_CALL 'public/*package*/ constructor <init> ($trustFeature: co.munyati.trust.presentation.TrustFeature) [primary] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+            $trustFeature: GET_VAR 'val trustFeature: co.munyati.trust.presentation.TrustFeature [val] declared in co.munyati.app.composition.AppEnvironment' type=co.munyati.trust.presentation.TrustFeature origin=null
+    SET_FIELD 'FIELD name:lambda-5 type:kotlin.Function4<kotlin.String, kotlin.Function0<kotlin.Unit>, androidx.compose.runtime.Composer, kotlin.Int, kotlin.Unit> visibility:internal [static] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt' type=kotlin.Unit origin=INITIALIZE_FIELD
+      value: CALL 'public final fun composableLambdaInstance (key: kotlin.Int, tracked: kotlin.Boolean, block: kotlin.Any): androidx.compose.runtime.internal.ComposableLambda declared in androidx.compose.runtime.internal.ComposableLambdaKt' type=androidx.compose.runtime.internal.ComposableLambda origin=null
+        key: CONST Int type=kotlin.Int value=-1528791803
+        tracked: CONST Boolean type=kotlin.Boolean value=false
+        block: BLOCK type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+          CLASS LAMBDA_IMPL CLASS name:<no name provided> modality:FINAL visibility:public/*package*/ superTypes:[kotlin.Any; kotlin.Function4<kotlin.String, kotlin.Function0<kotlin.Unit>, androidx.compose.runtime.Composer, kotlin.Int, kotlin.Unit>]
+            $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+            CONSTRUCTOR GENERATED_MEMBER_IN_CALLABLE_REFERENCE visibility:public/*package*/ <> ($trustFeature:co.munyati.trust.presentation.TrustFeature) returnType:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> [primary]
+              VALUE_PARAMETER BOUND_VALUE_PARAMETER name:$trustFeature index:0 type:co.munyati.trust.presentation.TrustFeature
+              BLOCK_BODY
+                SET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=kotlin.Unit origin=INITIALIZER_OF_FIELD_FOR_CAPTURED_VALUE
+                  receiver: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                  value: GET_VAR '$trustFeature: co.munyati.trust.presentation.TrustFeature declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.<init>' type=co.munyati.trust.presentation.TrustFeature origin=null
+                DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> () [primary] declared in kotlin.Any'
+                BLOCK type=kotlin.Unit origin=null
+            FUN name:invoke visibility:public modality:FINAL <> ($this:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>, id:kotlin.String, onDismiss:kotlin.Function0<kotlin.Unit>, $composer:androidx.compose.runtime.Composer?, $changed:kotlin.Int) returnType:kotlin.Unit
+              annotations:
+                Composable
+                ComposableTarget(applier = "androidx.compose.ui.UiComposable")
+              overridden:
+                public abstract fun invoke (p1: P1 of kotlin.Function4, p2: P2 of kotlin.Function4, p3: P3 of kotlin.Function4, p4: P4 of kotlin.Function4): R of kotlin.Function4 [operator] declared in kotlin.Function4
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+              VALUE_PARAMETER name:id index:0 type:kotlin.String
+              VALUE_PARAMETER name:onDismiss index:1 type:kotlin.Function0<kotlin.Unit>
+              VALUE_PARAMETER name:$composer index:2 type:androidx.compose.runtime.Composer? [assignable]
+              VALUE_PARAMETER name:$changed index:3 type:kotlin.Int
+              BLOCK_BODY
+                CALL 'public final fun sourceInformation (composer: androidx.compose.runtime.Composer, sourceInformation: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                  sourceInformation: CONST String type=kotlin.String value="C193@9993L26:AppEnvironment.kt#kzwmr4"
+                VAR name:$dirty type:kotlin.Int [val]
+                  GET_VAR '$changed: kotlin.Int declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                WHEN type=kotlin.Unit origin=IF
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                      arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                        $this: GET_VAR '$changed: kotlin.Int declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        other: CONST Int type=kotlin.Int value=6
+                      arg1: CONST Int type=kotlin.Int value=0
+                    then: SET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Unit origin=null
+                      CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                        $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        other: WHEN type=kotlin.Int origin=IF
+                          BRANCH
+                            if: CALL 'public abstract fun changed (value: kotlin.Any?): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                              $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                              value: GET_VAR 'id: kotlin.String declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.String origin=null
+                            then: CONST Int type=kotlin.Int value=4
+                          BRANCH
+                            if: CONST Boolean type=kotlin.Boolean value=true
+                            then: CONST Int type=kotlin.Int value=2
+                WHEN type=kotlin.Unit origin=IF
+                  BRANCH
+                    if: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                      arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                        $this: GET_VAR '$changed: kotlin.Int declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        other: CONST Int type=kotlin.Int value=48
+                      arg1: CONST Int type=kotlin.Int value=0
+                    then: SET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Unit origin=null
+                      CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                        $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                        other: WHEN type=kotlin.Int origin=IF
+                          BRANCH
+                            if: CALL 'public open fun changedInstance (value: kotlin.Any?): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                              $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                              value: GET_VAR 'onDismiss: kotlin.Function0<kotlin.Unit> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Function0<kotlin.Unit> origin=null
+                            then: CONST Int type=kotlin.Int value=32
+                          BRANCH
+                            if: CONST Boolean type=kotlin.Boolean value=true
+                            then: CONST Int type=kotlin.Int value=16
+                WHEN type=kotlin.Unit origin=IF
+                  BRANCH
+                    if: CALL 'public final fun OROR (arg0: kotlin.Boolean, arg1: kotlin.Boolean): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                      arg0: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                        $this: CALL 'public final fun EQEQ (arg0: kotlin.Any?, arg1: kotlin.Any?): kotlin.Boolean declared in kotlin.internal.ir' type=kotlin.Boolean origin=null
+                          arg0: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                            $this: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                            other: CONST Int type=kotlin.Int value=147
+                          arg1: CONST Int type=kotlin.Int value=146
+                      arg1: CALL 'public final fun not (): kotlin.Boolean [operator] declared in kotlin.Boolean' type=kotlin.Boolean origin=null
+                        $this: CALL 'public abstract fun <get-skipping> (): kotlin.Boolean declared in androidx.compose.runtime.Composer' type=kotlin.Boolean origin=null
+                          $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                    then: BLOCK type=kotlin.Unit origin=null
+                      WHEN type=kotlin.Unit origin=IF
+                        BRANCH
+                          if: CALL 'public final fun isTraceInProgress (): kotlin.Boolean declared in androidx.compose.runtime.ComposerKt' type=kotlin.Boolean origin=null
+                          then: CALL 'public final fun traceEventStart (key: kotlin.Int, dirty1: kotlin.Int, dirty2: kotlin.Int, info: kotlin.String): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                            key: CONST Int type=kotlin.Int value=-1528791803
+                            dirty1: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                            dirty2: CONST Int type=kotlin.Int value=-1
+                            info: CONST String type=kotlin.String value="co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.lambda-5.<anonymous> (AppEnvironment.kt:193)"
+                      CALL 'public final fun TicketSheet (bookingId: kotlin.String?, onDismiss: kotlin.Function0<kotlin.Unit>, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int): kotlin.Unit declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Unit origin=null
+                        $this: GET_FIELD 'FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.trust.presentation.TrustFeature origin=null
+                          receiver: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                        bookingId: GET_VAR 'id: kotlin.String declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.String origin=null
+                        onDismiss: GET_VAR 'onDismiss: kotlin.Function0<kotlin.Unit> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Function0<kotlin.Unit> origin=null
+                        $composer: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+                        $changed: CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                          $this: CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                            $this: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                              $this: CONST Int type=kotlin.Int value=14
+                              other: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                            other: CALL 'public final fun and (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                              $this: CONST Int type=kotlin.Int value=112
+                              other: GET_VAR 'val $dirty: kotlin.Int [val] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Int origin=null
+                          other: CALL 'public final fun shl (bitCount: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+                            $this: GET_FIELD 'FIELD name:$stable type:kotlin.Int visibility:public [final,static] declared in co.munyati.trust.presentation.TrustFeature' type=kotlin.Int origin=null
+                            bitCount: CONST Int type=kotlin.Int value=6
+                      WHEN type=kotlin.Unit origin=IF
+                        BRANCH
+                          if: CALL 'public final fun isTraceInProgress (): kotlin.Boolean declared in androidx.compose.runtime.ComposerKt' type=kotlin.Boolean origin=null
+                          then: CALL 'public final fun traceEventEnd (): kotlin.Unit declared in androidx.compose.runtime.ComposerKt' type=kotlin.Unit origin=null
+                  BRANCH
+                    if: CONST Boolean type=kotlin.Boolean value=true
+                    then: CALL 'public abstract fun skipToGroupEnd (): kotlin.Unit declared in androidx.compose.runtime.Composer' type=kotlin.Unit origin=null
+                      $this: GET_VAR '$composer: androidx.compose.runtime.Composer? [assignable] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=androidx.compose.runtime.Composer? origin=null
+            FIELD FIELD_FOR_CAPTURED_VALUE name:$trustFeature type:co.munyati.trust.presentation.TrustFeature visibility:public/*package*/ [final]
+            FUN BRIDGE name:invoke visibility:public modality:OPEN <> ($this:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>, p1:kotlin.Any?, p2:kotlin.Any?, p3:kotlin.Any?, p4:kotlin.Any?) returnType:kotlin.Any?
+              $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>
+              VALUE_PARAMETER BRIDGE name:p1 index:0 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p2 index:1 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p3 index:2 type:kotlin.Any?
+              VALUE_PARAMETER BRIDGE name:p4 index:3 type:kotlin.Any?
+              EXPRESSION_BODY
+                RETURN type=kotlin.Nothing from='public open fun invoke (p1: kotlin.Any?, p2: kotlin.Any?, p3: kotlin.Any?, p4: kotlin.Any?): kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>'
+                  CALL 'public final fun invoke (id: kotlin.String, onDismiss: kotlin.Function0<kotlin.Unit>, $composer: androidx.compose.runtime.Composer?, $changed: kotlin.Int): kotlin.Unit declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=kotlin.Unit origin=BRIDGE_DELEGATION
+                    $this: GET_VAR '<this>: co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+                    id: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
+                      GET_VAR 'p1: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    onDismiss: TYPE_OP type=kotlin.Function0<*> origin=IMPLICIT_CAST typeOperand=kotlin.Function0<*>
+                      GET_VAR 'p2: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    $composer: TYPE_OP type=androidx.compose.runtime.Composer origin=IMPLICIT_CAST typeOperand=androidx.compose.runtime.Composer
+                      GET_VAR 'p3: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+                    $changed: TYPE_OP type=kotlin.Int origin=IMPLICIT_CAST typeOperand=kotlin.Int
+                      GET_VAR 'p4: kotlin.Any? declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>.invoke' type=kotlin.Any? origin=null
+          CONSTRUCTOR_CALL 'public/*package*/ constructor <init> ($trustFeature: co.munyati.trust.presentation.TrustFeature) [primary] declared in co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided>' type=co.munyati.app.composition.ComposableSingletons$AppEnvironmentKt.<clinit>.<no name provided> origin=null
+            $trustFeature: GET_VAR 'val trustFeature: co.munyati.trust.presentation.TrustFeature [val] declared in co.munyati.app.composition.AppEnvironment' type=co.munyati.trust.presentation.TrustFeature origin=null
+
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:47)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate$default(FunctionCodegen.kt:40)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generateMethodNode(ClassCodegen.kt:406)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generateMethod(ClassCodegen.kt:423)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generate(ClassCodegen.kt:172)
+	at org.jetbrains.kotlin.backend.jvm.FileCodegen.lower(JvmPhases.kt:39)
+	at org.jetbrains.kotlin.backend.common.phaser.PhaseFactoriesKt.createFilePhase$lambda$4(PhaseFactories.kt:71)
+	at org.jetbrains.kotlin.backend.common.phaser.PhaseBuildersKt$createSimpleNamedCompilerPhase$1.phaseBody(PhaseBuilders.kt:69)
+	at org.jetbrains.kotlin.backend.common.phaser.SimpleNamedCompilerPhase.phaseBody(CompilerPhase.kt:226)
+	at org.jetbrains.kotlin.backend.common.phaser.AbstractNamedCompilerPhase.invoke(CompilerPhase.kt:113)
+	at org.jetbrains.kotlin.backend.common.phaser.PerformByIrFilePhase.invokeSequential(performByIrFile.kt:62)
+	... 44 more
+Caused by: java.lang.IllegalStateException: No mapping for symbol: VAR name:trustFeature type:co.munyati.trust.presentation.TrustFeature [val]
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrFrameMap.typeOf(irCodegenUtils.kt:59)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitGetValue(ExpressionCodegen.kt:807)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitGetValue(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrGetValue.accept(IrGetValue.kt:18)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.gen(ExpressionCodegen.kt:217)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.generateConstructorArguments(ExpressionCodegen.kt:771)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitConstructorCall(ExpressionCodegen.kt:759)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitConstructorCall(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrConstructorCall.accept(IrConstructorCall.kt:27)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:579)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitContainerExpression(ExpressionCodegen.kt:593)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitContainerExpression(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitBlock(IrElementVisitor.kt:122)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlock(ExpressionCodegen.kt:413)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlock(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrBlock.accept(IrBlock.kt:18)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.gen(ExpressionCodegen.kt:217)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrCallGenerator.genValueAndPut(IrCallGenerator.kt:48)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall$handleParameter(ExpressionCodegen.kt:616)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:644)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrCall.accept(IrCall.kt:24)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitFieldAccess(ExpressionCodegen.kt:878)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitFieldAccess(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.visitors.IrElementVisitor$DefaultImpls.visitSetField(IrElementVisitor.kt:206)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitSetField(ExpressionCodegen.kt:908)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitSetField(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrSetField.accept(IrSetField.kt:21)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:579)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:584)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:138)
+	at org.jetbrains.kotlin.ir.expressions.IrBlockBody.accept(IrBlockBody.kt:20)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.generate(ExpressionCodegen.kt:240)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.doGenerate(FunctionCodegen.kt:123)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:44)
+	... 54 more
+
+

@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>منيتي — الرئيسية</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&amp;family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#8A0D3A}a:hover{color:#5E0827}
+</style>
+</helmet>
+<div dir="rtl" style="width: 390px; height: 844px; box-sizing: border-box; background: #FAFAEC; color: #2A1420; font-family: 'IBM Plex Sans Arabic', sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="flex: 1; overflow: hidden; display: flex; flex-direction: column; gap: 18px; padding: 56px 20px 16px">
+
+    <div style="display: flex; align-items: center; gap: 12px">
+      <div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 13px; color: #6B5560">مساء الخير</span>
+        <span style="font-family: Amiri, serif; font-size: 26px; font-weight: 700; line-height: 1.2">نورة ✦</span>
+      </div>
+      <button type="button" style="display: flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 22px; border: 1px solid #E9DCC6; background: #FFFFFF; color: #2A1420; font: 500 13px 'IBM Plex Sans Arabic', sans-serif">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A0D3A" stroke-width="1.8" aria-hidden="true"><path d="M12 21 C12 21 5 14.5 5 9.5 A7 7 0 0 1 19 9.5 C19 14.5 12 21 12 21Z"></path><circle cx="12" cy="9.5" r="2.5"></circle></svg>
+        الدمام، الخبر +١
+      </button>
+      <button type="button" aria-label="الإشعارات" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #E9DCC6; background: #FFFFFF; display: flex; align-items: center; justify-content: center; position: relative">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2A1420" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 16 V11 A6 6 0 0 1 18 11 V16 L20 18 H4 Z"></path><path d="M10 21 H14"></path></svg>
+        <span style="position: absolute; top: 10px; left: 11px; width: 8px; height: 8px; border-radius: 4px; background: #8A0D3A"></span>
+      </button>
+    </div>
+
+    <div style="background: #8A0D3A; color: #FAFAEC; border-radius: 24px; padding: 18px 20px; display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <span style="font-size: 14px; font-weight: 600; opacity: 0.9">ميزانية زفافي</span>
+        <span style="font-size: 12px; padding: 4px 10px; border-radius: 12px; background: rgba(250,250,236,0.14)">تعديل</span>
+      </div>
+      <div style="display: flex; align-items: baseline; gap: 8px">
+        <span style="font-size: 30px; font-weight: 700; letter-spacing: -0.5px">١٦٬٥٠٠</span>
+        <span style="font-size: 14px; opacity: 0.85">ر.س متبقية من ٢٥٬٠٠٠</span>
+      </div>
+      <div style="height: 8px; border-radius: 4px; background: rgba(250,250,236,0.18); overflow: hidden; display: flex; justify-content: flex-start">
+        <span style="width: 34%; height: 8px; border-radius: 4px; background: #DFC389"></span>
+      </div>
+      <div style="display: flex; gap: 16px; font-size: 12.5px; opacity: 0.9">
+        <span>محجوز: ٨٬٥٠٠ ر.س</span>
+        <span>٣ خدمات</span>
+      </div>
+    </div>
+
+    <label style="display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 16px; border-radius: 16px; background: #FFFFFF; border: 1px solid #E9DCC6">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6B5560" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20 L16 16"></path></svg>
+      <input type="search" placeholder="ابحثي عن خدمة أو مقدّمة خدمة" aria-label="بحث" style="flex: 1; border: none; outline: none; background: transparent; font: 400 14.5px 'IBM Plex Sans Arabic', sans-serif; color: #2A1420">
+    </label>
+
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <h2 style="margin: 0; font-size: 17px; font-weight: 700">الأقسام</h2>
+        <a href="Home.dc.html" style="font-size: 13px; font-weight: 600; text-decoration: none">عرض الكل</a>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 8px">
+        <sc-for list="{{cats}}" as="c" hint-placeholder-count="8">
+          <a href="Provider.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 6px; text-decoration: none; color: #2A1420">
+            <span style="width: 60px; height: 60px; border-radius: 20px; background: #F2E5D2; display: flex; align-items: center; justify-content: center">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#8A0D3A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="{{c.icon}}"></path></svg>
+            </span>
+            <span style="font-size: 12px; font-weight: 500; text-align: center">{{c.name}}</span>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 12px">
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <h2 style="margin: 0; font-size: 17px; font-weight: 700">مختارات ضمن ميزانيتك</h2>
+        <span style="font-size: 12px; color: #6B5560">طاقم نسائي فقط ◦</span>
+      </div>
+      <div style="display: flex; gap: 12px">
+        <sc-for list="{{featured}}" as="p" hint-placeholder-count="2">
+          <a href="Provider.dc.html" style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px; text-decoration: none; color: #2A1420">
+            <span style="height: 96px; border-radius: 18px; background: #F2E5D2; display: flex; align-items: flex-end; justify-content: flex-start; padding: 8px; box-sizing: border-box">
+              <span style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 10px; background: #FAFAEC; color: #8A0D3A">{{p.cat}}</span>
+            </span>
+            <span style="font-size: 14px; font-weight: 700">{{p.name}}</span>
+            <span style="display: flex; justify-content: space-between; font-size: 12.5px; color: #6B5560">
+              <span>★ {{p.rating}}</span>
+              <span>من {{p.price}} ر.س</span>
+            </span>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <nav aria-label="التبويبات" style="flex: none; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 8px 8px 26px; background: rgba(255,255,255,0.92); border-top: 1px solid #E9DCC6">
+    <a href="Home.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 44px; text-decoration: none; color: #8A0D3A; font-size: 10.5px; font-weight: 600">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="#8A0D3A" aria-hidden="true"><path d="M4 11 L12 4 L20 11 V20 H14 V14 H10 V20 H4 Z"></path></svg>الرئيسية</a>
+    <a href="Home.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 44px; text-decoration: none; color: #8A7A80; font-size: 10.5px; font-weight: 500">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A7A80" stroke-width="1.7" aria-hidden="true"><path d="M3 6 L9 4 L15 6 L21 4 V18 L15 20 L9 18 L3 20 Z"></path><path d="M9 4 V18 M15 6 V20"></path></svg>استكشفي</a>
+    <a href="Bookings.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 44px; text-decoration: none; color: #8A7A80; font-size: 10.5px; font-weight: 500">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A7A80" stroke-width="1.7" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"></rect><path d="M4 10 H20 M9 3 V7 M15 3 V7"></path></svg>حجوزاتي</a>
+    <a href="Home.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 3px; min-height: 44px; text-decoration: none; color: #8A7A80; font-size: 10.5px; font-weight: 500">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8A7A80" stroke-width="1.7" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21 C5 16 19 16 20 21"></path></svg>حسابي</a>
+  </nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      cats: [
+        { name: 'مكياج', icon: 'M8 21 V12 H16 V21 M10 12 V6 L14 4 V12' },
+        { name: 'مصوّرات', icon: 'M4 8 H8 L10 5 H14 L16 8 H20 V19 H4 Z M12 16 A3 3 0 1 0 12 10 A3 3 0 1 0 12 16' },
+        { name: 'قاعات', icon: 'M3 21 H21 M5 21 V10 L12 4 L19 10 V21 M10 21 V15 H14 V21' },
+        { name: 'نقش حناء', icon: 'M12 3 C9 8 7 11 7 14 A5 5 0 0 0 17 14 C17 11 15 8 12 3 Z M12 11 V17' },
+        { name: 'كوشة وتنسيق', icon: 'M4 20 C4 12 8 7 12 7 C16 7 20 12 20 20 M12 7 V3 M9 20 V15 M15 20 V15' },
+        { name: 'فساتين', icon: 'M9 3 H15 L14 8 L19 21 H5 L10 8 Z' },
+        { name: 'قهوجيات', icon: 'M5 9 H17 V14 A5 5 0 0 1 12 19 H10 A5 5 0 0 1 5 14 Z M17 10 H19 A2 2 0 0 1 19 14 H17 M9 3 V6 M13 3 V6' },
+        { name: 'حلويات', icon: 'M4 21 H20 V14 H4 Z M6 14 V10 H18 V14 M12 10 V6 M12 6 A1 1 0 1 0 12 4' }
+      ],
+      featured: [
+        { name: 'لمسة جمال', cat: 'مكياج', rating: '٤٫٩', price: '١٬٢٠٠' },
+        { name: 'عدسة ريم', cat: 'مصوّرات', rating: '٤٫٨', price: '٣٬٥٠٠' }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

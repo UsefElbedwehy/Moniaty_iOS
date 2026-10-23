@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Arabic is the default locale (values/); English lives in values-en/. -->
+<resources>
+    <string name="error_network_timedOut">انتهت مهلة الطلب. حاولي مرة أخرى.</string>
+    <string name="error_network_noConnection">لا يوجد اتصال. تحققي من الإنترنت وحاولي مرة أخرى.</string>
+    <string name="error_network_cancelled">تم إلغاء الطلب.</string>
+    <string name="error_network_invalidResponse">حدث خطأ من جهتنا. حاولي مرة أخرى.</string>
+    <string name="error_auth_invalidCredentials">البيانات المدخلة غير صحيحة.</string>
+    <string name="error_auth_sessionExpired">انتهت جلستك. يرجى تسجيل الدخول مرة أخرى.</string>
+    <string name="error_auth_otpExpired">انتهت صلاحية الرمز. اطلبي رمزاً جديداً.</string>
+    <string name="error_auth_otpIncorrect">الرمز غير صحيح.</string>
+    <string name="error_auth_notAuthenticated">يرجى تسجيل الدخول للمتابعة.</string>
+    <string name="error_server_generic">واجهت خوادمنا مشكلة. حاولي مرة أخرى بعد قليل.</string>
+    <string name="error_offline">أنتِ غير متصلة. قد لا يكون بعض المحتوى محدّثاً.</string>
+    <string name="error_unknown">حدث خطأ غير متوقع.</string>
+</resources>

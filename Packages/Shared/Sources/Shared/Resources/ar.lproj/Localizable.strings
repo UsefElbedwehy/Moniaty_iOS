@@ -1,0 +1,26 @@
+/* Common, cross-cutting strings shared across features. */
+
+"common.retry" = "إعادة المحاولة";
+"common.cancel" = "إلغاء";
+"common.save" = "حفظ";
+"common.edit" = "تعديل";
+"common.continue" = "متابعة";
+"common.submit" = "إرسال";
+"common.done" = "تم";
+"common.back" = "رجوع";
+"common.loading" = "جارٍ التحميل…";
+"common.tryAgain" = "حاولي مرة أخرى";
+"common.viewAll" = "عرض الكل";
+"common.seeMore" = "المزيد";
+
+
+/* Photo and video viewer */
+"media.close" = "إغلاق";
+"media.share" = "مشاركة";
+"media.openHint" = "تفتح بملء الشاشة";
+"media.empty" = "لا توجد صور بعد";
+"media.photo" = "صورة %1$d من %2$d";
+"media.video" = "فيديو %1$d من %2$d";
+
+/* Maps */
+"location.mine" = "موقعي";

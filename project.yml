@@ -1,0 +1,166 @@
+name: Munyati
+options:
+  bundleIdPrefix: co.munyati
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+  generateEmptyDirectories: true
+  # English, not Arabic, as the development language: with Arabic here, iOS 17–18 draw Arabic
+  # reversed and unjoined inside List, Form and Picker (UIKit-hosted SwiftUI text). Arabic phones
+  # still get Arabic (CFBundleLocalizations lists ar first); see docs/HANDOFF.md.
+  developmentLanguage: en
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    DEVELOPMENT_LANGUAGE: en
+    ENABLE_USER_SCRIPT_SANDBOXING: YES
+    SWIFT_STRICT_CONCURRENCY: complete
+    # Set your Apple Developer Team ID here (Xcode > Signing & Capabilities shows it).
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_STYLE: Automatic
+    DEBUG_INFORMATION_FORMAT: dwarf-with-dsym
+
+packages:
+  Core:
+    path: Packages/Core
+  DesignSystem:
+    path: Packages/DesignSystem
+  Networking:
+    path: Packages/Networking
+  Shared:
+    path: Packages/Shared
+  Authentication:
+    path: Packages/Authentication
+  Catalog:
+    path: Packages/Features/Catalog
+  ProviderStudio:
+    path: Packages/Features/ProviderStudio
+  Booking:
+    path: Packages/Features/Booking
+  Trust:
+    path: Packages/Features/Trust
+  # Vendor SDK, linked to the App target only (packages stay vendor-free).
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: "11.0.0"
+
+targets:
+  App:
+    type: application
+    platform: iOS
+    sources:
+      - path: App/Sources
+      - path: App/Resources/Assets.xcassets
+      - path: App/Resources/BackendConfig.plist
+      # Per-project Firebase config: download from the Firebase console and drop it here, then
+      # regenerate. The glob only adds it when present (`optional: true` would still add a
+      # reference to a missing file and fail the build).
+      - path: App/Resources
+        includes:
+          - GoogleService-Info.plist
+      - path: App/Localization
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.munyati.app
+        PRODUCT_NAME: Munyati
+        APP_DISPLAY_NAME: منيتي
+        INFOPLIST_FILE: App/Resources/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        TARGETED_DEVICE_FAMILY: "1"
+        CODE_SIGN_ENTITLEMENTS: App/Resources/App.entitlements
+    dependencies:
+      - package: Core
+      - package: DesignSystem
+      - package: Networking
+      - package: Shared
+      - package: Authentication
+      - package: Catalog
+      - package: ProviderStudio
+      - package: Booking
+      - package: Trust
+      - package: Firebase
+        product: FirebaseMessaging
+      - package: Firebase
+        product: FirebaseAnalytics
+      - package: Firebase
+        product: FirebaseCrashlytics
+      # Embedded rich-push extension (downloads and attaches notification images).
+      - target: NotificationService
+    postBuildScripts:
+      - name: Upload Crashlytics symbols
+        basedOnDependencyAnalysis: false
+        script: |
+          if [ -f "${SRCROOT}/App/Resources/GoogleService-Info.plist" ]; then
+            "${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run"
+          fi
+        inputFiles:
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}
+          - ${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist
+          - $(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist
+          - $(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)
+
+  # Rich-push Notification Service Extension. Pinned to Swift 5 language mode: the standard
+  # URLSession completion-handler template is not data-race-safe under Swift 6.
+  NotificationService:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: App/NotificationService
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.munyati.app.notificationservice
+        INFOPLIST_FILE: App/NotificationService/Info.plist
+        SWIFT_VERSION: "5.0"
+        TARGETED_DEVICE_FAMILY: "1"
+
+  # Walkthrough of both roles on the in-memory mocks (UITEST_MOCK_BACKEND=1).
+  MunyatiUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: App/UITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: co.munyati.app.uitests
+        # XCTest's UI APIs are main-actor; Swift 5 mode keeps the test boilerplate plain.
+        SWIFT_VERSION: "5.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        TEST_TARGET_NAME: App
+    dependencies:
+      - target: App
+
+schemes:
+  Munyati:
+    build:
+      targets:
+        App: all
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - package: Core/CoreTests
+        - package: Networking/NetworkingTests
+        - package: Shared/SharedTests
+        - package: Authentication/AuthenticationTests
+        - package: Catalog/CatalogTests
+        - package: ProviderStudio/ProviderStudioTests
+        - package: Booking/BookingTests
+        - package: Trust/TrustTests
+        - package: DesignSystem/DesignSystemTests
+  # Slow end-to-end walkthrough, kept out of the unit-test scheme.
+  MunyatiUITests:
+    build:
+      targets:
+        App: all
+        MunyatiUITests: [test]
+    test:
+      config: Debug
+      targets:
+        - MunyatiUITests

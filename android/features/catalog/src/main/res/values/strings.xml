@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android-only Catalog strings (everything else comes from iOS via tools/sync_strings.py). -->
+<resources>
+    <string name="catalog_explore_mapUnavailable_title">الخريطة غير متاحة</string>
+    <string name="catalog_explore_mapUnavailable_message">لم يتم إعداد خرائط Google لهذه النسخة بعد.</string>
+    <string name="catalog_back">رجوع</string>
+    <string name="catalog_search_clear">مسح البحث</string>
+</resources>

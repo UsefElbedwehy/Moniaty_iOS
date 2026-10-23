@@ -1,0 +1,12 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["TEAMID.co.munyati.app"],
+        "components": [
+          { "/": "/p/*" }, { "/": "/s/*" }, { "/": "/store/*" }, { "/": "/c/*" }, { "/": "/b/*" }, { "/": "/plans" }
+        ]
+      }
+    ]
+  }
+}

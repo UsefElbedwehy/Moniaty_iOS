@@ -1,0 +1,4 @@
+"CFBundleDisplayName" = "منيتي";
+"NSLocationWhenInUseUsageDescription" = "نستخدم موقعك لعرض مقدّمات الخدمة القريبة منك على الخريطة.";
+"NSPhotoLibraryUsageDescription" = "لإرفاق صورة إيصال التحويل وصور خدماتك.";
+"NSCameraUsageDescription" = "لتصوير إيصال التحويل.";

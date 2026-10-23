@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="studio_back">Back</string>
+    <string name="studio_none">—</string>
+    <string name="studio_delete">Delete</string>
+    <string name="studio_delete_confirm">Delete permanently?</string>
+</resources>

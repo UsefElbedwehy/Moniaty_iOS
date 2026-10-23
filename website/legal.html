@@ -1,0 +1,34 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>منيتي</title><meta name="description" content="منيتي: كل تجهيزات العروس في مكان واحد. Munyati: everything for the bride in one place."><link rel="stylesheet" href="/style.css"><script src="/config.js"></script></head><body><div class="wrap"><header class="top"><a class="logo" href="/">منيتي <span class="sparkle">✦</span></a><nav><a href="/providers">لمقدّمات الخدمة</a><a href="/support">الدعم</a></nav></header>
+<main class="doc" id="doc"><p class="muted">…</p></main>
+</div>
+<script>
+(async () => {
+  const path = location.pathname.replace(/\/+$/, "");
+  const en = path.startsWith("/en/");
+  const slug = path.split("/").pop() || "terms";
+  const lang = en ? "en" : "ar";
+  if (en) { document.documentElement.lang = "en"; document.documentElement.dir = "ltr"; }
+  const el = document.getElementById("doc");
+  const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  // Minimal, safe Markdown: headings, bold, links, lists, paragraphs (text is escaped first).
+  const md = t => esc(t).split(/\n{2,}/).map(b => {
+    const inline = s => s.replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\[([^\]]+)\]\((https?:[^)\s]+|mailto:[^)\s]+)\)/g, '<a href="$2">$1</a>');
+    if (/^#{1,3} /.test(b)) { const n = b.match(/^#+/)[0].length; return `<h${n}>${inline(b.replace(/^#+ /, ""))}</h${n}>`; }
+    if (/^[-*] /m.test(b)) return "<ul>" + b.split("\n").map(l => `<li>${inline(l.replace(/^[-*] /, ""))}</li>`).join("") + "</ul>";
+    return `<p>${inline(b).replace(/\n/g, "<br>")}</p>`;
+  }).join("");
+  try {
+    const c = window.MUNYATI;
+    const r = await fetch(`${c.supabaseUrl}/rest/v1/cms_pages?slug=eq.${encodeURIComponent(slug)}&lang=eq.${lang}&is_published=eq.true&select=title,body_markdown`,
+      { headers: { apikey: c.supabaseAnonKey, Authorization: `Bearer ${c.supabaseAnonKey}` } });
+    const [page] = await r.json();
+    if (!page) throw 0;
+    document.title = `${page.title} — Munyati`;
+    el.innerHTML = `<h1>${esc(page.title)}</h1>` + md(page.body_markdown);
+  } catch {
+    el.innerHTML = en ? "<p>This page isn't available right now. Contact contact@munyati.co.</p>"
+                      : "<p>الصفحة غير متاحة حالياً. تواصلي معنا: contact@munyati.co</p>";
+  }
+})();
+</script>
+<footer><div class="wrap"><a href="/">الرئيسية</a><a href="/providers">لمقدّمات الخدمة</a><a href="/terms">الشروط</a><a href="/privacy">الخصوصية</a><a href="/support">الدعم</a><a href="/delete-account">حذف الحساب</a><a href="/en">English</a><p>© منيتي · munyati.co · <a href="mailto:contact@munyati.co">contact@munyati.co</a> · منيتي منصة تربط العرائس بمقدّمات الخدمة، والدفع يتم مباشرة بين الطرفين.</p></div></footer></body></html>
