@@ -10,7 +10,8 @@ public actor MockTrustRepository: TrustRepository {
 
     public init() {
         reviews["p-lamsa"] = [
-            Review(id: "r1", rating: 5, body: "مكياج ناعم وثابت طول الليل، والتعامل راقي جداً.", photoUrls: [],
+            Review(id: "r1", rating: 5, body: "مكياج ناعم وثابت طول الليل، والتعامل راقي جداً.",
+                   photoUrls: (1...2).compactMap { URL(string: "https://picsum.photos/seed/review-r1-\($0)/900/1200") },
                    authorName: "نو**** مح****", isMine: false, serviceTitle: "مكياج العروس",
                    providerReply: "شكراً لكِ يا عروستنا الجميلة!", status: "approved", createdAt: .now.addingTimeInterval(-86400 * 9)),
             Review(id: "r2", rating: 4, body: "التزام بالموعد وشغل نظيف.", photoUrls: [],

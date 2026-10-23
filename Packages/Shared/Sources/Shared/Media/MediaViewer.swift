@@ -443,17 +443,18 @@ extension ZoomableImageController: UIGestureRecognizerDelegate {
 
 // MARK: - Strings
 
-enum MediaStrings {
-    static var close: String { String(localized: "media.close", bundle: .module) }
-    static var share: String { String(localized: "media.share", bundle: .module) }
-    static var openHint: String { String(localized: "media.openHint", bundle: .module) }
-    static var empty: String { String(localized: "media.empty", bundle: .module) }
+/// Labels for photo and video galleries (also used by features showing their own thumbnails).
+public enum MediaStrings {
+    public static var close: String { String(localized: "media.close", bundle: .module) }
+    public static var share: String { String(localized: "media.share", bundle: .module) }
+    public static var openHint: String { String(localized: "media.openHint", bundle: .module) }
+    public static var empty: String { String(localized: "media.empty", bundle: .module) }
 
-    static func photo(_ index: Int, of count: Int) -> String {
+    public static func photo(_ index: Int, of count: Int) -> String {
         String(format: String(localized: "media.photo", bundle: .module), locale: .current, index, count)
     }
 
-    static func video(_ index: Int, of count: Int) -> String {
+    public static func video(_ index: Int, of count: Int) -> String {
         String(format: String(localized: "media.video", bundle: .module), locale: .current, index, count)
     }
 }

@@ -97,7 +97,7 @@ class MockTrustRepository : TrustRepository {
     init {
         val now = Instant.now()
         reviews["p-lamsa"] = mutableListOf(
-            Review("r1", 5, "مكياج ناعم وثابت طول الليل، والتعامل راقي جداً.", emptyList(), "نو**** مح****", false, "مكياج العروس",
+            Review("r1", 5, "مكياج ناعم وثابت طول الليل، والتعامل راقي جداً.", (1..2).map { "https://picsum.photos/seed/review-r1-$it/900/1200" }, "نو**** مح****", false, "مكياج العروس",
                 "شكراً لكِ يا عروستنا الجميلة!", "approved", now.minus(9, ChronoUnit.DAYS).toString()),
             Review("r2", 4, "التزام بالموعد وشغل نظيف.", emptyList(), "سا**** عل****", false, "مكياج سهرة",
                 null, "approved", now.minus(30, ChronoUnit.DAYS).toString()),

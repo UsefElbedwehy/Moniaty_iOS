@@ -208,6 +208,8 @@ struct RatingSummary: View {
 struct ReviewRow: View {
     let feature: TrustFeature
     let review: Review
+    @State private var viewerOpen = false
+    @State private var viewerStart = 0
 
     var body: some View {
         VStack(alignment: .leading, spacing: DSSpacing.xs) {
@@ -230,12 +232,23 @@ struct ReviewRow: View {
             if !review.photoUrls.isEmpty {
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(review.photoUrls, id: \.self) { url in
-                            RemoteImageView(url: url)
-                                .frame(width: 72, height: 72)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        ForEach(Array(review.photoUrls.enumerated()), id: \.element) { index, url in
+                            Button {
+                                viewerStart = index
+                                viewerOpen = true
+                            } label: {
+                                RemoteImageView(url: url)
+                                    .frame(width: 72, height: 72)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(MediaStrings.photo(index + 1, of: review.photoUrls.count))
+                            .accessibilityHint(MediaStrings.openHint)
                         }
                     }
+                }
+                .fullScreenCover(isPresented: $viewerOpen) {
+                    MediaViewer(items: review.photoUrls.map(GalleryItem.image), startIndex: viewerStart)
                 }
             }
             if let reply = review.providerReply {

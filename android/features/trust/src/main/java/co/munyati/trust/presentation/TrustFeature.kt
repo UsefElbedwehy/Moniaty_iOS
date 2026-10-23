@@ -2,6 +2,9 @@
 
 package co.munyati.trust.presentation
 
+import co.munyati.shared.R as SharedR
+import co.munyati.shared.media.GalleryItem
+import co.munyati.shared.media.MediaViewer
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -281,6 +284,7 @@ private fun RatingSummary(page: ReviewsPage) {
 @Composable
 private fun ReviewRow(feature: TrustFeature, review: Review) {
     val shape = RoundedCornerShape(DSRadius.card)
+    var viewerStart by remember { mutableStateOf<Int?>(null) }
     Column(
         Modifier.fillMaxWidth().clip(shape).background(DS.colors.surface).border(1.dp, DS.colors.border, shape).padding(DSSpacing.md),
         verticalArrangement = Arrangement.spacedBy(DSSpacing.xs),
@@ -297,8 +301,21 @@ private fun ReviewRow(feature: TrustFeature, review: Review) {
         if (!review.body.isNullOrEmpty()) Text(review.body, style = DS.type.body, color = DS.colors.textPrimary)
         if (review.photoUrls.isNotEmpty()) {
             Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
-                review.photoUrls.forEach { RemoteImage(it, Modifier.size(72.dp).clip(RoundedCornerShape(12.dp)), placeholder = DS.colors.primaryMuted) }
+                review.photoUrls.forEachIndexed { index, url ->
+                    val label = stringResource(SharedR.string.shared_media_photo, index + 1, review.photoUrls.size)
+                    val hint = stringResource(SharedR.string.shared_media_openHint)
+                    RemoteImage(
+                        url,
+                        Modifier.size(72.dp).clip(RoundedCornerShape(12.dp))
+                            .clickable(onClickLabel = hint, role = Role.Button) { viewerStart = index }
+                            .semantics { contentDescription = label },
+                        placeholder = DS.colors.primaryMuted,
+                    )
+                }
             }
+        }
+        viewerStart?.let { start ->
+            MediaViewer(review.photoUrls.map { GalleryItem.Image(it) }, start, onDismiss = { viewerStart = null })
         }
         review.providerReply?.let { reply ->
             Column(
