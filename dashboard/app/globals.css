@@ -143,3 +143,5 @@ tr.archived td { opacity: 0.55; }
 .inbox-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .inbox-clear { color: var(--success); font-weight: 600; margin-bottom: 24px; }
 .count-pill { background: var(--gold); color: var(--primary); border-radius: 999px; padding: 0 9px; font-size: 13px; font-weight: 700; }
+.chip-count { display: inline-block; margin-inline-start: 6px; min-width: 20px; padding: 0 6px; border-radius: 999px; font-size: 11px; font-weight: 700; text-align: center; background: var(--cream); color: var(--text); }
+.chips a.on .chip-count { background: rgba(255, 255, 255, 0.25); color: #fff; }

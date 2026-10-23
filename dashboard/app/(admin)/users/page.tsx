@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Chips, Empty, Flash, Pager } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
@@ -31,6 +32,7 @@ export default async function Users({ searchParams }: { searchParams: Promise<Re
   const back = `/users?${new URLSearchParams({ role, q })}`;
   const owner = await isOwner();
 
+  const counts = await countBy("profiles", "role", ["", "bride", "provider"], notArchived);
   return (
     <>
       <div className="topbar">
@@ -42,7 +44,7 @@ export default async function Users({ searchParams }: { searchParams: Promise<Re
         </form>
       </div>
       <Flash sp={sp} />
-      <Chips base="/users" current={role} name="role" options={[["", t("الكل", "All")], ["bride", t("العرائس", "Brides")], ["provider", t("مقدّمات الخدمة", "Providers")]]} />
+      <Chips base="/users" current={role} name="role" options={[["", t("الكل", "All")], ["bride", t("العرائس", "Brides")], ["provider", t("مقدّمات الخدمة", "Providers")]]}  counts={counts} />
       <div className="table-wrap">
         {rows.length === 0 ? <Empty /> : (
           <table>

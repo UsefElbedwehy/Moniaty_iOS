@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
 import { RecordActions } from "@/components/RecordActions";
 import { isOwner } from "@/lib/admin";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -24,11 +25,12 @@ export default async function Reviews({ searchParams }: { searchParams: Promise<
   const rows = (data ?? []) as Review[];
 
   const owner = await isOwner();
+  const counts = await countBy("reviews", "status", ["pending", "approved", "rejected", "hidden"]);
   return (
     <>
       <div className="topbar"><h1>{t("التقييمات", "Reviews")}</h1></div>
       <Flash sp={sp} />
-      <Chips base="/reviews" current={status} options={[["pending", t("بانتظار المراجعة", "Pending")], ["approved", t("منشورة", "Published")], ["rejected", t("مرفوضة", "Rejected")], ["hidden", t("مخفية", "Hidden")]]} />
+      <Chips base="/reviews" current={status} options={[["pending", t("بانتظار المراجعة", "Pending")], ["approved", t("منشورة", "Published")], ["rejected", t("مرفوضة", "Rejected")], ["hidden", t("مخفية", "Hidden")]]}  counts={counts} />
       {error && <div className="flash err">{error.message}</div>}
       {rows.length === 0 ? <div className="card"><Empty text={t("لا توجد تقييمات هنا.", "No reviews here.")} /></div> : rows.map((r) => (
         <div key={r.id} className="card" style={{ marginBottom: 10 }}>

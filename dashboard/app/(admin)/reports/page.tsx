@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
 import { RecordActions } from "@/components/RecordActions";
 import { isOwner } from "@/lib/admin";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -35,11 +36,12 @@ export default async function Reports({ searchParams }: { searchParams: Promise<
   const hours = (iso: string) => Math.floor((Date.now() - new Date(iso).getTime()) / 3_600_000);
 
   const owner = await isOwner();
+  const counts = await countBy("reports", "status", ["open", "actioned", "dismissed"], notArchived);
   return (
     <>
       <div className="topbar"><h1>{t("البلاغات", "Reports")}</h1><span className="muted">{t("الهدف: الإجراء خلال ٢٤ ساعة (إرشادات Apple)", "Goal: act within 24 hours (Apple guidelines)")}</span></div>
       <Flash sp={sp} />
-      <Chips base="/reports" current={status} options={[["open", t("مفتوحة", "Open")], ["actioned", t("تم الإجراء", "Actioned")], ["dismissed", t("مرفوضة", "Dismissed")]]} />
+      <Chips base="/reports" current={status} options={[["open", t("مفتوحة", "Open")], ["actioned", t("تم الإجراء", "Actioned")], ["dismissed", t("مرفوضة", "Dismissed")]]}  counts={counts} />
       {rows.length === 0 ? <div className="card"><Empty text={t("لا توجد بلاغات.", "No reports.")} /></div> : rows.map((r) => {
         const [href, label] = targetLink(r.target_type, r.target_id, t);
         const age = hours(r.created_at);

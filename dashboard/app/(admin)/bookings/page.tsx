@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
 import { RecordActions } from "@/components/RecordActions";
 import { isOwner } from "@/lib/admin";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -30,6 +31,7 @@ export default async function Bookings({ searchParams }: { searchParams: Promise
   const rows = (data ?? []) as unknown as Row[];
 
   const owner = await isOwner();
+  const counts = await countBy("bookings", "status", ["", "requested", "awaiting_payment", "payment_submitted", "payment_confirmed", "completed", "disputed", "expired"], notArchived);
   return (
     <>
       <div className="topbar">
@@ -42,7 +44,7 @@ export default async function Bookings({ searchParams }: { searchParams: Promise
       <Chips base="/bookings" current={duplicate ? "dup" : status} options={[
         ["", t("الكل", "All")], ["requested", t("بانتظار الموافقة", "Awaiting approval")], ["awaiting_payment", t("بانتظار الدفع", "Awaiting payment")], ["payment_submitted", t("إيصال مرفوع", "Receipt uploaded")],
         ["payment_confirmed", t("مؤكدة", "Confirmed")], ["completed", t("مكتملة", "Completed")], ["disputed", t("نزاع", "Disputed")], ["expired", t("منتهية", "Expired")],
-      ]} />
+      ]}  counts={counts} />
       {duplicate && <p className="muted">{t("حجوزات فيها إيصال استُخدم في حجز آخر.", "Bookings with a receipt that was used in another booking.")}</p>}
       {error && <div className="flash err">{error.message}</div>}
       <div className="table-wrap">

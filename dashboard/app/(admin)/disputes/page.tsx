@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Chips, Empty } from "@/components/ui";
 import { param } from "@/lib/format";
@@ -16,10 +17,11 @@ export default async function Disputes({ searchParams }: { searchParams: Promise
   const { data } = await supabase.from("disputes").select("*, bookings(reference_code)").eq("status", status)
     .order("created_at", { ascending: status === "open" }).limit(100);
   const rows = (data ?? []) as unknown as Row[];
+  const counts = await countBy("disputes", "status", ["open", "resolved", "rejected"]);
   return (
     <>
       <div className="topbar"><h1>{t("النزاعات", "Disputes")}</h1></div>
-      <Chips base="/disputes" current={status} options={[["open", t("مفتوحة", "Open")], ["resolved", t("مقبولة", "Upheld")], ["rejected", t("مرفوضة", "Rejected")]]} />
+      <Chips base="/disputes" current={status} options={[["open", t("مفتوحة", "Open")], ["resolved", t("مقبولة", "Upheld")], ["rejected", t("مرفوضة", "Rejected")]]}  counts={counts} />
       <div className="table-wrap">
         {rows.length === 0 ? <Empty text={t("لا توجد نزاعات.", "No disputes.")} /> : (
           <table>

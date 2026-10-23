@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Chips, Empty, Flash } from "@/components/ui";
 import { RecordActions } from "@/components/RecordActions";
@@ -32,6 +33,7 @@ export default async function Archive({ searchParams }: { searchParams: Promise<
   }));
   const name = (e: string) => (isEntity(e) ? ENTITIES[e].label[lang === "ar" ? 0 : 1] : e);
 
+  const counts = await countBy("admin_archive", "entity", ["", "provider", "service", "store", "user", "booking", "review", "report", "ticket", "banner", "category", "city", "plan"]);
   return (
     <>
       <div className="topbar"><h1>{t("الأرشيف", "Archive")}</h1></div>
@@ -39,7 +41,7 @@ export default async function Archive({ searchParams }: { searchParams: Promise<
       <Flash sp={sp} />
       <Chips base="/archive" current={type} name="type" options={[["", t("الكل", "All")],
         ...(["provider", "service", "store", "user", "booking", "review", "report", "ticket", "banner", "category", "city", "plan"] as Entity[])
-          .map((e) => [e, name(e)] as [string, string])]} />
+          .map((e) => [e, name(e)] as [string, string])]}  counts={counts} />
       <div className="table-wrap">
         {rows.length === 0 ? <Empty /> : (
           <table>

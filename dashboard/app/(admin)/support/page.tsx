@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
 import { RecordActions } from "@/components/RecordActions";
 import { isOwner } from "@/lib/admin";
 import { supabaseServer } from "@/lib/supabase/server";
@@ -20,11 +21,12 @@ export default async function Support({ searchParams }: { searchParams: Promise<
     .order("created_at", { ascending: status === "open" }).limit(100);
   const rows = (data ?? []) as unknown as Ticket[];
   const owner = await isOwner();
+  const counts = await countBy("support_tickets", "status", ["open", "answered", "closed"], notArchived);
   return (
     <>
       <div className="topbar"><h1>{t("طلبات الدعم", "Support tickets")}</h1></div>
       <Flash sp={sp} />
-      <Chips base="/support" current={status} options={[["open", t("مفتوحة", "Open")], ["answered", t("تم الرد", "Answered")], ["closed", t("مغلقة", "Closed")]]} />
+      <Chips base="/support" current={status} options={[["open", t("مفتوحة", "Open")], ["answered", t("تم الرد", "Answered")], ["closed", t("مغلقة", "Closed")]]}  counts={counts} />
       {rows.length === 0 ? <div className="card"><Empty text={t("لا توجد طلبات.", "No tickets.")} /></div> : rows.map((tk) => (
         <div key={tk.id} className="card" style={{ marginBottom: 10 }}>
           <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>

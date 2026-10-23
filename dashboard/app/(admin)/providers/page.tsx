@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Badge, Chips, Empty, Flash, Pager } from "@/components/ui";
 import { RecordActions } from "@/components/RecordActions";
@@ -33,6 +34,7 @@ export default async function Providers({ searchParams }: { searchParams: Promis
   const owner = await isOwner();
   const back = `/providers?${new URLSearchParams({ status, q })}`;
 
+  const counts = await countBy("providers", "status", ["", "pending", "approved", "rejected", "suspended"], notArchived);
   return (
     <>
       <div className="topbar">
@@ -44,7 +46,7 @@ export default async function Providers({ searchParams }: { searchParams: Promis
         </form>
       </div>
       <Flash sp={sp} />
-      <Chips base="/providers" current={status} options={[["", t("الكل", "All")], ["pending", t("قيد المراجعة", "Pending")], ["approved", t("مفعّلة", "Approved")], ["rejected", t("مرفوضة", "Rejected")], ["suspended", t("موقوفة", "Suspended")]]} />
+      <Chips base="/providers" current={status} options={[["", t("الكل", "All")], ["pending", t("قيد المراجعة", "Pending")], ["approved", t("مفعّلة", "Approved")], ["rejected", t("مرفوضة", "Rejected")], ["suspended", t("موقوفة", "Suspended")]]}  counts={counts} />
       {error && <div className="flash err">{error.message}</div>}
       <div className="table-wrap">
         {rows.length === 0 ? <Empty /> : (
