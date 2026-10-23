@@ -13,6 +13,7 @@
     <string name="shared_common_submit">إرسال</string>
     <string name="shared_common_tryAgain">حاولي مرة أخرى</string>
     <string name="shared_common_viewAll">عرض الكل</string>
+    <string name="shared_location_mine">موقعي</string>
     <string name="shared_media_close">إغلاق</string>
     <string name="shared_media_empty">لا توجد صور بعد</string>
     <string name="shared_media_openHint">تفتح بملء الشاشة</string>

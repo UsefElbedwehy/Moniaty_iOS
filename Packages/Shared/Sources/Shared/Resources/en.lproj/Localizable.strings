@@ -21,3 +21,6 @@
 "media.empty" = "No photos yet";
 "media.photo" = "Photo %1$d of %2$d";
 "media.video" = "Video %1$d of %2$d";
+
+/* Maps */
+"location.mine" = "My location";

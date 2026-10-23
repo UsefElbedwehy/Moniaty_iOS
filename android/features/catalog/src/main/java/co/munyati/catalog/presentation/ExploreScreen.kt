@@ -1,5 +1,11 @@
 package co.munyati.catalog.presentation
 
+import co.munyati.shared.location.MyLocationButton
+import co.munyati.shared.location.rememberMyLocationState
+import com.google.maps.android.compose.MapProperties
+import com.google.android.gms.maps.CameraUpdateFactory
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -111,29 +117,38 @@ private fun PinsMap(feature: CatalogFeature, categoryId: String?) {
         }.getOrNull()?.let { pins = it }
     }
 
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = camera,
-        uiSettings = MapUiSettings(zoomControlsEnabled = false, mapToolbarEnabled = false, compassEnabled = true),
-    ) {
-        pins.forEach { pin ->
-            key(pin.kind + pin.id) {
-                MarkerComposable(
-                    state = rememberMarkerState(position = LatLng(pin.lat, pin.lng)),
-                    title = pin.name,
-                    onClick = {
-                        navigator.navigate(if (pin.kind == "store") StoreRoute(pin.id) else ProviderRoute(pin.id))
-                        true
-                    },
-                ) {
-                    Box(
-                        Modifier.size(36.dp).clip(CircleShape).background(DS.colors.primary).border(2.dp, DS.colors.background, CircleShape),
-                        contentAlignment = Alignment.Center,
+    val myLocation = rememberMyLocationState()
+    val scope = rememberCoroutineScope()
+    Box(Modifier.fillMaxSize()) {
+        GoogleMap(
+            modifier = Modifier.fillMaxSize(),
+            cameraPositionState = camera,
+            properties = MapProperties(isMyLocationEnabled = myLocation.granted),
+            // Our own button (below) asks for permission first; Google's would need it already.
+            uiSettings = MapUiSettings(zoomControlsEnabled = false, mapToolbarEnabled = false, compassEnabled = true, myLocationButtonEnabled = false),
+        ) {
+            pins.forEach { pin ->
+                key(pin.kind + pin.id) {
+                    MarkerComposable(
+                        state = rememberMarkerState(position = LatLng(pin.lat, pin.lng)),
+                        title = pin.name,
+                        onClick = {
+                            navigator.navigate(if (pin.kind == "store") StoreRoute(pin.id) else ProviderRoute(pin.id))
+                            true
+                        },
                     ) {
-                        Icon(if (pin.kind == "store") Icons.Filled.Storefront else Icons.Filled.AutoAwesome, contentDescription = pin.name, tint = DS.colors.premiumGold, modifier = Modifier.size(16.dp))
+                        Box(
+                            Modifier.size(36.dp).clip(CircleShape).background(DS.colors.primary).border(2.dp, DS.colors.background, CircleShape),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Icon(if (pin.kind == "store") Icons.Filled.Storefront else Icons.Filled.AutoAwesome, contentDescription = pin.name, tint = DS.colors.premiumGold, modifier = Modifier.size(16.dp))
+                        }
                     }
                 }
             }
+        }
+        MyLocationButton(myLocation, Modifier.align(Alignment.BottomEnd).padding(DSSpacing.lg)) { lat, lng ->
+            scope.launch { camera.animate(CameraUpdateFactory.newLatLngZoom(LatLng(lat, lng), 13f)) }
         }
     }
 }

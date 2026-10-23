@@ -30,6 +30,8 @@ dependencies {
     api(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.material.icons.extended)
     // Video: playback in the media viewer, 720p compression before upload.
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.ui)

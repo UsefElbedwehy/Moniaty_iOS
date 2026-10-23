@@ -13,6 +13,7 @@
     <string name="shared_common_submit">Submit</string>
     <string name="shared_common_tryAgain">Try Again</string>
     <string name="shared_common_viewAll">View All</string>
+    <string name="shared_location_mine">My location</string>
     <string name="shared_media_close">Close</string>
     <string name="shared_media_empty">No photos yet</string>
     <string name="shared_media_openHint">Opens full screen</string>

@@ -1,5 +1,9 @@
 package co.munyati.providerstudio.presentation
 
+import co.munyati.shared.location.MyLocationButton
+import co.munyati.shared.location.rememberMyLocationState
+import com.google.maps.android.compose.MapProperties
+import com.google.android.gms.maps.CameraUpdateFactory
 import androidx.compose.material.icons.outlined.VideoCall
 import co.munyati.shared.media.VideoPreparer
 import co.munyati.shared.media.VideoAsset
@@ -188,8 +192,17 @@ internal fun LocationPicker(lat: Double?, lng: Double?, mapsAvailable: Boolean, 
     }
     val hint = stringResource(R.string.studio_location_hint)
     Box(Modifier.fillMaxWidth().height(220.dp).clip(RoundedCornerShape(16.dp)).semantics { contentDescription = hint }) {
-        GoogleMap(cameraPositionState = camera, uiSettings = MapUiSettings(zoomControlsEnabled = false, mapToolbarEnabled = false))
+        val myLocation = rememberMyLocationState()
+        val scope = rememberCoroutineScope()
+        GoogleMap(
+            cameraPositionState = camera,
+            properties = MapProperties(isMyLocationEnabled = myLocation.granted),
+            uiSettings = MapUiSettings(zoomControlsEnabled = false, mapToolbarEnabled = false, myLocationButtonEnabled = false),
+        )
         Icon(Icons.Filled.LocationOn, contentDescription = null, tint = DS.colors.primary, modifier = Modifier.align(Alignment.Center).offset(y = (-16).dp).size(40.dp))
+        MyLocationButton(myLocation, Modifier.align(Alignment.BottomEnd).padding(DSSpacing.xs)) { lat, lng ->
+            scope.launch { camera.animate(CameraUpdateFactory.newLatLngZoom(LatLng(lat, lng), 15f)) }
+        }
     }
 }
 

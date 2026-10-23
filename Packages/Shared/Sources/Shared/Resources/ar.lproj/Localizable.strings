@@ -21,3 +21,6 @@
 "media.empty" = "لا توجد صور بعد";
 "media.photo" = "صورة %1$d من %2$d";
 "media.video" = "فيديو %1$d من %2$d";
+
+/* Maps */
+"location.mine" = "موقعي";
