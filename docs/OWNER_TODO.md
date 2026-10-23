@@ -1,7 +1,12 @@
 # What the owner must do (phases 0–9)
 
-Everything below is outside the code: accounts, keys, uploads and decisions. Nothing here is done
-yet. Do them roughly in this order; items marked ⏳ take weeks, so start them first.
+Everything below is outside the code: accounts, keys, uploads and decisions. Do them roughly in
+this order; items marked ⏳ take weeks, so start them first.
+
+**Status (2026-10-23):** both apps are feature-complete, build and pass their tests; the
+dashboard is live on Vercel; the iOS app talks to the live Supabase project. What's left is
+mostly here: accounts and approvals, keys, the last two migrations (§9, §10) and the store
+listings (§11, ready-to-paste text in `docs/STORE_LISTING.md`).
 
 ## 1. Accounts and legal (start today)
 - [ ] ⏳ **Commercial registration (CR)** + register on **business.sa** (needed for Apple, Tap, OurSMS).
@@ -19,8 +24,8 @@ yet. Do them roughly in this order; items marked ⏳ take weeks, so start them f
 - [ ] Create the project (Pro plan, region Frankfurt).
 - [ ] Authentication: enable **anonymous sign-ins** (guest browsing) and the **email** provider (admins).
 - [ ] Extensions: enable **pg_cron** and **btree_gist**.
-- [ ] Push the database: `supabase link --project-ref <ref>` then `supabase db push` (applies all
-      7 migrations in `supabase/migrations`).
+- [ ] Push the database: `supabase link --project-ref <ref>` then `supabase db push`. The live
+      project (`kjibwspziclotvynrjub`) already has the earlier migrations; §9 and §10 add the last two.
 - [ ] Secrets (`supabase secrets set NAME=value`): `OTP_HASH_SECRET`, `PASSWORD_SECRET`,
       `OURSMS_API_KEY`, `OURSMS_SENDER`, `FIREBASE_PROJECT_ID`, `FIREBASE_SERVICE_ACCOUNT_JSON`,
       `PUSH_WEBHOOK_SECRET`, `SMS_WEBHOOK_SECRET`, `TAP_SECRET_KEY` (and optionally
@@ -31,21 +36,17 @@ yet. Do them roughly in this order; items marked ⏳ take weeks, so start them f
 - [ ] First admin: invite your email (Authentication → Invite), then the SQL line in `dashboard/README.md`.
 
 ## 3. Firebase
-- [ ] Create a Firebase project, add the iOS app `co.munyati.app`, download **GoogleService-Info.plist**
-      into `App/Resources/`.
+- [x] Create a Firebase project, add the iOS app `co.munyati.app`, download **GoogleService-Info.plist**
+      into `App/Resources/` (present in the repo checkout).
 - [ ] Upload your **APNs key** (from Apple Developer → Keys) to Firebase Cloud Messaging.
 - [ ] Create a service account with *Firebase Cloud Messaging API Admin* → its JSON goes into the
       `FIREBASE_SERVICE_ACCOUNT_JSON` secret.
 
-## 4. The iOS app — build it (nothing was compiled yet!)
-- [ ] On the Mac: `brew install xcodegen`, then in the repo `xcodegen generate`, open `Munyati.xcodeproj`.
-- [ ] Set your Apple **Team** (`DEVELOPMENT_TEAM` in `project.yml`).
-- [ ] Fill `App/Resources/BackendConfig.plist` with the Supabase URL + **anon** key (never the service key).
-- [ ] Build. Expect compile errors (the code was written without a compiler): fix them with Claude
-      in your local session, one batch at a time. The app also runs with **no backend** on sample
-      data, which is the fastest way to start.
-- [ ] Run the tests in Xcode (Product → Test).
-- [ ] App icon: export the ring-meem icon (`design/logo/`) at 1024×1024 into the asset catalog.
+## 4. The iOS app
+- [x] Builds with Xcode (`xcodegen generate`, open `Munyati.xcodeproj`); unit and UI tests pass.
+- [x] `App/Resources/BackendConfig.plist` points at the live Supabase project (anon key only).
+- [x] App icon in the asset catalog.
+- [ ] Set your Apple **Team** (`DEVELOPMENT_TEAM` in `project.yml`) once the Apple Developer account exists, then Product → Archive → upload to TestFlight.
 
 ## 5. Content and business decisions (in the dashboard)
 - [ ] **Plan prices**: seeded 99 / 249 / 499 SAR are placeholders — set the real ones (Plans page).
@@ -106,3 +107,12 @@ yet. Do them roughly in this order; items marked ⏳ take weeks, so start them f
 - [ ] Redeploy the dashboard: each service on a provider's page now opens **الصور والفيديوهات / Photos and videos**, where admins watch, add (MP4 up to 60 s and 50 MB) and remove media. Reported services open there too.
 - [ ] Keep an eye on Supabase **egress**: videos are far heavier than photos (a 60-second 720p clip is roughly 5–15 MB, streamed each time a bride watches it). The free plan includes 5 GB of egress a month and Pro 250 GB. If it grows, move videos to a video CDN (e.g. Cloudflare Stream or Bunny); only the upload path changes.
 - [ ] Supabase's per-file upload limit must stay at least 50 MB (Storage settings), the size the apps allow.
+
+## 11. Store listings
+- [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy
+      answers from `docs/STORE_LISTING.md`; upload the screenshots in `design/store/ios/`
+      (6.9" iPhone, Arabic and English). Retake them with real providers' photos when you have
+      some: run `StoreScreenshotsTests` on the iPhone 16 Pro Max simulator.
+- [ ] Google Play Console: the same document has the short description, content-rating answers
+      and the Data safety form.
+- [ ] Fill the demo numbers in the review notes after setting `DEV_PHONES` / `DEV_OTP_CODE`.
