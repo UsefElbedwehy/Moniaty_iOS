@@ -115,7 +115,8 @@ final class AppEnvironment {
             studio = StudioFeature(repository: studioRepository, uploader: mediaUploader,
                                    checkout: MockPlanCheckout(repository: studioRepository))
             // One mock for both shells: a request sent as a bride shows up in the provider inbox.
-            bookingRepository = MockBookingRepository()
+            // UI-test hook: `UITEST_SAMPLE_BOOKINGS=1` starts with sample bookings (screenshots).
+            bookingRepository = MockBookingRepository(sampleBookings: ProcessInfo.processInfo.environment["UITEST_SAMPLE_BOOKINGS"] == "1")
             receiptStorage = MockReceiptStorage()
             analytics = .disabled
             performDeleteAccount = nil

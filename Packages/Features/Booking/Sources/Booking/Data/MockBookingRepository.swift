@@ -22,6 +22,25 @@ public actor MockBookingRepository: BookingRepository {
 
     public init() {}
 
+    /// Starts with two sample bookings (confirmed, and awaiting the bride's payment), for
+    /// screenshots and demos.
+    public init(sampleBookings: Bool) {
+        guard sampleBookings else { return }
+        let day: TimeInterval = 86400
+        for (status, offset, title, price) in [(BookingStatus.awaitingPayment, 12.0, "مكياج العروس", 2800),
+                                               (BookingStatus.paymentConfirmed, 30.0, "مكياج ليلة الحناء", 1500)] {
+            let id = UUID().uuidString
+            let starts = Date.now.addingTimeInterval(offset * day).rounded(toHour: 18)
+            rows[id] = Row(summary: [
+                "id": id, "reference_code": "MN-" + String(id.prefix(5)).uppercased(), "is_demo": false,
+                "service_id": "s1", "service_title": title, "price": price,
+                "starts_at": Self.iso.string(from: starts), "ends_at": Self.iso.string(from: starts.addingTimeInterval(3 * 3600)),
+                "note": "", "status_changed_at": Self.iso.string(from: .now),
+                "provider": ["id": "p-lamsa", "name": "لمسة جمال", "is_verified": true] as [String: Any], "bride_name": "نورة"
+            ], status: status, events: [["to_status": status.rawValue, "actor_role": "provider", "created_at": Self.iso.string(from: .now)]])
+        }
+    }
+
     private static let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
@@ -195,5 +214,12 @@ extension DateFormatter {
         f.timeZone = TimeZone(identifier: "Asia/Riyadh")
         f.dateFormat = "yyyy-MM-dd"
         return f
+    }
+}
+
+private extension Date {
+    /// The same day at `hour`:00 (sample bookings start at a round time).
+    func rounded(toHour hour: Int) -> Date {
+        Calendar(identifier: .gregorian).date(bySettingHour: hour, minute: 0, second: 0, of: self) ?? self
     }
 }

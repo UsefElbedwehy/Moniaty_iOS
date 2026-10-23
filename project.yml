@@ -5,14 +5,17 @@ options:
     iOS: "17.0"
   createIntermediateGroups: true
   generateEmptyDirectories: true
-  developmentLanguage: ar
+  # English, not Arabic, as the development language: with Arabic here, iOS 17–18 draw Arabic
+  # reversed and unjoined inside List, Form and Picker (UIKit-hosted SwiftUI text). Arabic phones
+  # still get Arabic (CFBundleLocalizations lists ar first); see docs/HANDOFF.md.
+  developmentLanguage: en
 
 settings:
   base:
     SWIFT_VERSION: "6.0"
     MARKETING_VERSION: "1.0.0"
     CURRENT_PROJECT_VERSION: "1"
-    DEVELOPMENT_LANGUAGE: ar
+    DEVELOPMENT_LANGUAGE: en
     ENABLE_USER_SCRIPT_SANDBOXING: YES
     SWIFT_STRICT_CONCURRENCY: complete
     # Set your Apple Developer Team ID here (Xcode > Signing & Capabilities shows it).

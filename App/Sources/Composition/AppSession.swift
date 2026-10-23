@@ -40,7 +40,8 @@ final class AppSession {
         // UI-test hooks: start signed in as a given role so automated runs skip OTP.
         let env = ProcessInfo.processInfo.environment
         if let raw = env["UITEST_START_ROLE"], let role = UserRole(rawValue: raw) {
-            state = .signedIn(SessionUser(id: "uitest-user", role: role, isAnonymous: false, displayName: "Test"))
+            state = .signedIn(SessionUser(id: "uitest-user", role: role, isAnonymous: false,
+                                          displayName: env["UITEST_DISPLAY_NAME"] ?? "Test", phone: env["UITEST_PHONE"]))
         }
     }
 

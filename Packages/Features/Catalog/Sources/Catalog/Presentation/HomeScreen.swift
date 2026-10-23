@@ -343,6 +343,8 @@ private struct HomeSlideCard: View {
                     .foregroundStyle(ink)
                     .lineLimit(2)
                     .minimumScaleFactor(0.85)
+                    // The title keeps its second line; the subtitle gives way first.
+                    .layoutPriority(1)
                 if let subtitle {
                     Text(verbatim: subtitle)
                         .font(.dsFootnote)
