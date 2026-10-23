@@ -35,3 +35,8 @@ text changes.
   inside `List`, `Form`, `Picker` and segmented controls (SwiftUI text hosted in UIKit); iOS 26
   is fine. Arabic phones still get Arabic. Found 2026-10-23 on the iOS 18.0 simulator; matches
   https://developer.apple.com/forums/thread/782459.
+- **Times are shown in the phone's time zone** on both apps (booking slots are computed in Riyadh
+  time on the server). Correct for phones in Saudi Arabia; a phone set to another zone sees
+  booking times shifted (e.g. Cairo in winter shows 9:00 for a 10:00 Riyadh slot). Pinning the
+  display to Asia/Riyadh means changing `Calendar.display` (iOS), `DisplayDates` (Android) and
+  every date-only formatter and date picker together, or wedding dates shift by a day.
