@@ -293,6 +293,15 @@ class AppEnvironment(private val context: Context) {
         }
     }
 
+    /**
+     * Finishes sign-in on the app's own scope. The auth sheet's scope is cancelled the moment the
+     * sheet closes (which signing in does), and that cut the profile load short: name and phone
+     * stayed empty until the next launch.
+     */
+    fun finishAuth(state: AuthState) {
+        scope.launch { authFinished(state) }
+    }
+
     /** Called when the auth flow finishes (sign-in, registration, or "browse as guest"). */
     suspend fun authFinished(state: AuthState) {
         when (state) {

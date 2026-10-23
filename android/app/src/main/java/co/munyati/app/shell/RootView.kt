@@ -22,7 +22,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,7 +39,6 @@ import co.munyati.designsystem.theme.DS
 import co.munyati.designsystem.theme.DSSpacing
 import co.munyati.shared.analytics.AnalyticsEvent
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 /**
  * Picks what the whole window shows: splash while restoring, the landing (role choice) when signed
@@ -94,8 +92,7 @@ fun RootView(environment: AppEnvironment) {
 /** Owns one auth feature for as long as it is on screen, so its navigation survives recomposition. */
 @Composable
 private fun AuthHost(environment: AppEnvironment) {
-    val scope = rememberCoroutineScope()
-    val feature = remember { environment.makeAuthFeature { state -> scope.launch { environment.authFinished(state) } } }
+    val feature = remember { environment.makeAuthFeature { state -> environment.finishAuth(state) } }
     feature.Content()
 }
 
