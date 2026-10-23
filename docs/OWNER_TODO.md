@@ -108,6 +108,11 @@ listings (§11, ready-to-paste text in `docs/STORE_LISTING.md`).
 - [ ] Keep an eye on Supabase **egress**: videos are far heavier than photos (a 60-second 720p clip is roughly 5–15 MB, streamed each time a bride watches it). The free plan includes 5 GB of egress a month and Pro 250 GB. If it grows, move videos to a video CDN (e.g. Cloudflare Stream or Bunny); only the upload path changes.
 - [ ] Supabase's per-file upload limit must stay at least 50 MB (Storage settings), the size the apps allow.
 
+## 10b. Security fix (apply now)
+- [ ] Run `supabase/migrations/20261020000000_get_service_visibility.sql` in the SQL editor. It stops
+      `get_service` from returning hidden services (paused, or from pending / suspended / lapsed
+      providers) to anyone who has the link.
+
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy
       answers from `docs/STORE_LISTING.md`; upload the screenshots in `design/store/ios/`
