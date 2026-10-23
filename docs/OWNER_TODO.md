@@ -113,6 +113,13 @@ listings (§11, ready-to-paste text in `docs/STORE_LISTING.md`).
       `get_service` from returning hidden services (paused, or from pending / suspended / lapsed
       providers) to anyone who has the link.
 
+## 10c. Dashboard: edit, archive, delete and the Needs-action inbox
+- [ ] Run `supabase/migrations/20261021000000_admin_records.sql` in the SQL editor, **then** redeploy
+      the dashboard (the new pages need the new columns).
+- Every list now has **Edit · Archive · Delete**. Archive hides a record everywhere and can be
+  undone from **الأرشيف / Archive**; permanent Delete is for the owner role only and asks you to
+  type «حذف». The home page is now **تحتاج إجراء / Needs action** with approve / reject buttons.
+
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy
       answers from `docs/STORE_LISTING.md`; upload the screenshots in `design/store/ios/`

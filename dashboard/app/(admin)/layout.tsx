@@ -1,18 +1,14 @@
 import Link from "next/link";
 import { requireAdmin, can } from "@/lib/admin";
-import { supabaseServer } from "@/lib/supabase/server";
 import { i18n } from "@/lib/i18n";
 import { LangSwitch } from "@/components/LangSwitch";
 import { signOut } from "./actions";
-
-type Queues = Record<string, number>;
+import { getQueues, totalQueue } from "@/lib/queues";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await requireAdmin();
   const { t, lang } = await i18n();
-  const supabase = await supabaseServer();
-  const { data } = await supabase.rpc("admin_stats");
-  const q: Queues = (data as { queues?: Queues } | null)?.queues ?? {};
+  const q = await getQueues();
 
   const item = (href: string, label: string, count?: number) => (
     <Link href={href}>
@@ -27,7 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <div className="brand">{t("منيتي", "Munyati")}<small>{t("لوحة الإدارة", "Admin")}</small></div>
         <nav className="nav">
           <div className="nav-group">
-            {item("/", t("الرئيسية", "Overview"))}
+            {item("/", t("تحتاج إجراء", "Needs action"), totalQueue(q))}
           </div>
           <div className="nav-group">
             <span>{t("العمليات", "Operations")}</span>
@@ -38,6 +34,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             {can(admin, "reports.handle") && item("/reports", t("البلاغات", "Reports"), q.reports_open)}
             {can(admin, "reports.handle") && item("/support", t("الدعم", "Support"), q.tickets_open)}
             {item("/users", t("المستخدمون", "Users"))}
+            {item("/archive", t("الأرشيف", "Archive"))}
           </div>
           <div className="nav-group">
             <span>{t("الإيرادات", "Revenue")}</span>

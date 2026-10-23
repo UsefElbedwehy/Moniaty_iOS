@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { RecordActions } from "@/components/RecordActions";
+import { isOwner } from "@/lib/admin";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Badge, Chips, Empty, Pager } from "@/components/ui";
 import { param, pageRange, PAGE_SIZE } from "@/lib/format";
@@ -20,13 +22,14 @@ export default async function Bookings({ searchParams }: { searchParams: Promise
   const supabase = await supabaseServer();
   const select = "id, reference_code, status, price, starts_at, created_at, service_title, bride_name, is_demo, providers(business_name)"
     + (duplicate ? ", payment_receipts!inner(is_duplicate)" : "");
-  let query = supabase.from("bookings").select(select).order("created_at", { ascending: false }).range(...pageRange(page));
+  let query = supabase.from("bookings").select(select).is("archived_at", null).order("created_at", { ascending: false }).range(...pageRange(page));
   if (status) query = query.eq("status", status);
   if (q) query = query.ilike("reference_code", `%${q}%`);
   if (duplicate) query = query.eq("payment_receipts.is_duplicate", true);
   const { data, error } = await query;
   const rows = (data ?? []) as unknown as Row[];
 
+  const owner = await isOwner();
   return (
     <>
       <div className="topbar">
@@ -45,7 +48,7 @@ export default async function Bookings({ searchParams }: { searchParams: Promise
       <div className="table-wrap">
         {rows.length === 0 ? <Empty /> : (
           <table>
-            <thead><tr><th>{t("الرقم", "Code")}</th><th>{t("الخدمة", "Service")}</th><th>{t("مقدّمة الخدمة", "Provider")}</th><th>{t("العروس", "Bride")}</th><th>{t("الموعد", "Appointment")}</th><th>{t("المبلغ", "Amount")}</th><th>{t("الحالة", "Status")}</th></tr></thead>
+            <thead><tr><th>{t("الرقم", "Code")}</th><th>{t("الخدمة", "Service")}</th><th>{t("مقدّمة الخدمة", "Provider")}</th><th>{t("العروس", "Bride")}</th><th>{t("الموعد", "Appointment")}</th><th>{t("المبلغ", "Amount")}</th><th>{t("الحالة", "Status")}</th><th></th></tr></thead>
             <tbody>
               {rows.map((b) => (
                 <tr key={b.id}>
@@ -56,6 +59,7 @@ export default async function Bookings({ searchParams }: { searchParams: Promise
                   <td>{fmtDateTime(b.starts_at)}</td>
                   <td>{fmtSAR(b.price)}</td>
                   <td><Badge map={bookingStatus} value={b.status} /></td>
+                  <td><RecordActions entity="booking" id={b.id} back="/bookings" isOwner={owner} /></td>
                 </tr>
               ))}
             </tbody>

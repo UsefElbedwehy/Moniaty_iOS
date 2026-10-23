@@ -92,7 +92,7 @@ button, .button {
 button:hover, .button:hover { background: var(--primary-press); text-decoration: none; }
 button.secondary, .button.secondary { background: #fff; color: var(--primary); }
 button.danger { background: var(--danger); border-color: var(--danger); }
-button.ghost { background: transparent; border-color: var(--border); color: var(--text); }
+button.ghost, .button.ghost { background: transparent; border-color: var(--border); color: var(--text); }
 .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
 .chips a { padding: 4px 12px; border-radius: 999px; border: 1px solid var(--border); background: #fff; color: var(--text); }
 .chips a.on { background: var(--primary); color: #fff; border-color: var(--primary); }
@@ -125,3 +125,21 @@ details summary { cursor: pointer; color: var(--primary); }
 .media-grid img, .media-grid video { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; border: 1px solid var(--border); background: #000; }
 .media-grid video { object-fit: contain; }
 .media-grid figcaption { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+
+/* Record actions (edit · archive · delete) */
+.record-actions { gap: 6px; }
+.record-actions .button, .record-actions button { padding: 4px 10px; font-size: 13px; }
+tr.archived td { opacity: 0.55; }
+.decision { gap: 6px; margin-bottom: 6px; }
+.decision input[name="note"] { min-width: 180px; }
+.inbox-card { display: grid; gap: 8px; border-inline-start: 4px solid var(--gold); }
+.record-block { margin-bottom: 12px; }
+.record-block > .record-actions { margin-top: 6px; }
+
+/* Needs-action inbox */
+.inbox { display: grid; gap: 18px; margin-bottom: 24px; }
+.inbox section { display: grid; gap: 10px; }
+.inbox h3 { margin: 0; display: flex; align-items: center; gap: 8px; }
+.inbox-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.inbox-clear { color: var(--success); font-weight: 600; margin-bottom: 24px; }
+.count-pill { background: var(--gold); color: var(--primary); border-radius: 999px; padding: 0 9px; font-size: 13px; font-weight: 700; }

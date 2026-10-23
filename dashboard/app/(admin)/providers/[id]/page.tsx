@@ -3,6 +3,9 @@ import { notFound } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Badge, Flash } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
+import { RecordActions } from "@/components/RecordActions";
+import { ProviderDecision } from "@/components/ProviderDecision";
+import { isOwner } from "@/lib/admin";
 import { i18n } from "@/lib/i18n";
 import { bookingStatus, providerStatus } from "@/lib/labels";
 import { grantSubscription, reviewProvider, setServiceStatus } from "../actions";
@@ -20,14 +23,15 @@ export default async function ProviderDetail({ params, searchParams }: {
     supabase.from("profiles").select("phone, display_name, created_at, is_banned, deleted_at").eq("id", id).maybeSingle(),
     supabase.from("provider_categories").select("category_id").eq("provider_id", id),
     supabase.from("provider_cities").select("city_id").eq("provider_id", id),
-    supabase.from("services").select("id, title, price, status, category_id, image_urls, videos, created_at").eq("provider_id", id).order("created_at"),
-    supabase.from("stores").select("id, name, is_active, address").eq("provider_id", id),
+    supabase.from("services").select("id, title, price, status, category_id, image_urls, videos, created_at").eq("provider_id", id).is("archived_at", null).order("created_at"),
+    supabase.from("stores").select("id, name, is_active, address").eq("provider_id", id).is("archived_at", null),
     supabase.from("provider_subscriptions").select("plan_id, source, status, starts_at, ends_at, note").eq("provider_id", id).order("starts_at", { ascending: false }).limit(10),
     supabase.from("bookings").select("id, reference_code, status, price, starts_at, is_demo").eq("provider_id", id).order("created_at", { ascending: false }).limit(10),
     supabase.from("subscription_plans").select("id, name_ar, name_en").order("sort_order"),
     supabase.from("provider_payment_methods").select("kind, label, account_name, value, is_active").eq("provider_id", id),
   ]);
   const back = `/providers/${id}`;
+  const owner = await isOwner();
 
   return (
     <>
@@ -36,9 +40,18 @@ export default async function ProviderDetail({ params, searchParams }: {
           <h1>{p.business_name || t("بدون اسم", "Unnamed")} {p.is_verified && <span className="badge brand">{t("موثّقة", "Verified")}</span>}</h1>
           <Badge map={providerStatus} value={p.status} />
         </div>
-        <Link className="button secondary" href="/providers">{t("رجوع", "Back")}</Link>
+        <div style={{ display: "grid", gap: 6, justifyItems: "end" }}>
+          <Link className="button secondary" href="/providers">{t("رجوع", "Back")}</Link>
+          <RecordActions entity="provider" id={id} archived={!!p.archived_at} back={back} isOwner={owner} />
+        </div>
       </div>
       <Flash sp={sp} />
+      {p.status === "pending" && (
+        <div className="card inbox-card" style={{ marginBottom: 16 }}>
+          <b>{t("طلب انضمام بانتظار قرارك", "Join request waiting for your decision")}</b>
+          <ProviderDecision id={id} back={back} />
+        </div>
+      )}
 
       <div className="grid two">
         <div className="card">
@@ -118,6 +131,7 @@ export default async function ProviderDetail({ params, searchParams }: {
                       {s.status === "active" ? t("إيقاف", "Pause") : t("تفعيل", "Activate")}
                     </ConfirmButton>
                   </form>
+                  <RecordActions entity="service" id={s.id} back={back} isOwner={owner} />
                 </td>
               </tr>
             ))}
@@ -138,7 +152,12 @@ export default async function ProviderDetail({ params, searchParams }: {
             <div key={i} className="small">{m.label} · {m.account_name} · <span className="ltr mono">{m.value}</span> {!m.is_active && t("(مخفية)", "(hidden)")}</div>
           ))}
           <h2>{t("المتاجر", "Stores")}</h2>
-          {(stores.data ?? []).map((st) => <div key={st.id}>{st.name} {!st.is_active && <span className="badge">{t("مخفي", "Hidden")}</span>}</div>)}
+          {(stores.data ?? []).map((st) => (
+            <div key={st.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <span>{st.name} {!st.is_active && <span className="badge">{t("مخفي", "Hidden")}</span>}</span>
+              <RecordActions entity="store" id={st.id} back={back} isOwner={owner} />
+            </div>
+          ))}
         </div>
         <div className="card">
           <h2 style={{ marginTop: 0 }}>{t("آخر الحجوزات", "Recent bookings")}</h2>

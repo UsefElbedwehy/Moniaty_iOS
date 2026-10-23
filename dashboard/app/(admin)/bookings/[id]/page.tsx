@@ -6,6 +6,8 @@ import { ConfirmButton } from "@/components/ConfirmButton";
 import { i18n } from "@/lib/i18n";
 import { bookingStatus, disputeReason, party } from "@/lib/labels";
 import { resolveDispute } from "../actions";
+import { RecordActions } from "@/components/RecordActions";
+import { isOwner } from "@/lib/admin";
 
 export default async function BookingDetail({ params, searchParams }: {
   params: Promise<{ id: string }>; searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -16,6 +18,7 @@ export default async function BookingDetail({ params, searchParams }: {
   const supabase = await supabaseServer();
   const { data: b } = await supabase.from("bookings").select("*, providers(business_name)").eq("id", id).maybeSingle();
   if (!b) notFound();
+  const owner = await isOwner();
   const [events, receipts, disputes, bride] = await Promise.all([
     supabase.from("booking_events").select("from_status, to_status, actor_role, note, created_at").eq("booking_id", id).order("created_at"),
     supabase.from("payment_receipts").select("*").eq("booking_id", id).order("created_at", { ascending: false }),
@@ -38,7 +41,10 @@ export default async function BookingDetail({ params, searchParams }: {
           <h1 className="mono" style={{ fontSize: 22 }}>{b.reference_code}</h1>
           <Badge map={bookingStatus} value={b.status} /> {b.is_demo && <span className="badge">{t("تجريبي", "Demo")}</span>}
         </div>
-        <Link className="button secondary" href="/bookings">{t("رجوع", "Back")}</Link>
+        <div style={{ display: "grid", gap: 6, justifyItems: "end" }}>
+          <Link className="button secondary" href="/bookings">{t("رجوع", "Back")}</Link>
+          <RecordActions entity="booking" id={b.id} archived={!!b.archived_at} back={`/bookings/${b.id}`} isOwner={owner} />
+        </div>
       </div>
       <Flash sp={sp} />
 

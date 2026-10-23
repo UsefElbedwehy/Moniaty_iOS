@@ -1,4 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
+import { RecordActions } from "@/components/RecordActions";
+import { isOwner } from "@/lib/admin";
 import { Flash } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { i18n } from "@/lib/i18n";
@@ -68,10 +70,11 @@ export default async function Banners({ searchParams }: { searchParams: Promise<
   const { t } = await i18n();
   const supabase = await supabaseServer();
   const [banners, cities] = await Promise.all([
-    supabase.from("home_banners").select("*").order("sort_order").order("created_at", { ascending: false }),
+    supabase.from("home_banners").select("*").is("archived_at", null).order("sort_order").order("created_at", { ascending: false }),
     supabase.from("cities").select("id, name_ar, name_en").order("sort_order"),
   ]);
   const cityList = (cities.data ?? []) as City[];
+  const owner = await isOwner();
   return (
     <>
       <div className="topbar"><h1>{t("بنرات الرئيسية", "Home banners")}</h1></div>
@@ -79,7 +82,12 @@ export default async function Banners({ searchParams }: { searchParams: Promise<
       <p className="muted">{t(
         "تظهر البنرات الفعّالة أولاً في شريط العروض بالصفحة الرئيسية للعروس، ثم شرائح منيتي الثابتة. الرابط اختياري: رابط داخل التطبيق مثل https://munyati.co/c/makeup (قسم) أو /s/<id> (خدمة) أو /p/<id> (مقدّمة خدمة)، أو رابط خارجي.",
         "Active banners show first in the bride's Home carousel, followed by Munyati's built-in slides. The link is optional: an app link such as https://munyati.co/c/makeup (category), /s/<id> (service) or /p/<id> (provider), or an outside link.")}</p>
-      {((banners.data ?? []) as Banner[]).map((b) => <BannerForm key={b.id} b={b} cities={cityList} />)}
+      {((banners.data ?? []) as Banner[]).map((b) => (
+        <div key={b.id} className="record-block">
+          <BannerForm b={b} cities={cityList} />
+          <RecordActions entity="banner" id={b.id} back="/banners" isOwner={owner} edit={false} />
+        </div>
+      ))}
       <h2>{t("بنر جديد", "New banner")}</h2>
       <BannerForm cities={cityList} />
     </>
