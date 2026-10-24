@@ -332,9 +332,11 @@ private struct HomeSlideCard: View {
 
     var body: some View {
         if imageOnly, case .banner(let banner) = slide, let url = banner.imageUrl {
-            // A designed banner: shown exactly as uploaded.
-            RemoteImageView(url: url)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            // A designed banner: shown exactly as uploaded. `Color.clear` takes the slot's exact size
+            // and the image fills it as an overlay, so the rounded clip matches the other slides
+            // (a fill image as the base view would size itself to the photo and escape the clip).
+            Color.clear
+                .overlay { RemoteImageView(url: url) }
                 .clipShape(RoundedRectangle(cornerRadius: DSRadius.card))
                 .contentShape(RoundedRectangle(cornerRadius: DSRadius.card))
                 .accessibilityElement()
