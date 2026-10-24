@@ -158,6 +158,13 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
   list. Nobody can give the developer role, change it or suspend it from the dashboard; it is set
   only by SQL.
 
+## 10f. Image-only home banners
+- [ ] Run `supabase/migrations/20261025000000_banner_optional_title.sql` in the SQL editor (safe to
+      re-run). Until then, saving a banner without a title from the dashboard is refused.
+- What changes: a banner's title is optional. A banner with an image and no title shows the image
+  exactly as uploaded (no fade, no text); a tap still opens its link. Design such images at 2:1 and
+  keep text away from the edges. A banner needs an image or a title in both languages.
+
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy
       answers from `docs/STORE_LISTING.md`; upload the screenshots in `design/store/ios/`

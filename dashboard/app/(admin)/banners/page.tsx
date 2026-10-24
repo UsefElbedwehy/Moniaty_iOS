@@ -6,7 +6,7 @@ import { ConfirmButton } from "@/components/ConfirmButton";
 import { i18n } from "@/lib/i18n";
 import { saveBanner, deleteBanner } from "./actions";
 
-type Banner = { id: string; title_ar: string; title_en: string; subtitle_ar: string | null; subtitle_en: string | null;
+type Banner = { id: string; title_ar: string | null; title_en: string | null; subtitle_ar: string | null; subtitle_en: string | null;
   cta_ar: string | null; cta_en: string | null; image_url: string | null; link_url: string | null; city_ids: string[] | null;
   starts_at: string | null; ends_at: string | null; is_active: boolean; sort_order: number };
 type City = { id: string; name_ar: string; name_en: string };
@@ -24,8 +24,8 @@ async function BannerForm({ b, cities }: { b?: Banner; cities: City[] }) {
         {b?.image_url && <img src={b.image_url} alt="" style={{ width: 160, height: 80, objectFit: "cover", borderRadius: 10 }} />}
         <div className="stack" style={{ flex: 1, minWidth: 260 }}>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            <input name="title_ar" defaultValue={b?.title_ar} placeholder={t("العنوان", "Arabic title")} required style={{ flex: 1 }} />
-            <input name="title_en" defaultValue={b?.title_en} placeholder={t("Title", "English title")} required dir="ltr" style={{ flex: 1 }} />
+            <input name="title_ar" defaultValue={b?.title_ar ?? ""} placeholder={t("العنوان (اختياري)", "Arabic title (optional)")} style={{ flex: 1 }} />
+            <input name="title_en" defaultValue={b?.title_en ?? ""} placeholder={t("Title (optional)", "English title (optional)")} dir="ltr" style={{ flex: 1 }} />
           </div>
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <input name="subtitle_ar" defaultValue={b?.subtitle_ar ?? ""} placeholder={t("النص الفرعي", "Arabic subtitle")} style={{ flex: 1 }} />
@@ -80,8 +80,8 @@ export default async function Banners({ searchParams }: { searchParams: Promise<
       <div className="topbar"><h1>{t("بنرات الرئيسية", "Home banners")}</h1></div>
       <Flash sp={sp} />
       <p className="muted">{t(
-        "تظهر البنرات الفعّالة أولاً في شريط العروض بالصفحة الرئيسية للعروس، ثم شرائح منيتي الثابتة. الرابط اختياري: رابط داخل التطبيق مثل https://munyati.co/c/makeup (قسم) أو /s/<id> (خدمة) أو /p/<id> (مقدّمة خدمة)، أو رابط خارجي.",
-        "Active banners show first in the bride's Home carousel, followed by Munyati's built-in slides. The link is optional: an app link such as https://munyati.co/c/makeup (category), /s/<id> (service) or /p/<id> (provider), or an outside link.")}</p>
+        "تظهر البنرات الفعّالة أولاً في شريط العروض بالصفحة الرئيسية للعروس، ثم شرائح منيتي الثابتة. الرابط اختياري: رابط داخل التطبيق مثل https://munyati.co/c/makeup (قسم) أو /s/<id> (خدمة) أو /p/<id> (مقدّمة خدمة)، أو رابط خارجي. العنوان اختياري: البنر بدون عنوان يظهر كصورتك كما هي دون نص فوقها (صمّميها بعرض ٢:١ واتركي الأطراف خالية من الكتابة، فقد تُقصّ قليلاً حسب الجهاز).",
+        "Active banners show first in the bride's Home carousel, followed by Munyati's built-in slides. The link is optional: an app link such as https://munyati.co/c/makeup (category), /s/<id> (service) or /p/<id> (provider), or an outside link. The title is optional: a banner without one shows your image exactly as it is, with no text over it (design it at 2:1 and keep text away from the edges, which may be trimmed slightly on some phones).")}</p>
       {((banners.data ?? []) as Banner[]).map((b) => (
         <div key={b.id} className="record-block">
           <BannerForm b={b} cities={cityList} />

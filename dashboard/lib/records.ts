@@ -100,7 +100,7 @@ export const ENTITIES: Record<Entity, Config> = {
     label: ["طلب دعم", "Support ticket"], table: "support_tickets", select: "id, subject, status", title: (r) => s(r.subject), href: () => "/support",
     fields: [{ name: "status", label: ["الحالة", "Status"], type: "select", options: [["open", "مفتوح", "Open"], ["answered", "تم الرد", "Answered"], ["closed", "مغلق", "Closed"]] }],
   },
-  banner: { label: ["بنر", "Banner"], table: "home_banners", select: "id, title_ar, title_en", title: (r) => s(r.title_ar), href: () => "/banners" },
+  banner: { label: ["بنر", "Banner"], table: "home_banners", select: "id, title_ar, title_en", title: (r) => s(r.title_ar) || "🖼", href: () => "/banners" },
   category: { label: ["قسم", "Category"], table: "categories", select: "id, name_ar, name_en", title: (r) => s(r.name_ar), href: () => "/catalog" },
   city: { label: ["مدينة", "City"], table: "cities", select: "id, name_ar, name_en", title: (r) => s(r.name_ar), href: () => "/catalog" },
   plan: { label: ["باقة", "Plan"], table: "subscription_plans", select: "id, name_ar, name_en", title: (r) => s(r.name_ar), href: () => "/plans" },

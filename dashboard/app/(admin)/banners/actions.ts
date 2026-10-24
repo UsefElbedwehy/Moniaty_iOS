@@ -25,9 +25,17 @@ export async function saveBanner(form: FormData) {
   if (link && !/^(https:\/\/|munyati:\/\/)/.test(link)) {
     return done("/banners", { message: await tr("الرابط يجب أن يبدأ بـ https://", "The link must start with https://") });
   }
+  // The title is optional: without one the apps show the image alone (a designed banner).
+  const titleAr = optStr(form, "title_ar"), titleEn = optStr(form, "title_en");
+  if (!titleAr !== !titleEn) {
+    return done("/banners", { message: await tr("اكتبي العنوان بالعربية والإنجليزية، أو اتركيهما فارغين لبنر بالصورة فقط", "Write the title in Arabic and English, or leave both empty for an image-only banner") });
+  }
+  if (!titleAr && !imageUrl) {
+    return done("/banners", { message: await tr("البنر بدون عنوان يحتاج صورة", "A banner without a title needs an image") });
+  }
   const cities = form.getAll("city_ids").map(String).filter(Boolean);
   const row = {
-    title_ar: str(form, "title_ar"), title_en: str(form, "title_en"),
+    title_ar: titleAr, title_en: titleEn,
     subtitle_ar: optStr(form, "subtitle_ar"), subtitle_en: optStr(form, "subtitle_en"),
     cta_ar: optStr(form, "cta_ar"), cta_en: optStr(form, "cta_en"),
     image_url: imageUrl, link_url: link, city_ids: cities.length ? cities : null,
