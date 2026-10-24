@@ -144,8 +144,8 @@ internal fun PhotoUploadButton(uploader: MediaUploading, folder: String, maxCoun
         scope.launch {
             val urls = mutableListOf<String>()
             for (uri in uris) {
-                val jpeg = withContext(Dispatchers.IO) { ImageCompressor.jpeg(context, uri) } ?: continue
-                runCatching { uploader.uploadJpeg(jpeg, folder) }.onSuccess { urls += it }.onFailure { failed = true }
+                val photo = withContext(Dispatchers.IO) { ImageCompressor.photo(context, uri) } ?: continue
+                runCatching { uploader.uploadPhoto(photo, folder) }.onSuccess { urls += it }.onFailure { failed = true }
             }
             isUploading = false
             if (urls.isNotEmpty()) onUploaded(urls)

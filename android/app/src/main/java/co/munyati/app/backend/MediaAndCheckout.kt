@@ -4,7 +4,9 @@ import co.munyati.core.error.AppError
 import co.munyati.providerstudio.domain.CheckoutStart
 import co.munyati.providerstudio.domain.PlanCheckout
 import co.munyati.providerstudio.domain.PlanPaymentStatus
+import co.munyati.shared.media.MediaThumbnail
 import co.munyati.shared.media.MediaUploading
+import co.munyati.shared.media.PreparedPhoto
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerialName
@@ -41,10 +43,18 @@ class SupabaseMediaUploader(
     override suspend fun uploadFile(file: File, contentType: String, fileExtension: String, folder: String): String =
         upload(fileExtension, folder, file.asRequestBody(contentType.toMediaType()))
 
-    private suspend fun upload(fileExtension: String, folder: String, body: RequestBody): String {
+    /** The small copy goes first: a full photo is only ever saved with its thumbnail beside it. */
+    override suspend fun uploadPhoto(photo: PreparedPhoto, folder: String): String {
+        val name = UUID.randomUUID().toString()
+        val jpeg = "image/jpeg".toMediaType()
+        upload("jpg", folder, photo.thumbnail.toRequestBody(jpeg), name + MediaThumbnail.THUMBNAIL_SUFFIX.removeSuffix(".jpg"))
+        return upload("jpg", folder, photo.full.toRequestBody(jpeg), name + MediaThumbnail.FULL_SUFFIX.removeSuffix(".jpg"))
+    }
+
+    private suspend fun upload(fileExtension: String, folder: String, body: RequestBody, name: String = UUID.randomUUID().toString()): String {
         val uid = currentUserId() ?: throw AppError.Authentication(AppError.AuthFailureReason.NotAuthenticated)
         val token = accessToken() ?: throw AppError.Authentication(AppError.AuthFailureReason.NotAuthenticated)
-        val path = "$uid/$folder/${UUID.randomUUID()}.$fileExtension"
+        val path = "$uid/$folder/$name.$fileExtension"
         val request = Request.Builder()
             .url("${baseUrl.trimEnd('/')}/storage/v1/object/media/$path")
             .header("apikey", anonKey)
@@ -71,6 +81,8 @@ class SupabaseMediaUploader(
  */
 class MockMediaUploader(private val keepDir: File) : MediaUploading {
     override suspend fun uploadJpeg(jpeg: ByteArray, folder: String) = "https://picsum.photos/seed/${UUID.randomUUID()}/800/600"
+
+    override suspend fun uploadPhoto(photo: PreparedPhoto, folder: String) = uploadJpeg(photo.full, folder)
 
     override suspend fun uploadFile(file: File, contentType: String, fileExtension: String, folder: String): String =
         withContext(Dispatchers.IO) {

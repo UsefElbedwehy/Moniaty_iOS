@@ -42,7 +42,7 @@ struct ServiceCardView: View {
         NavigationLink(value: CatalogRoute.service(id: card.id)) {
             VStack(alignment: .leading, spacing: DSSpacing.xs) {
                 ZStack(alignment: .topTrailing) {
-                    RemoteImageView(url: card.imageUrl)
+                    RemoteImageView(url: card.imageUrl, thumbnail: true)
                         .frame(maxWidth: .infinity)
                         .frame(height: 120)
                         .background(Color.dsPrimaryMuted)

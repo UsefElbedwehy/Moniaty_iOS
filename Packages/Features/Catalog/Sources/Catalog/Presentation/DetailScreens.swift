@@ -294,7 +294,7 @@ struct ProviderAvatar: View {
     var body: some View {
         Group {
             if let url {
-                RemoteImageView(url: url)
+                RemoteImageView(url: url, thumbnail: true)
             } else {
                 Text(verbatim: String(name?.first ?? "م"))
                     .font(.custom(DSFonts.displayBold, size: size * 0.42))

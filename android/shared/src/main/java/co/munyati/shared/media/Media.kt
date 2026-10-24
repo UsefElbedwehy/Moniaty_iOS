@@ -18,6 +18,30 @@ interface MediaUploading {
 
     /** Uploads a file already on disk (a prepared video), streamed rather than read into memory. */
     suspend fun uploadFile(file: java.io.File, contentType: String, fileExtension: String, folder: String): String
+
+    /**
+     * Uploads a photo with its small list copy side by side (`<id>.full.jpg`, `<id>.thumb.jpg`) and
+     * returns the full photo's URL; `MediaThumbnail.url` derives the other. Same as iOS.
+     */
+    suspend fun uploadPhoto(photo: PreparedPhoto, folder: String): String
+}
+
+/** A picked photo ready to upload: the full photo and the small copy shown in lists and grids. */
+class PreparedPhoto(val full: ByteArray, val thumbnail: ByteArray)
+
+/**
+ * Where a photo's small copy lives. Photos uploaded since thumbnails exist end in `.full.jpg` and
+ * have a `.thumb.jpg` beside them; older photos have none, so they are shown as they are.
+ */
+object MediaThumbnail {
+    const val FULL_SUFFIX = ".full.jpg"
+    const val THUMBNAIL_SUFFIX = ".thumb.jpg"
+    /** Longest side of the small copy: a two-column card at 3x. */
+    const val MAX_DIMENSION = 600
+
+    /** The small copy's URL, or null when the photo has none. */
+    fun url(full: String?): String? =
+        full?.takeIf { it.endsWith(FULL_SUFFIX) }?.let { it.removeSuffix(FULL_SUFFIX) + THUMBNAIL_SUFFIX }
 }
 
 /**
@@ -47,4 +71,11 @@ object ImageCompressor {
             out.toByteArray()
         }
     }.getOrNull()
+
+    /** The full photo (1600 px) and its list copy (600 px), both from the picked original. */
+    fun photo(context: Context, uri: Uri): PreparedPhoto? {
+        val full = jpeg(context, uri) ?: return null
+        val thumbnail = jpeg(context, uri, maxDimension = MediaThumbnail.MAX_DIMENSION, quality = 75) ?: return null
+        return PreparedPhoto(full, thumbnail)
+    }
 }

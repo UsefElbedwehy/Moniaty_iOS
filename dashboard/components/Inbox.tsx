@@ -2,6 +2,7 @@ import Link from "next/link";
 import { supabaseServer } from "@/lib/supabase/server";
 import { can, type Admin } from "@/lib/admin";
 import { i18n } from "@/lib/i18n";
+import { thumbUrl } from "@/lib/format";
 import { disputeReason, reportReason } from "@/lib/labels";
 import { getQueues, totalQueue } from "@/lib/queues";
 import { ProviderDecision } from "@/components/ProviderDecision";
@@ -109,7 +110,7 @@ export async function Inbox({ admin }: { admin: Admin }) {
                 <span className="muted small">{r.author_name ?? "—"} {arrow} <Link href={`/providers/${r.provider_id}`}>{r.provider_name ?? "—"}</Link></span>
               </div>
               {r.body && <p style={{ margin: 0 }}>{r.body}</p>}
-              {r.photo_urls?.length > 0 && <div style={{ display: "flex", gap: 6 }}>{r.photo_urls.map((u) => <img key={u} className="thumb" src={u} alt="" />)}</div>}
+              {r.photo_urls?.length > 0 && <div style={{ display: "flex", gap: 6 }}>{r.photo_urls.map((u) => <img key={u} className="thumb" src={thumbUrl(u)} alt="" />)}</div>}
               {r.flagged_words?.length ? <span className="badge bad">{t("كلمات محظورة:", "Banned words:")} {list(r.flagged_words)}</span> : null}
               <form className="inline decision" action={moderateReview}>
                 <input type="hidden" name="id" value={r.id} />

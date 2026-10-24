@@ -32,6 +32,10 @@ public enum RemoteImageLoading {
         diskPath: "MunyatiRemoteImageCache"
     )
 
+    /// Longest side of an image shown inside the app (cards, galleries, banners): a full phone
+    /// width at 3x. Uploads are 1600 px, so this alone saves about 45% memory per photo.
+    public static let displayMaxPixelSize: CGFloat = 1200
+
     public static let session: URLSession = {
         let configuration = URLSessionConfiguration.default
         configuration.urlCache = cache
@@ -76,10 +80,6 @@ extension RemoteImageLoading {
         decodeDownsampled(data, maxPixelSize: nil)
     }
 
-    /// Longest side of an image shown inside the app (cards, galleries, banners): a full phone
-    /// width at 3x. Uploads are 1600 px, so this alone saves about 45% memory per photo.
-    public static let displayMaxPixelSize: CGFloat = 1200
-
     /// Decodes with ImageIO: shrunk to `maxPixelSize` while decoding (never holding the full bitmap)
     /// and decoded right here, off the main thread. `UIImage(data:)` would instead decode the full
     /// size lazily on the main thread the first time the image is drawn, which stutters scrolling.
@@ -114,7 +114,8 @@ final class RemoteImageLoader {
     private let logger = Logger(subsystem: "Munyati.Shared", category: "RemoteImage")
     private var currentTask: Task<Void, Never>?
 
-    func load(url: URL?) {
+    /// Loads `url`; if that fails (e.g. a missing thumbnail), tries `fallback` before giving up.
+    func load(url: URL?, fallback: URL? = nil, maxPixelSize: CGFloat = RemoteImageLoading.displayMaxPixelSize) {
         currentTask?.cancel()
         guard let url else {
             phase = .failed
@@ -122,7 +123,12 @@ final class RemoteImageLoader {
         }
         phase = .loading
         currentTask = Task { [weak self] in
-            await self?.fetch(url: url)
+            guard let self else { return }
+            await self.fetch(url: url, maxPixelSize: maxPixelSize)
+            if case .failed = self.phase, let fallback, !Task.isCancelled {
+                self.phase = .loading
+                await self.fetch(url: fallback, maxPixelSize: maxPixelSize)
+            }
         }
     }
 
@@ -130,7 +136,7 @@ final class RemoteImageLoader {
         currentTask?.cancel()
     }
 
-    private func fetch(url: URL) async {
+    private func fetch(url: URL, maxPixelSize: CGFloat) async {
         #if canImport(UIKit)
         if let cached = RemoteImageDecodeCache.shared.object(forKey: url as NSURL) {
             phase = .loaded(Image(uiImage: cached))
@@ -155,14 +161,14 @@ final class RemoteImageLoader {
             }
             guard !Task.isCancelled else { return }
             #if canImport(UIKit)
-            guard let uiImage = await Self.decode(data: data) else {
+            guard let uiImage = await Self.decode(data: data, maxPixelSize: maxPixelSize) else {
                 phase = .failed
                 return
             }
             RemoteImageDecodeCache.shared.setObject(uiImage, forKey: url as NSURL)
             phase = .loaded(Image(uiImage: uiImage))
             #elseif canImport(AppKit)
-            guard let nsImage = await Self.decode(data: data) else {
+            guard let nsImage = await Self.decode(data: data, maxPixelSize: maxPixelSize) else {
                 phase = .failed
                 return
             }
@@ -183,11 +189,11 @@ final class RemoteImageLoader {
     // `nonisolated func ... async` hops to the background cooperative pool rather than staying
     // pinned to whichever actor called it.
     #if canImport(UIKit)
-    nonisolated private static func decode(data: Data) async -> UIImage? {
-        RemoteImageLoading.decodeDownsampled(data, maxPixelSize: RemoteImageLoading.displayMaxPixelSize)
+    nonisolated private static func decode(data: Data, maxPixelSize: CGFloat) async -> UIImage? {
+        RemoteImageLoading.decodeDownsampled(data, maxPixelSize: maxPixelSize)
     }
     #elseif canImport(AppKit)
-    nonisolated private static func decode(data: Data) async -> NSImage? { NSImage(data: data) }
+    nonisolated private static func decode(data: Data, maxPixelSize: CGFloat) async -> NSImage? { NSImage(data: data) }
     #endif
 }
 
@@ -196,13 +202,25 @@ final class RemoteImageLoader {
 public struct RemoteImageView: View {
     private let url: URL?
     private let contentMode: ContentMode
+    private let thumbnail: Bool
 
     @State private var loader = RemoteImageLoader()
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
-    public init(url: URL?, contentMode: ContentMode = .fill) {
+    /// `thumbnail: true` for small spots (cards, rows, avatars): loads the photo's small copy when
+    /// it has one (`MediaThumbnail`), a fraction of the bytes, and falls back to the full photo.
+    public init(url: URL?, contentMode: ContentMode = .fill, thumbnail: Bool = false) {
         self.url = url
         self.contentMode = contentMode
+        self.thumbnail = thumbnail
+    }
+
+    private func startLoading() {
+        if thumbnail, let url, let small = MediaThumbnail.url(for: url) {
+            loader.load(url: small, fallback: url, maxPixelSize: MediaThumbnail.maxDimension)
+        } else {
+            loader.load(url: url)
+        }
     }
 
     public var body: some View {
@@ -226,7 +244,7 @@ public struct RemoteImageView: View {
         }
         .clipped()
         .task(id: url) {
-            loader.load(url: url)
+            startLoading()
         }
         .onDisappear {
             loader.cancel()
@@ -244,7 +262,7 @@ public struct RemoteImageView: View {
                 .fill(Color.dsBorder.opacity(0.45))
 
             Button {
-                loader.load(url: url)
+                startLoading()
             } label: {
                 Image(systemName: "arrow.clockwise")
                     .font(.title3)

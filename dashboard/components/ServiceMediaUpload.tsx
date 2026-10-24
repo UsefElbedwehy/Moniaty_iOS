@@ -31,8 +31,9 @@ export function ServiceMediaUpload({ serviceId, lang, photosLeft, videosLeft }: 
     const supabase = supabaseBrowser();
     const images: string[] = [];
     const videos: ServiceVideo[] = [];
-    const put = async (blob: Blob, ext: string, type: string) => {
-      const path = `services/${serviceId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const newName = () => `services/${serviceId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const put = async (blob: Blob, ext: string, type: string, name = newName()) => {
+      const path = `${name}.${ext}`;
       const { error: e } = await supabase.storage.from("content")
         .upload(path, blob, { contentType: type, cacheControl: "31536000", upsert: false });
       if (e) throw new Error(e.message);
@@ -44,9 +45,17 @@ export function ServiceMediaUpload({ serviceId, lang, photosLeft, videosLeft }: 
           if (images.length >= photosLeft) throw new Error(t("وصلت الخدمة إلى الحد الأقصى للصور", "The service has reached its photo limit"));
           if (file.size > MAX_PHOTO_BYTES) throw new Error(t(`${file.name}: الصورة أكبر من ٢٠ ميغابايت`, `${file.name}: the photo is larger than 20 MB`));
           setBusy(t(`جارٍ تجهيز ${file.name}…`, `Preparing ${file.name}…`));
-          const photo = await shrinkPhoto(file);
+          const full = await shrinkPhoto(file, 1600, 0.8);
+          const thumb = await shrinkPhoto(file, 600, 0.75);
           setBusy(t(`جارٍ رفع ${file.name}…`, `Uploading ${file.name}…`));
-          images.push(photo ? await put(photo, "jpg", "image/jpeg") : await put(file, PHOTO_TYPES[file.type], file.type));
+          if (full && thumb) {
+            // The small copy first, beside the full photo (`.thumb.jpg` / `.full.jpg`), as the apps do.
+            const name = newName();
+            await put(thumb, "thumb.jpg", "image/jpeg", name);
+            images.push(await put(full, "full.jpg", "image/jpeg", name));
+          } else {
+            images.push(await put(file, PHOTO_TYPES[file.type], file.type));
+          }
         } else if (file.type === "video/mp4") {
           if (videos.length >= videosLeft) throw new Error(t("وصلت الخدمة إلى الحد الأقصى للفيديوهات (٣)", "The service has reached its video limit (3)"));
           if (file.size > MAX_VIDEO_BYTES) throw new Error(t(`${file.name}: الفيديو أكبر من ٥٠ ميغابايت`, `${file.name}: the video is larger than 50 MB`));
@@ -90,14 +99,14 @@ export function ServiceMediaUpload({ serviceId, lang, photosLeft, videosLeft }: 
 }
 
 /**
- * The photo as the apps upload it: longest side at most 1600 px, JPEG at quality 0.8 (usually a few
- * hundred KB). Returns null to upload the original instead, when it is already smaller or the
- * browser can't decode it.
+ * The photo as the apps upload it: longest side at most `maxSide` px as JPEG (1600 px at 0.8 for
+ * the photo, usually a few hundred KB; 600 px for its list copy). Returns null when the browser
+ * can't decode it, and the original photo is uploaded as it is.
  */
-async function shrinkPhoto(file: File): Promise<Blob | null> {
+async function shrinkPhoto(file: File, maxSide: number, quality: number): Promise<Blob | null> {
   try {
     const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
-    const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+    const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
     const canvas = document.createElement("canvas");
     canvas.width = Math.round(bitmap.width * scale);
     canvas.height = Math.round(bitmap.height * scale);
@@ -108,8 +117,7 @@ async function shrinkPhoto(file: File): Promise<Blob | null> {
     ctx.imageSmoothingQuality = "high";
     ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
     bitmap.close();
-    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.8));
-    return blob && (scale < 1 || blob.size < file.size) ? blob : null;
+    return await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", quality));
   } catch {
     return null;
   }

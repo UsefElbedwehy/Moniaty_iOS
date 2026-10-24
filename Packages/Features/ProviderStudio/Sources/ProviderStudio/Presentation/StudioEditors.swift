@@ -27,7 +27,7 @@ struct BusinessEditScreen: View {
                 TextField(StudioL10n.string("business.bio"), text: $draft.bio, axis: .vertical)
                     .lineLimit(3...8)
                 HStack(spacing: DSSpacing.md) {
-                    RemoteImageView(url: draft.logoUrl)
+                    RemoteImageView(url: draft.logoUrl, thumbnail: true)
                         .frame(width: 56, height: 56)
                         .background(Color.dsPrimaryMuted)
                         .clipShape(Circle())
@@ -133,7 +133,7 @@ struct ServicesListScreen: View {
                     ForEach(business.services) { service in
                         Button { editing = ServiceDraft(service) } label: {
                             HStack(spacing: DSSpacing.sm) {
-                                RemoteImageView(url: service.imageUrls.first)
+                                RemoteImageView(url: service.imageUrls.first, thumbnail: true)
                                     .frame(width: 52, height: 52)
                                     .background(Color.dsPrimaryMuted)
                                     .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -240,7 +240,7 @@ struct ServiceEditScreen: View {
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack {
                             ForEach(draft.imageUrls, id: \.self) { url in
-                                RemoteImageView(url: url)
+                                RemoteImageView(url: url, thumbnail: true)
                                     .frame(width: 84, height: 84)
                                     .clipShape(RoundedRectangle(cornerRadius: 12))
                                     .overlay(alignment: .topTrailing) {
@@ -454,7 +454,7 @@ struct StoreEditScreen: View {
                 TextField(StudioL10n.string("store.description"), text: $draft.description, axis: .vertical)
                     .lineLimit(2...6)
                 HStack(spacing: DSSpacing.md) {
-                    RemoteImageView(url: draft.logoUrl)
+                    RemoteImageView(url: draft.logoUrl, thumbnail: true)
                         .frame(width: 56, height: 56)
                         .background(Color.dsPrimaryMuted)
                         .clipShape(RoundedRectangle(cornerRadius: 12))

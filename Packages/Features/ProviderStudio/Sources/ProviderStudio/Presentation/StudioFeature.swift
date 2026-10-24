@@ -323,9 +323,9 @@ struct PhotoUploadButton: View {
         var urls: [URL] = []
         for item in picked {
             guard let data = try? await item.loadTransferable(type: Data.self),
-                  let jpeg = ImageCompressor.jpeg(from: data) else { continue }
+                  let photo = ImageCompressor.photo(from: data) else { continue }
             do {
-                urls.append(try await uploader.uploadJPEG(jpeg, folder: folder))
+                urls.append(try await uploader.uploadPhoto(photo, folder: folder))
             } catch {
                 failed = true
             }
