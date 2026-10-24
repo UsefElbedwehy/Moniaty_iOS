@@ -3,11 +3,12 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { can, type Admin } from "@/lib/admin";
 import { i18n } from "@/lib/i18n";
 import { thumbUrl } from "@/lib/format";
-import { disputeReason, reportReason } from "@/lib/labels";
+import { disputeReason } from "@/lib/labels";
 import { getQueues, totalQueue } from "@/lib/queues";
 import { ProviderDecision } from "@/components/ProviderDecision";
 import { moderateReview } from "@/app/(admin)/reviews/actions";
-import { resolveReport } from "@/app/(admin)/reports/actions";
+import { ReportCard } from "@/components/ReportCard";
+import { loadReportContext, type ReportRow } from "@/lib/reports";
 import { replyTicket } from "@/app/(admin)/support/actions";
 
 const LIMIT = 8;
@@ -21,15 +22,10 @@ type PendingProvider = {
 };
 type PendingReview = { id: string; rating: number; body: string | null; photo_urls: string[]; author_name: string | null;
   provider_id: string; provider_name: string | null; flagged_words: string[] | null; created_at: string };
-type OpenReport = { id: string; target_type: string; target_id: string; reason: string; details: string | null; created_at: string };
 type OpenDispute = { id: string; booking_id: string; reason: string; details: string | null; opened_by_role: string; created_at: string;
   bookings: { reference_code: string; service_title: string | null } | null };
 type OpenTicket = { id: string; subject: string; message: string; created_at: string; booking_id: string | null;
   profiles: { display_name: string | null; phone: string | null } | null };
-
-const targetHref = (type: string, id: string) =>
-  type === "provider" ? `/providers/${id}` : type === "service" ? `/reports/service/${id}` : type === "store" ? `/reports/store/${id}`
-  : type === "booking" ? `/bookings/${id}` : type === "user" ? `/users?q=${id}` : "/reviews?status=approved";
 
 /**
  * "Needs action": everything waiting for an admin, each with its decision buttons right here, so
@@ -50,7 +46,7 @@ export async function Inbox({ admin }: { admin: Admin }) {
       : null,
     can(admin, "reviews.moderate") && q.reviews_pending ? supabase.rpc("admin_get_reviews", { p_status: "pending", p_limit: LIMIT, p_offset: 0 }) : null,
     can(admin, "reports.handle") && q.reports_open
-      ? supabase.from("reports").select("id, target_type, target_id, reason, details, created_at").eq("status", "open").is("archived_at", null).order("created_at").limit(LIMIT)
+      ? supabase.from("reports").select("*").eq("status", "open").is("archived_at", null).order("created_at").limit(LIMIT)
       : null,
     q.disputes_open
       ? supabase.from("disputes").select("id, booking_id, reason, details, opened_by_role, created_at, bookings(reference_code, service_title)").eq("status", "open").order("created_at").limit(LIMIT)
@@ -61,7 +57,8 @@ export async function Inbox({ admin }: { admin: Admin }) {
   ]);
   const pendingProviders = (providers?.data ?? []) as unknown as PendingProvider[];
   const pendingReviews = (reviews?.data ?? []) as PendingReview[];
-  const openReports = (reports?.data ?? []) as OpenReport[];
+  const openReports = (reports?.data ?? []) as ReportRow[];
+  const reportCtx = await loadReportContext(supabase, openReports);
   const openDisputes = (disputes?.data ?? []) as unknown as OpenDispute[];
   const openTickets = (tickets?.data ?? []) as unknown as OpenTicket[];
   const more = (shown: number, total: number, href: string) =>
@@ -128,22 +125,7 @@ export async function Inbox({ admin }: { admin: Admin }) {
       {openReports.length > 0 && (
         <section>
           <h3>{t("بلاغات مفتوحة", "Open reports")} <span className="count-pill">{q.reports_open}</span></h3>
-          {openReports.map((r) => (
-            <div key={r.id} className="card inbox-card">
-              <div className="inbox-head">
-                <span><b>{label(reportReason, r.reason)}</b> · <Link href={targetHref(r.target_type, r.target_id)}>{t("فتح المحتوى", "Open the content")}</Link></span>
-                <span className={`badge ${age(r.created_at) >= 20 ? "bad" : ""}`}>{age(r.created_at)} {t("ساعة", "h")}</span>
-              </div>
-              {r.details && <p style={{ margin: 0 }}>{r.details}</p>}
-              <form className="inline decision" action={resolveReport}>
-                <input type="hidden" name="id" value={r.id} />
-                <input type="hidden" name="back_path" value={back} />
-                <input name="note" placeholder={t("ما الإجراء المتخذ؟", "What action was taken?")} />
-                <button name="status" value="actioned">{t("تم الإجراء", "Actioned")}</button>
-                <button className="secondary" name="status" value="dismissed">{t("رفض البلاغ", "Dismiss")}</button>
-              </form>
-            </div>
-          ))}
+          {openReports.map((r) => <ReportCard key={r.id} report={r} ctx={reportCtx} back={back} />)}
           {more(openReports.length, q.reports_open, "/reports")}
         </section>
       )}
