@@ -2,6 +2,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { Flash } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { i18n } from "@/lib/i18n";
+import { isDeveloper } from "@/lib/admin";
 import type { LabelMap } from "@/lib/labels";
 import { saveRawConfig, saveSettings } from "./actions";
 
@@ -19,6 +20,8 @@ const smsLabels: LabelMap = {
 export default async function Settings({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
   const { t, lang, label, dateTime: fmtDateTime } = await i18n();
+  // The full-JSON editor is for the developer only.
+  const developer = await isDeveloper();
   const supabase = await supabaseServer();
   const [{ data }, { data: plans }] = await Promise.all([
     supabase.from("app_config").select("config, updated_at").eq("id", 1).single(),
@@ -96,13 +99,15 @@ export default async function Settings({ searchParams }: { searchParams: Promise
         <div><ConfirmButton message={t("حفظ الإعدادات؟ تصل للتطبيقات مباشرة.", "Save settings? They reach the apps right away.")}>{t("حفظ الإعدادات", "Save settings")}</ConfirmButton></div>
       </form>
 
-      <details>
-        <summary>{t("متقدم: تعديل JSON كامل", "Advanced: edit the full JSON")}</summary>
-        <form className="stack" action={saveRawConfig} style={{ marginTop: 12 }}>
-          <textarea name="json" dir="ltr" className="mono" style={{ minHeight: 360 }} defaultValue={JSON.stringify(c, null, 2)} />
-          <div><ConfirmButton message={t("استبدال الإعدادات كاملة؟", "Replace all settings?")} className="danger">{t("حفظ JSON", "Save JSON")}</ConfirmButton></div>
-        </form>
-      </details>
+      {developer && (
+        <details>
+          <summary>{t("متقدم: تعديل JSON كامل", "Advanced: edit the full JSON")}</summary>
+          <form className="stack" action={saveRawConfig} style={{ marginTop: 12 }}>
+            <textarea name="json" dir="ltr" className="mono" style={{ minHeight: 360 }} defaultValue={JSON.stringify(c, null, 2)} />
+            <div><ConfirmButton message={t("استبدال الإعدادات كاملة؟", "Replace all settings?")} className="danger">{t("حفظ JSON", "Save JSON")}</ConfirmButton></div>
+          </form>
+        </details>
+      )}
     </>
   );
 }

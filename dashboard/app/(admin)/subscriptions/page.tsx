@@ -5,6 +5,7 @@ import { Badge, Chips, Empty, Pager } from "@/components/ui";
 import { param, pageRange, PAGE_SIZE } from "@/lib/format";
 import { i18n } from "@/lib/i18n";
 import { paymentStatus } from "@/lib/labels";
+import { isDeveloper } from "@/lib/admin";
 
 type Payment = { id: string; provider_id: string | null; plan_id: string; amount: number; currency: string; status: string;
   tap_charge_id: string | null; tap_status: string | null; created_at: string; captured_at: string | null; raw: unknown;
@@ -16,6 +17,8 @@ export default async function Subscriptions({ searchParams }: { searchParams: Pr
   const page = Math.max(1, Number(param(sp.page, "1")) || 1);
   const { t, dateTime: fmtDateTime, sar: fmtSAR } = await i18n();
   const supabase = await supabaseServer();
+  // The raw Tap response is shown to the developer only.
+  const developer = await isDeveloper();
   let query = supabase.from("subscription_payments").select("*, providers(business_name)")
     .order("created_at", { ascending: false }).range(...pageRange(page));
   if (status) query = query.eq("status", status);
@@ -32,7 +35,7 @@ export default async function Subscriptions({ searchParams }: { searchParams: Pr
       <div className="table-wrap">
         {rows.length === 0 ? <Empty /> : (
           <table>
-            <thead><tr><th>{t("التاريخ", "Date")}</th><th>{t("مقدّمة الخدمة", "Provider")}</th><th>{t("الباقة", "Plan")}</th><th>{t("المبلغ", "Amount")}</th><th>{t("الحالة", "Status")}</th><th>Tap</th><th></th></tr></thead>
+            <thead><tr><th>{t("التاريخ", "Date")}</th><th>{t("مقدّمة الخدمة", "Provider")}</th><th>{t("الباقة", "Plan")}</th><th>{t("المبلغ", "Amount")}</th><th>{t("الحالة", "Status")}</th><th>Tap</th>{developer && <th></th>}</tr></thead>
             <tbody>{rows.map((r) => (
               <tr key={r.id}>
                 <td>{fmtDateTime(r.captured_at ?? r.created_at)}</td>
@@ -41,7 +44,7 @@ export default async function Subscriptions({ searchParams }: { searchParams: Pr
                 <td>{fmtSAR(r.amount)}</td>
                 <td><Badge map={paymentStatus} value={r.status} /></td>
                 <td><span className="mono ltr">{r.tap_charge_id ?? "—"}</span> <span className="small muted">{r.tap_status}</span></td>
-                <td>{r.raw ? <details><summary>{t("التفاصيل", "Details")}</summary><pre className="mono" style={{ maxWidth: 420, overflow: "auto", direction: "ltr" }}>{JSON.stringify(r.raw, null, 2)}</pre></details> : null}</td>
+                {developer && <td>{r.raw ? <details><summary>{t("التفاصيل", "Details")}</summary><pre className="mono" style={{ maxWidth: 420, overflow: "auto", direction: "ltr" }}>{JSON.stringify(r.raw, null, 2)}</pre></details> : null}</td>}
               </tr>
             ))}</tbody>
           </table>
