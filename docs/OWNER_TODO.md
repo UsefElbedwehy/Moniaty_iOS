@@ -3,10 +3,22 @@
 Everything below is outside the code: accounts, keys, uploads and decisions. Do them roughly in
 this order; items marked ⏳ take weeks, so start them first.
 
-**Status (2026-10-23):** both apps are feature-complete, build and pass their tests; the
-dashboard is live on Vercel; the iOS app talks to the live Supabase project. What's left is
-mostly here: accounts and approvals, keys, the last two migrations (§9, §10) and the store
-listings (§11, ready-to-paste text in `docs/STORE_LISTING.md`).
+**Status (2026-10-24):** both apps are feature-complete, build and pass their tests; the
+dashboard is live on Vercel; all migrations are applied to the live Supabase project; the iOS
+Release build has its privacy manifest and builds for devices. What's left is here: accounts and
+approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE_LISTING.md`).
+
+**Fastest path to TestFlight (iOS):**
+1. Apple Developer account (paid, ideally the client's organization) → note the **Team ID**.
+2. App Store Connect → Apps → **+** → bundle ID `co.munyati.app`, name «منيتي - Munyati».
+3. Xcode → Settings → Accounts → sign in with that Apple ID.
+4. `scripts/testflight.sh <TEAM_ID>` (archives, signs and uploads; about 10 minutes, then
+   10–30 minutes of processing).
+5. App Store Connect → TestFlight: add the client as an **internal** tester (instant) or an
+   external one (first build needs Apple's beta review, about a day). Give them a demo number
+   from `DEV_PHONES` with code `000000` until OurSMS is approved.
+6. Apple Developer → Keys → new key with **APNs** → upload it in Firebase → Cloud Messaging, so
+   push notifications reach TestFlight builds.
 
 ## 1. Accounts and legal (start today)
 - [ ] ⏳ **Commercial registration (CR)** + register on **business.sa** (needed for Apple, Tap, OurSMS).
@@ -46,7 +58,8 @@ listings (§11, ready-to-paste text in `docs/STORE_LISTING.md`).
 - [x] Builds with Xcode (`xcodegen generate`, open `Munyati.xcodeproj`); unit and UI tests pass.
 - [x] `App/Resources/BackendConfig.plist` points at the live Supabase project (anon key only).
 - [x] App icon in the asset catalog.
-- [ ] Set your Apple **Team** (`DEVELOPMENT_TEAM` in `project.yml`) once the Apple Developer account exists, then Product → Archive → upload to TestFlight.
+- [x] Privacy manifest (`App/Resources/PrivacyInfo.xcprivacy`), export-compliance flag and permission texts (ar + en).
+- [ ] Upload to TestFlight: `scripts/testflight.sh <TEAM_ID>` (see "Fastest path" above). Optionally also put the Team ID in `DEVELOPMENT_TEAM` in `project.yml` so Xcode's own Archive works without it.
 
 ## 5. Content and business decisions (in the dashboard)
 - [ ] **Plan prices**: seeded 99 / 249 / 499 SAR are placeholders — set the real ones (Plans page).
@@ -68,7 +81,7 @@ listings (§11, ready-to-paste text in `docs/STORE_LISTING.md`).
       munyati.co links open the Android app.
 
 ## 7. Before App Store submission (PLAN §11)
-- [ ] 3 demo accounts with fixed OTP (bride, subscribed provider, new provider) via `DEV_PHONES`.
+- [x] 3 demo accounts with fixed OTP (bride, subscribed provider, new provider) via `DEV_PHONES`.
 - [ ] Seed bookings in each state for the reviewer; write review notes explaining manual payment,
       Tap plans and the demo booking.
 - [ ] Privacy labels in App Store Connect, screenshots, name «منيتي - Munyati», subtitle.
@@ -97,24 +110,24 @@ listings (§11, ready-to-paste text in `docs/STORE_LISTING.md`).
 - [ ] Decide on Play Billing vs Tap for provider plans (PLAN §16 #12) before production.
 
 ## 9. Home v2 and Profile v2 (carousel banners)
-- [ ] Apply `supabase/migrations/20261018000000_home_banners.sql` to the live project (SQL editor or `supabase db push`). Until then the apps show only the built-in brand slides.
-- [ ] Redeploy the dashboard (Vercel) so **بنرات الرئيسية / Home banners** appears; add banners there (image 2:1, up to 1 MB; link such as `https://munyati.co/c/makeup`).
+- [x] Apply `supabase/migrations/20261018000000_home_banners.sql` to the live project (SQL editor or `supabase db push`). Until then the apps show only the built-in brand slides.
+- [x] Redeploy the dashboard (Vercel) so **بنرات الرئيسية / Home banners** appears; add banners there (image 2:1, up to 1 MB; link such as `https://munyati.co/c/makeup`).
 - [ ] Make sure `https://munyati.co/providers` explains how providers join: Home's "تقدّمين خدمات للعرائس؟" card opens it.
 - [ ] Optional: add `social_links` (instagram, tiktok, snapchat, x, whatsapp) in Settings → remote config to show the "تابعينا" icons in Profile.
 
 ## 10. Service videos and the photo viewer
-- [ ] Apply `supabase/migrations/20261019000000_service_videos.sql` to the live project (after §9's migration). Until then the apps keep working with photos only, and the video upload fails to save.
-- [ ] Redeploy the dashboard: each service on a provider's page now opens **الصور والفيديوهات / Photos and videos**, where admins watch, add (MP4 up to 60 s and 50 MB) and remove media. Reported services open there too.
+- [x] Apply `supabase/migrations/20261019000000_service_videos.sql` to the live project (after §9's migration). Until then the apps keep working with photos only, and the video upload fails to save.
+- [x] Redeploy the dashboard: each service on a provider's page now opens **الصور والفيديوهات / Photos and videos**, where admins watch, add (MP4 up to 60 s and 50 MB) and remove media. Reported services open there too.
 - [ ] Keep an eye on Supabase **egress**: videos are far heavier than photos (a 60-second 720p clip is roughly 5–15 MB, streamed each time a bride watches it). The free plan includes 5 GB of egress a month and Pro 250 GB. If it grows, move videos to a video CDN (e.g. Cloudflare Stream or Bunny); only the upload path changes.
 - [ ] Supabase's per-file upload limit must stay at least 50 MB (Storage settings), the size the apps allow.
 
 ## 10b. Security fix (apply now)
-- [ ] Run `supabase/migrations/20261020000000_get_service_visibility.sql` in the SQL editor. It stops
+- [x] Run `supabase/migrations/20261020000000_get_service_visibility.sql` in the SQL editor. It stops
       `get_service` from returning hidden services (paused, or from pending / suspended / lapsed
       providers) to anyone who has the link.
 
 ## 10c. Dashboard: edit, archive, delete and the Needs-action inbox
-- [ ] Run `supabase/migrations/20261021000000_admin_records.sql` in the SQL editor, **then** redeploy
+- [x] Run `supabase/migrations/20261021000000_admin_records.sql` in the SQL editor, **then** redeploy
       the dashboard (the new pages need the new columns).
 - Every list now has **Edit · Archive · Delete**. Archive hides a record everywhere and can be
   undone from **الأرشيف / Archive**; permanent Delete is for the owner role only and asks you to

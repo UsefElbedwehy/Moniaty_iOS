@@ -38,7 +38,7 @@
 		<false/>
 	</dict>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>To attach transfer receipts and photos of your services.</string>
+	<string>To attach transfer receipts and photos and videos of your services.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>To photograph a transfer receipt.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
