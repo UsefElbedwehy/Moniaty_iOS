@@ -137,8 +137,9 @@ data class HomeContent(
 @Serializable
 data class HomeBanner(
     val id: String,
-    val titleAr: String,
-    val titleEn: String,
+    /** Optional: a banner without a title is a designed image shown on its own. */
+    val titleAr: String? = null,
+    val titleEn: String? = null,
     val subtitleAr: String? = null,
     val subtitleEn: String? = null,
     val ctaAr: String? = null,
@@ -146,9 +147,12 @@ data class HomeBanner(
     val imageUrl: String? = null,
     val linkUrl: String? = null,
 ) {
-    val title: String get() = localized(titleAr, titleEn)
+    val title: String? get() = localized(titleAr.orEmpty(), titleEn.orEmpty()).ifEmpty { null }
     val subtitle: String? get() = localized(subtitleAr.orEmpty(), subtitleEn.orEmpty()).ifEmpty { null }
     val cta: String? get() = localized(ctaAr.orEmpty(), ctaEn.orEmpty()).ifEmpty { null }
+
+    /** No title but an image: the slide is the image alone, with no fade or text over it. */
+    val isImageOnly: Boolean get() = title == null && imageUrl != null
 }
 
 @Serializable

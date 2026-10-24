@@ -325,11 +325,24 @@ private fun HomeCarousel(slides: List<HomeSlide>, onTap: (HomeSlide) -> Unit) {
 
 @Composable
 private fun HomeSlideCard(slide: HomeSlide, onClick: () -> Unit) {
+    val banner = (slide as? HomeSlide.Banner)?.banner
+    if (banner != null && banner.isImageOnly) {
+        // A designed banner: shown exactly as uploaded.
+        val label = banner.subtitle ?: stringResource(R.string.catalog_home_slide_banner_image)
+        RemoteImage(
+            banner.imageUrl,
+            Modifier.fillMaxSize().clip(RoundedCornerShape(DSRadius.card))
+                .clickable(role = Role.Button, onClick = onClick)
+                .semantics { contentDescription = label },
+            contentScale = ContentScale.Crop,
+        )
+        return
+    }
     val isGold = slide == HomeSlide.Budget
     val ink = if (isGold) DS.colors.primaryPress else Color.White
     val badge = if (isGold) stringResource(R.string.catalog_home_slide_budget_badge) else null
     val title = when (slide) {
-        is HomeSlide.Banner -> slide.banner.title
+        is HomeSlide.Banner -> slide.banner.title.orEmpty()
         HomeSlide.Budget -> stringResource(R.string.catalog_home_slide_budget_title)
         HomeSlide.Discover -> stringResource(R.string.catalog_home_slide_discover_title)
     }

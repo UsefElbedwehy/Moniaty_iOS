@@ -27,6 +27,20 @@ struct CatalogTests {
         #expect(detail.store == nil)
     }
 
+    @Test("a banner without a title is image-only; with a title it is a card")
+    func bannerTitleIsOptional() throws {
+        let json = """
+        [{"id":"b1","title_ar":"","title_en":"","subtitle_ar":null,"subtitle_en":null,"cta_ar":null,"cta_en":null,
+          "image_url":"https://x.co/b.jpg","link_url":"https://munyati.co/c/makeup"},
+         {"id":"b2","title_ar":null,"title_en":null,"image_url":"https://x.co/c.jpg"},
+         {"id":"b3","title_ar":"عرض","title_en":"Offer","image_url":"https://x.co/d.jpg"}]
+        """
+        let banners = try decoder.decode([HomeBanner].self, from: Data(json.utf8))
+        #expect(banners.map(\.isImageOnly) == [true, true, false])
+        #expect(banners[0].title == nil)
+        #expect(banners[2].title != nil)
+    }
+
     @Test("get_service returning null decodes to nil")
     func decodesNull() throws {
         let detail = try decoder.decode(ServiceDetail?.self, from: Data("null".utf8))

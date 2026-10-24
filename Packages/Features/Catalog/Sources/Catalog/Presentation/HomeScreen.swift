@@ -304,9 +304,13 @@ private struct HomeSlideCard: View {
     private var ink: Color { isGold ? Color.dsPrimaryPress : .white }
 
     private var badge: String? { slide == .budget ? CatalogL10n.string("home.slide.budget.badge") : nil }
+    private var imageOnly: Bool {
+        if case .banner(let banner) = slide { return banner.isImageOnly }
+        return false
+    }
     private var title: String {
         switch slide {
-        case .banner(let banner): banner.title
+        case .banner(let banner): banner.title ?? ""
         case .budget: CatalogL10n.string("home.slide.budget.title")
         case .discover: CatalogL10n.string("home.slide.discover.title")
         }
@@ -327,6 +331,21 @@ private struct HomeSlideCard: View {
     }
 
     var body: some View {
+        if imageOnly, case .banner(let banner) = slide, let url = banner.imageUrl {
+            // A designed banner: shown exactly as uploaded.
+            RemoteImageView(url: url)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipShape(RoundedRectangle(cornerRadius: DSRadius.card))
+                .contentShape(RoundedRectangle(cornerRadius: DSRadius.card))
+                .accessibilityElement()
+                .accessibilityLabel(banner.subtitle ?? CatalogL10n.string("home.slide.banner.image"))
+                .accessibilityAddTraits(.isButton)
+        } else {
+            card
+        }
+    }
+
+    private var card: some View {
         ZStack(alignment: .leading) {
             background
             VStack(alignment: .leading, spacing: DSSpacing.xs) {

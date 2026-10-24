@@ -188,8 +188,9 @@ public struct HomeContent: Sendable, Decodable {
 /// (https://munyati.co/<p|s|store|c>/<id>) or an outside page.
 public struct HomeBanner: Identifiable, Hashable, Sendable, Decodable {
     public let id: String
-    public let titleAr: String
-    public let titleEn: String
+    /// Optional: a banner without a title is a designed image shown on its own.
+    public let titleAr: String?
+    public let titleEn: String?
     public let subtitleAr: String?
     public let subtitleEn: String?
     public let ctaAr: String?
@@ -197,9 +198,11 @@ public struct HomeBanner: Identifiable, Hashable, Sendable, Decodable {
     public let imageUrl: URL?
     public let linkUrl: URL?
 
-    public var title: String { localized(ar: titleAr, en: titleEn) }
+    public var title: String? { localized(ar: titleAr ?? "", en: titleEn ?? "").nilIfEmpty }
     public var subtitle: String? { localized(ar: subtitleAr ?? "", en: subtitleEn ?? "").nilIfEmpty }
     public var cta: String? { localized(ar: ctaAr ?? "", en: ctaEn ?? "").nilIfEmpty }
+    /// No title but an image: the slide is the image alone, with no fade or text over it.
+    public var isImageOnly: Bool { title == nil && imageUrl != nil }
 }
 
 public struct MapPin: Identifiable, Hashable, Sendable, Decodable {
