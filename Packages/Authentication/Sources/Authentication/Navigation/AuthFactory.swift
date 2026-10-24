@@ -55,7 +55,8 @@ struct AuthFactory: ViewFactory {
             viewModel: OTPViewModel(
                 challenge: challenge,
                 verifyOTP: useCases.verifyOTP,
-                sendOTP: useCases.sendOTP
+                sendOTP: useCases.sendOTP,
+                role: coordinator.selectedRole
             ),
             coordinator: coordinator
         )

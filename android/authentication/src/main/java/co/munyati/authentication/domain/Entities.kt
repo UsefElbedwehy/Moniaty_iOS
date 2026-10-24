@@ -35,7 +35,8 @@ sealed interface AuthState {
 data class OtpChallenge(val id: String, val phoneE164: String, val resendIntervalSeconds: Int)
 
 /**
- * Raised when the code was accepted but the number is new: the UI collects a name, then calls
- * `registerWithName` with the same still-valid code.
+ * Raised when the code was accepted but the number has no account for the picked side: the UI
+ * collects a name, then calls `registerWithName` with the same still-valid code. [otherRole] is set
+ * when the number already has an account of the other kind.
  */
-class RequiresRegistration : Exception()
+class RequiresRegistration(val otherRole: UserRole? = null) : Exception()

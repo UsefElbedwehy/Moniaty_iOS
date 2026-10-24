@@ -220,6 +220,7 @@ class AppEnvironment(private val context: Context) {
         val ctx = catalog.context
         val wasGuest = ctx.isGuest
         ctx.isGuest = !session.hasAccount
+        ctx.canBook = session.role != UserRole.Provider
         ctx.displayName = session.user?.displayName
         ctx.cityIds = cities.queryCityIds
         ctx.citySummary = cities.summary(allCitiesLabel())

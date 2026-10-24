@@ -24,7 +24,7 @@ class MockAuthRepository(private val artificialDelayMs: Long = 350) : AuthReposi
         return OtpChallenge(id, phoneE164, RESEND_INTERVAL_SECONDS)
     }
 
-    override suspend fun verifyOtp(challengeId: String, code: String): User {
+    override suspend fun verifyOtp(challengeId: String, code: String, role: UserRole?): User {
         tick()
         return mutex.withLock {
             val phone = challenges[challengeId] ?: throw AppError.Authentication(AppError.AuthFailureReason.OtpExpired)

@@ -30,6 +30,11 @@ class CatalogContext(cityIds: List<String>? = null, citySummary: String = "", di
     var displayName by mutableStateOf(displayName)
     /** Guests (no account) are asked to sign in before favoriting or setting a budget. */
     var isGuest by mutableStateOf(isGuest)
+    /**
+     * False for provider accounts: bookings are made from a bride account (which can be created on
+     * the same number), so the service page shows a note instead of the Book button.
+     */
+    var canBook by mutableStateOf(true)
 }
 
 // Destinations inside the catalog. The App registers `destinations()` on each tab's NavHost and

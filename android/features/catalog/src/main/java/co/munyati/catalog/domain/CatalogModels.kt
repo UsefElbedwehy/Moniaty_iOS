@@ -90,6 +90,11 @@ data class ServiceDetail(
     val store: StoreSummary?,
     val moreFromProvider: List<ServiceCard>,
     val videos: List<VideoAsset> = emptyList(),
+    /**
+     * The viewer's own service: she is its provider, or her bride account shares the provider's
+     * phone number. It can't be booked (the server refuses it too).
+     */
+    val isOwn: Boolean = false,
 ) {
     /** The page's gallery: photos (or the card photo when there are none), then videos. */
     val galleryItems: List<GalleryItem>

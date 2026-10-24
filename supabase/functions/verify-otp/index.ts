@@ -1,12 +1,18 @@
 // verify-otp: checks a login code and returns a Supabase session.
 //
-// - Existing number: signs straight in.
-// - New number without a name: returns { requires_registration: true } (the code stays valid).
-// - New number with first/last name and role ("bride" | "provider"): creates the account.
-//   A provider gets a `providers` row in status "pending" (admin approval) via a DB trigger.
+// One phone may hold two accounts: a bride account and a provider account. `role` is the side
+// picked on the sign-in screen.
+// - The number has an account for that side: signs straight in. (No `role`, from an older app:
+//   the number's oldest account.)
+// - It has none yet, without a name: returns { requires_registration: true, other_role } (the
+//   code stays valid; other_role tells the app the number already has the other kind).
+// - It has none yet, with first/last name: creates the account for that side. A provider gets a
+//   `providers` row in status "pending" (admin approval) via a DB trigger. A number whose other
+//   account is banned can't open a second one.
 //
-// Each phone maps to a synthetic email account whose password is derived from PASSWORD_SECRET,
-// so GoTrue issues normal access/refresh tokens.
+// Each account is a synthetic email user whose password is derived from PASSWORD_SECRET, so
+// GoTrue issues normal access/refresh tokens. The first account on a number uses
+// <digits>@phone.munyati.co; the second <digits>.<role>@phone.munyati.co.
 // Secrets: OTP_HASH_SECRET, PASSWORD_SECRET, (optional) DEV_PHONES + DEV_OTP_CODE.
 import { createClient } from "npm:@supabase/supabase-js@2";
 import { corsHeaders, json, requireEnv } from "../_shared/http.ts";
@@ -53,41 +59,62 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 2. Find or create the account.
-    const email = `${phone.replace("+", "")}@phone.munyati.co`;
+    // 2. Find or create the account for the chosen side.
+    const digits = phone.replace("+", "");
     const password = await derivePassword(phone, requireEnv("PASSWORD_SECRET"));
-    const { data: existing } = await admin
-      .from("profiles").select("id, role").eq("phone", phone).is("deleted_at", null).maybeSingle();
+    const wanted = body.role === "provider" ? "provider" : body.role === "bride" ? "bride" : null;
+    const { data: accounts, error: lookupError } = await admin
+      .from("profiles").select("id, role, is_banned, created_at").eq("phone", phone).is("deleted_at", null)
+      .order("created_at");
+    if (lookupError) throw lookupError;
+    const existing = wanted ? accounts?.find((a) => a.role === wanted) : accounts?.[0];
 
     let userId: string;
-    let role: string | null = existing?.role ?? null;
+    let role: string;
+    let email: string;
     if (existing) {
       userId = existing.id;
+      role = existing.role;
+      const { data: authUser, error: authError } = await admin.auth.admin.getUserById(userId);
+      if (authError || !authUser.user?.email) throw authError ?? new Error("account has no email");
+      email = authUser.user.email;
     } else {
+      role = wanted ?? "bride";
+      const other = accounts?.find((a) => a.role !== role);
       const first = (body.first_name ?? "").trim();
       const last = (body.last_name ?? "").trim();
-      if (!first || !last) return json(200, { requires_registration: true });
-      role = body.role === "provider" ? "provider" : "bride";
+      if (!first || !last) return json(200, { requires_registration: true, other_role: other?.role ?? null });
+      if (other?.is_banned) return json(403, { error: "لا يمكن إنشاء حساب جديد بهذا الرقم. تواصلي مع الدعم" });
       const displayName = `${first} ${last}`;
 
-      const { data: created, error: createError } = await admin.auth.admin.createUser({
-        email,
-        password,
-        email_confirm: true,
-        user_metadata: { phone, display_name: displayName, role },
-      });
-      if (createError) {
-        // An auth user without a profile (e.g. a profile insert failed earlier): reuse it.
-        const { data: orphanId } = await admin.rpc("auth_user_id_for_email", { p_email: email });
-        if (!orphanId) throw createError;
+      // The first free address: an auth user that already has a live profile belongs to the
+      // other account and must never be reused; one without a profile is an orphan from a failed
+      // sign-up and is taken over.
+      email = "";
+      let orphanId: string | null = null;
+      for (const candidate of [`${digits}@phone.munyati.co`, `${digits}.${role}@phone.munyati.co`]) {
+        const { data: ownerId } = await admin.rpc("auth_user_id_for_email", { p_email: candidate });
+        if (!ownerId) { email = candidate; break; }
+        const { data: profile } = await admin.from("profiles").select("id").eq("id", ownerId).maybeSingle();
+        if (!profile) { email = candidate; orphanId = ownerId; break; }
+      }
+      if (!email) throw new Error("no free account address for this number");
+
+      if (orphanId) {
         userId = orphanId;
-        await admin.auth.admin.updateUserById(userId, { password });
+        await admin.auth.admin.updateUserById(userId, { password, user_metadata: { phone, display_name: displayName, role } });
       } else {
+        const { data: created, error: createError } = await admin.auth.admin.createUser({
+          email,
+          password,
+          email_confirm: true,
+          user_metadata: { phone, display_name: displayName, role },
+        });
+        if (createError) throw createError;
         userId = created.user!.id;
       }
-      const { error: profileError } = await admin.from("profiles").upsert(
+      const { error: profileError } = await admin.from("profiles").insert(
         { id: userId, phone, first_name: first, last_name: last, display_name: displayName, role },
-        { onConflict: "id" },
       );
       if (profileError) throw profileError;
     }

@@ -56,6 +56,8 @@
 "detail.stores" = "Stores";
 "detail.services" = "Services";
 "book.cta" = "Request booking";
+"book.ownService" = "This is your service, so it can't be booked from your account.";
+"book.providerAccount" = "To book, sign in with a bride account. You can create one with this same number.";
 "book.comingSoon.title" = "Booking is coming soon";
 "book.comingSoon.message" = "In-app booking is coming very soon.";
 "explore.title" = "Explore";

@@ -43,3 +43,7 @@
 "auth.role.bride.subtitle" = "Discover and book wedding services within your budget";
 "auth.role.provider.title" = "I'm a service provider";
 "auth.role.provider.subtitle" = "Join and receive bookings · first 2 months free";
+
+/* Name screen: the number already has the other kind of account. */
+"auth.name.secondAccount.bride" = "This number already has a service provider account. We'll create a separate bride account for booking other providers; your own services can't be booked from it. To open your provider account, go back and choose “I'm a service provider”.";
+"auth.name.secondAccount.provider" = "This number already has a bride account. We'll create a separate service provider account. To open your bride account, go back and choose “I'm a bride”.";

@@ -133,6 +133,19 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
   undone from **الأرشيف / Archive**; permanent Delete is for the owner role only and asks you to
   type «حذف». The home page is now **تحتاج إجراء / Needs action** with approve / reject buttons.
 
+## 10d. One phone, two accounts (bride + provider)
+- [ ] Run `supabase/migrations/20261022000000_one_phone_two_accounts.sql` in the SQL editor,
+      **then** redeploy the login function: `supabase functions deploy verify-otp`. (In this order:
+      the new function needs the new phone-per-role rule; the old function keeps working with the
+      new database until then.)
+- What changes: the same mobile number can now have one bride account and one provider account.
+  The side picked on the first screen («أنا عروس» / «أنا مقدّمة خدمة») decides which one opens;
+  the first time she picks the other side, the name screen says a separate account will be
+  created. From her bride account she can book any provider **except her own provider account**
+  (the Book button becomes a note, and the database refuses it on every path). Provider accounts
+  don't book; they see «للحجز، سجّلي الدخول بحساب عروس».
+- A number whose existing account is banned can't open a second one.
+
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy
       answers from `docs/STORE_LISTING.md`; upload the screenshots in `design/store/ios/`

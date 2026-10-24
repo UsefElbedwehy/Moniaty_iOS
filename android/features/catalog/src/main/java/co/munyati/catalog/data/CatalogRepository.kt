@@ -59,7 +59,7 @@ class RemoteCatalogRepository(private val client: ApiClient) : CatalogRepository
         val card = decode(serializer<ServiceCard>(), raw)
         val extras = decode(ServiceExtras.serializer(), raw)
         ServiceDetail(card, extras.description, extras.durationMinutes, extras.atCustomerLocation, extras.imageUrls,
-            extras.provider, extras.store, extras.moreFromProvider, extras.videos)
+            extras.provider, extras.store, extras.moreFromProvider, extras.videos, extras.isOwn)
     }
 
     override suspend fun provider(id: String): ProviderProfile? = flattened(ApiEndpoint.rpc("get_provider"), id) { raw ->
@@ -124,6 +124,7 @@ private data class ServiceExtras(
     val store: StoreSummary? = null,
     val moreFromProvider: List<ServiceCard> = emptyList(),
     val videos: List<VideoAsset> = emptyList(),
+    val isOwn: Boolean = false,
 )
 
 @Serializable

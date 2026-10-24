@@ -29,6 +29,10 @@ public final class AuthCoordinator: Coordinator {
     /// existing account keeps the role stored on its profile.
     public private(set) var selectedRole: UserRole = .bride
 
+    /// Set when the number already has an account of the other kind: the name screen explains
+    /// that a separate account is being created for the side she picked.
+    public private(set) var otherAccountRole: UserRole?
+
     private let onFinished: (AuthState) -> Void
 
     public init(onFinished: @escaping (AuthState) -> Void) {
@@ -49,10 +53,11 @@ public final class AuthCoordinator: Coordinator {
         push(.otp(challengeId: challenge.id))
     }
 
-    /// OTP verified but the number is new — collect a name before creating the account. The code
-    /// stays valid; it travels on the route so registration can reuse it.
-    public func needsName(code: String) {
+    /// OTP verified but the number has no account for the picked side — collect a name before
+    /// creating it. The code stays valid; it travels on the route so registration can reuse it.
+    public func needsName(code: String, otherRole: UserRole? = nil) {
         guard let challenge = activeChallenge else { return }
+        otherAccountRole = otherRole
         push(.name(challengeId: challenge.id, code: code))
     }
 

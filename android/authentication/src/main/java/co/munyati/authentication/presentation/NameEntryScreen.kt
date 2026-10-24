@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import co.munyati.authentication.R
+import co.munyati.authentication.domain.UserRole
 import co.munyati.designsystem.components.PrimaryButton
 import co.munyati.designsystem.theme.DS
 import co.munyati.designsystem.theme.DSRadius
@@ -67,6 +68,18 @@ internal fun NameEntryScreen(viewModel: NameEntryViewModel, coordinator: AuthCoo
             Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
                 Text(stringResource(R.string.auth_name_title), style = DS.type.title1, color = DS.colors.textPrimary)
                 Text(stringResource(R.string.auth_name_subtitle), style = DS.type.body, color = DS.colors.textSecondary)
+                // The number already has the other kind of account: say this one is separate, so
+                // nobody creates a second account by picking the wrong side by mistake.
+                coordinator.otherAccountRole?.let { other ->
+                    Text(
+                        stringResource(if (other == UserRole.Provider) R.string.auth_name_secondAccount_bride else R.string.auth_name_secondAccount_provider),
+                        style = DS.type.footnote,
+                        color = DS.colors.textPrimary,
+                        modifier = Modifier.fillMaxWidth()
+                            .background(DS.colors.primaryMuted, RoundedCornerShape(DSRadius.control))
+                            .padding(DSSpacing.sm),
+                    )
+                }
             }
             Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.sm)) {
                 NameField(

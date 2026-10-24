@@ -110,12 +110,20 @@ struct ServiceDetailScreen: View {
                     Text(verbatim: formatSAR(detail.card.price)).font(.dsHeadline)
                 }
             }
-            PrimaryButton(CatalogL10n.key("book.cta")) {
-                analytics(.bookingStarted, detail.card.id)
-                if let onBook = feature.onBook {
-                    onBook(detail.card)
-                } else {
-                    showComingSoon = true
+            if detail.isOwn || !feature.context.canBook {
+                CatalogL10n.text(detail.isOwn ? "book.ownService" : "book.providerAccount")
+                    .font(.dsFootnote)
+                    .foregroundStyle(Color.dsTextSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                PrimaryButton(CatalogL10n.key("book.cta")) {
+                    analytics(.bookingStarted, detail.card.id)
+                    if let onBook = feature.onBook {
+                        onBook(detail.card)
+                    } else {
+                        showComingSoon = true
+                    }
                 }
             }
         }

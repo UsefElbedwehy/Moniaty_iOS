@@ -54,7 +54,7 @@ class AuthenticationFeature(repository: AuthRepository, private val onFinished: 
                 val route = entry.toRoute<OtpRoute>()
                 // The full challenge (phone + resend interval) is held by the coordinator.
                 val challenge = coordinator.activeChallenge ?: OtpChallenge(route.challengeId, "", 60)
-                OtpScreen(viewModel { OtpViewModel(challenge, useCases.verifyOtp, useCases.sendOtp) }, coordinator)
+                OtpScreen(viewModel { OtpViewModel(challenge, useCases.verifyOtp, useCases.sendOtp, coordinator.selectedRole) }, coordinator)
             }
             composable<NameRoute> { entry ->
                 val route = entry.toRoute<NameRoute>()
@@ -80,6 +80,8 @@ private class NavAuthCoordinator(
         private set
     override var selectedRole: UserRole = UserRole.Bride
         private set
+    override var otherAccountRole: UserRole? = null
+        private set
 
     override fun startPhoneSignIn(role: UserRole) {
         selectedRole = role
@@ -91,7 +93,8 @@ private class NavAuthCoordinator(
         navController.navigate(OtpRoute(challenge.id))
     }
 
-    override fun needsName(code: String) {
+    override fun needsName(code: String, otherRole: UserRole?) {
+        otherAccountRole = otherRole
         val challenge = activeChallenge ?: return
         navController.navigate(NameRoute(challenge.id, code))
     }

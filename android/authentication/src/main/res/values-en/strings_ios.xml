@@ -13,6 +13,8 @@
     <string name="auth_landing_tagline">Everything for the bride, in one place</string>
     <string name="auth_name_first">First name</string>
     <string name="auth_name_last">Last name</string>
+    <string name="auth_name_secondAccount_bride">This number already has a service provider account. We\'ll create a separate bride account for booking other providers; your own services can\'t be booked from it. To open your provider account, go back and choose “I\'m a service provider”.</string>
+    <string name="auth_name_secondAccount_provider">This number already has a bride account. We\'ll create a separate service provider account. To open your bride account, go back and choose “I\'m a bride”.</string>
     <string name="auth_name_submit">Create account</string>
     <string name="auth_name_subtitle">Enter your first and last name to finish creating your account.</string>
     <string name="auth_name_title">Your name</string>
