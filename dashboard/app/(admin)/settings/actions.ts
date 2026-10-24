@@ -1,6 +1,7 @@
 "use server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { done, str, bool, num, tr } from "@/lib/act";
+import { isDeveloper } from "@/lib/admin";
 
 type Config = Record<string, unknown>;
 
@@ -60,6 +61,7 @@ export async function saveSettings(form: FormData) {
 
 /** Advanced: replace the whole JSON (validated). */
 export async function saveRawConfig(form: FormData) {
+  if (!(await isDeveloper())) return done("/settings", { message: await tr("هذا الخيار للمطوّر فقط", "This option is for the developer only") });
   let parsed: unknown;
   try {
     parsed = JSON.parse(str(form, "json"));

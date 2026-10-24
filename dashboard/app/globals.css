@@ -211,3 +211,17 @@ tr.archived td { opacity: 0.55; }
 .card > .record-block { padding-bottom: var(--s-4); border-bottom: 1px solid var(--border); }
 .card > .record-block + .record-block { padding-top: var(--s-1); }
 details > summary { padding: var(--s-2) 0; }
+
+/* Reports: each part labelled (who, what, reason, message, decision). */
+.report { display: grid; gap: var(--s-4); }
+.report > * + * { margin-top: 0 !important; }
+.report-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s-2) var(--s-4); flex-wrap: wrap; }
+.report-head h3 { margin: 0; font-size: 16px; }
+.report-name { color: var(--primary); }
+.report-badges { display: flex; gap: var(--s-2); flex-wrap: wrap; }
+.report-kv { grid-template-columns: 150px 1fr; padding: var(--s-4); background: #fcfbf5; border: 1px solid var(--border); border-radius: 12px; }
+.report-target { display: grid; gap: var(--s-1); justify-items: start; }
+.quote { margin: var(--s-1) 0 0; padding: var(--s-2) var(--s-3); background: var(--primary-muted); border-inline-start: 3px solid var(--gold); border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.report-form { align-items: flex-end; padding-top: var(--s-3); border-top: 1px solid var(--border); }
+.report-note { flex: 1; min-width: 240px; }
+@media (max-width: 900px) { .report-kv { grid-template-columns: 1fr; } }

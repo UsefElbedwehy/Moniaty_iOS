@@ -34,6 +34,11 @@ export function can(admin: Admin, permission: string): boolean {
   return admin.roleId === "owner" || admin.permissions.has(permission);
 }
 
+/** Raw JSON views and editors are for the developer only. */
+export async function isDeveloper(): Promise<boolean> {
+  return (await requireAdmin()).roleId === "developer";
+}
+
 /** Owners (and the developer) alone can delete records permanently. */
 export async function isOwner(): Promise<boolean> {
   const { roleId } = await requireAdmin();
