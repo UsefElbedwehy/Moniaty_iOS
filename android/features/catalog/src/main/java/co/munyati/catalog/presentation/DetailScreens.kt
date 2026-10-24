@@ -115,7 +115,7 @@ internal fun ServiceDetailScreen(feature: CatalogFeature, serviceId: String) {
             ) { ServiceContent(feature, it) }
         }
         if (detail != null) {
-            BookBar(detail) {
+            BookBar(detail, canBook = feature.context.canBook) {
                 analytics(AnalyticsEvent.BookingStarted, detail.card.id)
                 feature.onBook?.invoke(detail.card) ?: run { showComingSoon = true }
             }
@@ -165,7 +165,7 @@ private fun ServiceContent(feature: CatalogFeature, detail: ServiceDetail) {
 }
 
 @Composable
-private fun BookBar(detail: ServiceDetail, onBook: () -> Unit) {
+private fun BookBar(detail: ServiceDetail, canBook: Boolean, onBook: () -> Unit) {
     Column(Modifier.background(DS.colors.surface)) {
         HorizontalDivider(color = DS.colors.border)
         Row(
@@ -180,7 +180,14 @@ private fun BookBar(detail: ServiceDetail, onBook: () -> Unit) {
                     Text(formatSar(detail.card.price), style = DS.type.headline, color = DS.colors.textPrimary)
                 }
             }
-            PrimaryButton(stringResource(R.string.catalog_book_cta), modifier = Modifier.weight(1f), onClick = onBook)
+            if (detail.isOwn || !canBook) {
+                Text(
+                    stringResource(if (detail.isOwn) R.string.catalog_book_ownService else R.string.catalog_book_providerAccount),
+                    style = DS.type.footnote, color = DS.colors.textSecondary, modifier = Modifier.weight(1f),
+                )
+            } else {
+                PrimaryButton(stringResource(R.string.catalog_book_cta), modifier = Modifier.weight(1f), onClick = onBook)
+            }
         }
     }
 }

@@ -7,11 +7,11 @@ import Foundation
 public protocol AuthRepository: Sendable {
     /// Start a phone verification. Returns a challenge the OTP screen verifies against.
     func sendOTP(phoneE164: String) async throws -> OTPChallenge
-    /// Verify a code against a challenge. On success the user is authenticated. If the phone
-    /// belongs to a brand-new user who hasn't given their name yet, this throws
-    /// `OTPFlowError.requiresRegistration` — the caller then collects a first/last name and calls
-    /// `registerWithName`. The verification code stays valid across the two calls.
-    func verifyOTP(challengeId: String, code: String) async throws -> User
+    /// Verify a code against a challenge and sign in to the number's account for `role` (one
+    /// phone may hold a bride account and a provider account). If the number has no account for
+    /// that side yet, this throws `OTPFlowError.requiresRegistration` — the caller then collects
+    /// a first/last name and calls `registerWithName`. The code stays valid across the two calls.
+    func verifyOTP(challengeId: String, code: String, role: UserRole?) async throws -> User
     /// Complete a new user's signup: verify the same code and create the account with the given
     /// name (first + last, both required) and the role picked on the landing screen. On success
     /// the user is authenticated.
@@ -27,9 +27,10 @@ public protocol AuthRepository: Sendable {
 
 /// Signals raised by the phone-OTP flow that the UI reacts to specifically (rather than showing a
 /// generic error). `requiresRegistration` means the code was accepted but the account can't be
-/// created until the user supplies a name.
+/// created until the user supplies a name; `otherRole` is set when the number already has an
+/// account of the other kind (so the name screen can say a separate account will be created).
 public enum OTPFlowError: Error, Sendable {
-    case requiresRegistration
+    case requiresRegistration(otherRole: UserRole?)
 }
 
 /// The server's response to `sendOTP`: an opaque challenge id, the number it was sent to (so the

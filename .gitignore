@@ -86,3 +86,6 @@ supabase/.temp/
 
 # Per-project Firebase config (download from the Firebase console)
 App/Resources/GoogleService-Info.plist
+
+# TestFlight archives (scripts/testflight.sh)
+/build/

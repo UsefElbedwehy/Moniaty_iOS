@@ -24,7 +24,7 @@ public actor RemoteAuthRepository: AuthRepository {
         return response.toDomain()
     }
 
-    public func verifyOTP(challengeId: String, code: String) async throws -> User {
+    public func verifyOTP(challengeId: String, code: String, role: UserRole?) async throws -> User {
         let response: VerifyOTPResponseDTO = try await client.send(
             APIEndpoint.authentication.verifyOTP,
             body: VerifyOTPRequestDTO(challengeId: challengeId, code: code)
@@ -36,7 +36,7 @@ public actor RemoteAuthRepository: AuthRepository {
 
     public func registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole) async throws -> User {
         // Reference impl doesn't model the two-step name flow; treat it as a plain verify.
-        try await verifyOTP(challengeId: challengeId, code: code)
+        try await verifyOTP(challengeId: challengeId, code: code, role: role)
     }
 
     public func signInWithApple(idToken: String, nonce: String) async throws -> User {

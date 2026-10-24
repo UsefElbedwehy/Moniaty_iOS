@@ -25,16 +25,20 @@ public final class OTPViewModel {
 
     private let verifyOTP: any VerifyOTPUseCase
     private let sendOTP: any SendOTPUseCase
+    /// The side picked on the landing screen; the number's account for that side is signed in.
+    private let role: UserRole
     private var countdownTask: Task<Void, Never>?
 
     public init(
         challenge: OTPChallenge,
         verifyOTP: any VerifyOTPUseCase,
-        sendOTP: any SendOTPUseCase
+        sendOTP: any SendOTPUseCase,
+        role: UserRole = .bride
     ) {
         self.challenge = challenge
         self.verifyOTP = verifyOTP
         self.sendOTP = sendOTP
+        self.role = role
     }
 
     public var isVerifying: Bool { state.isLoading }
@@ -82,18 +86,19 @@ public final class OTPViewModel {
 
     /// Verify the current code. On success `onUser` hands the user to the coordinator. If the
     /// number is brand-new, the code is accepted but the account can't be created yet — `onNeedsName`
-    /// fires so the flow can push the name screen (the same `code` is reused there).
-    public func verify(onUser: @escaping (User) -> Void, onNeedsName: @escaping (String) -> Void) async {
+    /// fires so the flow can push the name screen (the same `code` is reused there), with the
+    /// number's other account role if it has one.
+    public func verify(onUser: @escaping (User) -> Void, onNeedsName: @escaping (String, UserRole?) -> Void) async {
         guard !isVerifying else { return }
         state = .loading
         let submittedCode = code
         do {
-            let user = try await verifyOTP(challengeId: challenge.id, code: submittedCode)
+            let user = try await verifyOTP(challengeId: challenge.id, code: submittedCode, role: role)
             state = .loaded(user)
             onUser(user)
-        } catch is OTPFlowError {
+        } catch OTPFlowError.requiresRegistration(let otherRole) {
             state = .empty          // not an error — just needs a name; don't show a red message
-            onNeedsName(submittedCode)
+            onNeedsName(submittedCode, otherRole)
         } catch let error as AppError {
             state = .error(error)
         } catch {

@@ -10,14 +10,17 @@ interface AuthCoordinator {
     val activeChallenge: OtpChallenge?
     val selectedRole: UserRole
 
+    /** Set when the number already has an account of the other kind (shown on the name screen). */
+    val otherAccountRole: UserRole?
+
     /** Landing → "I'm a bride" / "I'm a service provider". */
     fun startPhoneSignIn(role: UserRole)
 
     /** Phone entry sent a code — advance to OTP. */
     fun didSendOtp(challenge: OtpChallenge)
 
-    /** Code accepted for a new number — collect a name before creating the account. */
-    fun needsName(code: String)
+    /** Code accepted but no account for the picked side yet — collect a name before creating it. */
+    fun needsName(code: String, otherRole: UserRole?)
 
     /** OTP screen's "Edit" — back to the number field. */
     fun editPhoneNumber()

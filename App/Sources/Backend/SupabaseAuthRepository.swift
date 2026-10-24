@@ -136,8 +136,8 @@ public actor SupabaseAuthRepository: AuthRepository {
     /// `verify-otp` function replies `requires_registration` and we surface
     /// `OTPFlowError.requiresRegistration` so the UI can collect a name, then call
     /// `registerWithName` with the same still-valid code.
-    public func verifyOTP(challengeId: String, code: String) async throws -> User {
-        try await verifyOrRegister(phone: challengeId, code: code, firstName: nil, lastName: nil, role: nil)
+    public func verifyOTP(challengeId: String, code: String, role: UserRole?) async throws -> User {
+        try await verifyOrRegister(phone: challengeId, code: code, firstName: nil, lastName: nil, role: role)
     }
 
     /// Complete a new user's signup: same code + a required first/last name. The function creates
@@ -152,7 +152,9 @@ public actor SupabaseAuthRepository: AuthRepository {
             .authentication.verifyOTP,
             body: VerifyOTPBody(phone: phone, code: code, firstName: firstName, lastName: lastName, role: role?.rawValue)
         )
-        if dto.requiresRegistration == true { throw OTPFlowError.requiresRegistration }
+        if dto.requiresRegistration == true {
+            throw OTPFlowError.requiresRegistration(otherRole: dto.otherRole.flatMap(UserRole.init(rawValue:)))
+        }
         guard let accessToken = dto.accessToken, let user = dto.user else {
             throw AppError.unknown(message: "Unexpected verify-otp response")
         }
@@ -283,7 +285,8 @@ private struct VerifyOTPBody: Encodable, Sendable {
     // these to first_name / last_name for the Edge Function.
     let firstName: String?
     let lastName: String?
-    /// "bride" | "provider"; sent only when registering a new number.
+    /// "bride" | "provider": the side picked on the landing screen. One number may hold one
+    /// account of each kind; the server signs in to (or creates) the one for this side.
     let role: String?
 }
 
@@ -297,6 +300,8 @@ private struct VerifyOTPResponseDTO: Decodable, Sendable {
     let user: GoTrueUserDTO?
     /// The account's role from `profiles.role`.
     let role: String?
+    /// With `requires_registration`: the role of the number's other account, if it has one.
+    let otherRole: String?
 }
 
 private struct AppleIdTokenBody: Encodable, Sendable {

@@ -54,6 +54,7 @@ internal val bookingKeys: Map<String, Int> = mapOf(
     "error.invalid_mobile" to R.string.booking_error_invalid_mobile,
     "error.no_payment_method" to R.string.booking_error_no_payment_method,
     "error.not_started" to R.string.booking_error_not_started,
+    "error.own_service" to R.string.booking_error_own_service,
     "error.service_unavailable" to R.string.booking_error_service_unavailable,
     "error.slot_unavailable" to R.string.booking_error_slot_unavailable,
     "error.too_soon" to R.string.booking_error_too_soon,

@@ -50,6 +50,7 @@
     <string name="booking_error_invalid_mobile">رقم الجوال غير صحيح.</string>
     <string name="booking_error_no_payment_method">أضيفي طريقة استلام مبالغ قبل الموافقة على الحجوزات.</string>
     <string name="booking_error_not_started">لا يمكن إنهاء الخدمة قبل موعدها.</string>
+    <string name="booking_error_own_service">لا يمكنك حجز خدمة من حساب مقدّمة الخدمة الخاص بك.</string>
     <string name="booking_error_service_unavailable">هذه الخدمة غير متاحة حالياً.</string>
     <string name="booking_error_slot_unavailable">هذا الوقت لم يعد متاحاً، اختاري وقتاً آخر.</string>
     <string name="booking_error_too_soon">الموعد المقترح قريب جداً، اختاري موعداً أبعد.</string>

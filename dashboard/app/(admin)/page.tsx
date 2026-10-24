@@ -57,13 +57,13 @@ export default async function Overview() {
         <Stat label={t("إيراد الاشتراكات (٣٠ يوم)", "Subscription revenue (30 days)")} value={fmtSAR(s.revenue_30d)} />
       </div>
 
-      <div className="grid two" style={{ marginTop: 16 }}>
+      <div className="grid two">
         <div className="card">
           <h2 style={{ marginTop: 0 }}>{t("الحجوزات حسب الحالة (٣٠ يوم)", "Bookings by status (30 days)")}</h2>
           {Object.entries(s.bookings_30d).length === 0 ? <p className="muted">{t("لا توجد حجوزات بعد.", "No bookings yet.")}</p> :
             Object.entries(s.bookings_30d).sort((a, b) => b[1] - a[1]).map(([k, n]) => (
-              <div key={k} style={{ marginBottom: 8 }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div key={k} className="meter">
+                <div className="row" style={{ padding: 0 }}>
                   <span>{label(bookingStatus, k)}</span><b>{fmtNum(n)}</b>
                 </div>
                 <div className="bar"><i style={{ width: `${(n / Math.max(bookingsTotal, 1)) * 100}%` }} /></div>
@@ -74,13 +74,13 @@ export default async function Overview() {
           <h2 style={{ marginTop: 0 }}>{t("الاشتراكات الفعّالة", "Active subscriptions")}</h2>
           {subs.length === 0 ? <p className="muted">{t("لا توجد اشتراكات مدفوعة بعد.", "No paid subscriptions yet.")}</p> :
             subs.map(([plan, n]) => (
-              <div key={plan} style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+              <div key={plan} className="row">
                 <span>{plan}</span><b>{fmtNum(n)}</b>
               </div>
             ))}
           <h2>{t("مقدّمات الخدمة", "Providers")}</h2>
           {Object.entries(s.providers ?? {}).map(([k, n]) => (
-            <div key={k} style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+            <div key={k} className="row">
               <span>{label(providerStatus, k)}</span><b>{fmtNum(n)}</b>
             </div>
           ))}

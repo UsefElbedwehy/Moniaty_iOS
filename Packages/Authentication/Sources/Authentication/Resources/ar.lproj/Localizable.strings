@@ -43,3 +43,7 @@
 "auth.role.bride.subtitle" = "اكتشفي واحجزي خدمات زفافك ضمن ميزانيتك";
 "auth.role.provider.title" = "أنا مقدّمة خدمة";
 "auth.role.provider.subtitle" = "انضمي واستقبلي الحجوزات · أول شهرين مجاناً";
+
+/* Name screen: the number already has the other kind of account. */
+"auth.name.secondAccount.bride" = "هذا الرقم لديه حساب مقدّمة خدمة. سننشئ لك حساب عروس منفصلاً به تحجزين خدمات الأخريات، ولا يمكن منه حجز خدماتك. للدخول إلى حساب مقدّمة الخدمة ارجعي واختاري «أنا مقدّمة خدمة».";
+"auth.name.secondAccount.provider" = "هذا الرقم لديه حساب عروس. سننشئ لك حساب مقدّمة خدمة منفصلاً. للدخول إلى حساب العروس ارجعي واختاري «أنا عروس».";

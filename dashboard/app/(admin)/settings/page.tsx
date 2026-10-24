@@ -92,9 +92,9 @@ export default async function Settings({ searchParams }: { searchParams: Promise
         <div><ConfirmButton message={t("حفظ الإعدادات؟ تصل للتطبيقات مباشرة.", "Save settings? They reach the apps right away.")}>{t("حفظ الإعدادات", "Save settings")}</ConfirmButton></div>
       </form>
 
-      <details style={{ marginTop: 24 }}>
+      <details>
         <summary>{t("متقدم: تعديل JSON كامل", "Advanced: edit the full JSON")}</summary>
-        <form className="stack" action={saveRawConfig} style={{ marginTop: 10 }}>
+        <form className="stack" action={saveRawConfig} style={{ marginTop: 12 }}>
           <textarea name="json" dir="ltr" className="mono" style={{ minHeight: 360 }} defaultValue={JSON.stringify(c, null, 2)} />
           <div><ConfirmButton message={t("استبدال الإعدادات كاملة؟", "Replace all settings?")} className="danger">{t("حفظ JSON", "Save JSON")}</ConfirmButton></div>
         </form>

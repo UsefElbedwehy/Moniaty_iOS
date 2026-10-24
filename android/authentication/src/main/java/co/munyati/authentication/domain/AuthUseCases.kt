@@ -18,9 +18,9 @@ class SendOtp(private val repository: AuthRepository) {
 }
 
 class VerifyOtp(private val repository: AuthRepository) {
-    suspend operator fun invoke(challengeId: String, code: String): User {
+    suspend operator fun invoke(challengeId: String, code: String, role: UserRole? = null): User {
         OtpCodeValidator.validate(code)
-        return repository.verifyOtp(challengeId, code)
+        return repository.verifyOtp(challengeId, code, role)
     }
 }
 

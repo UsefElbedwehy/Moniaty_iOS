@@ -28,7 +28,9 @@ Munyati ("my wish") is an Arabic-first iOS app where **brides** in Saudi Arabia 
 
 ## 3. Users, roles & navigation
 
-**Roles:** `bride` (customer) and `provider`, chosen once during sign-up (requirement 1). **Admins** live in a separate table and can never be created from the app. Guests can browse without an account; login (phone + OTP) is requested only when booking, favoriting or reviewing. Apple prefers this.
+**Roles:** `bride` (customer) and `provider`, chosen once during sign-up (requirement 1). One
+mobile number may hold one account of each role (separate accounts; the side picked at sign-in
+opens one); a bride account can't book services of the provider account on the same number. **Admins** live in a separate table and can never be created from the app. Guests can browse without an account; login (phone + OTP) is requested only when booking, favoriting or reviewing. Apple prefers this.
 
 **4 native tabs (requirement 7)**, using the system `TabView`, Arabic RTL first:
 

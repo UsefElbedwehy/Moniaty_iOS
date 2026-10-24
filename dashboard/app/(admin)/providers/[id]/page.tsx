@@ -40,14 +40,14 @@ export default async function ProviderDetail({ params, searchParams }: {
           <h1>{p.business_name || t("بدون اسم", "Unnamed")} {p.is_verified && <span className="badge brand">{t("موثّقة", "Verified")}</span>}</h1>
           <Badge map={providerStatus} value={p.status} />
         </div>
-        <div style={{ display: "grid", gap: 6, justifyItems: "end" }}>
+        <div className="topbar-actions">
           <Link className="button secondary" href="/providers">{t("رجوع", "Back")}</Link>
           <RecordActions entity="provider" id={id} archived={!!p.archived_at} back={back} isOwner={owner} />
         </div>
       </div>
       <Flash sp={sp} />
       {p.status === "pending" && (
-        <div className="card inbox-card" style={{ marginBottom: 16 }}>
+        <div className="card inbox-card">
           <b>{t("طلب انضمام بانتظار قرارك", "Join request waiting for your decision")}</b>
           <ProviderDecision id={id} back={back} />
         </div>
@@ -139,7 +139,7 @@ export default async function ProviderDetail({ params, searchParams }: {
         </table>
       </div>
 
-      <div className="grid two" style={{ marginTop: 16 }}>
+      <div className="grid two">
         <div className="card">
           <h2 style={{ marginTop: 0 }}>{t("الاشتراك", "Subscription")}</h2>
           {(periods.data ?? []).length === 0 ? <p className="muted">{t("لا توجد فترات مدفوعة.", "No paid periods.")}</p> : (
@@ -149,11 +149,11 @@ export default async function ProviderDetail({ params, searchParams }: {
           )}
           <h2>{t("طرق استلام المبالغ", "Payout methods")}</h2>
           {(methods.data ?? []).map((m, i) => (
-            <div key={i} className="small">{m.label} · {m.account_name} · <span className="ltr mono">{m.value}</span> {!m.is_active && t("(مخفية)", "(hidden)")}</div>
+            <div key={i} className="small row" style={{ display: "block" }}>{m.label} · {m.account_name} · <span className="ltr mono">{m.value}</span> {!m.is_active && t("(مخفية)", "(hidden)")}</div>
           ))}
           <h2>{t("المتاجر", "Stores")}</h2>
           {(stores.data ?? []).map((st) => (
-            <div key={st.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, marginBottom: 6 }}>
+            <div key={st.id} className="row">
               <span>{st.name} {!st.is_active && <span className="badge">{t("مخفي", "Hidden")}</span>}</span>
               <RecordActions entity="store" id={st.id} back={back} isOwner={owner} />
             </div>
@@ -162,7 +162,7 @@ export default async function ProviderDetail({ params, searchParams }: {
         <div className="card">
           <h2 style={{ marginTop: 0 }}>{t("آخر الحجوزات", "Recent bookings")}</h2>
           {(bookings.data ?? []).map((b) => (
-            <div key={b.id} style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+            <div key={b.id} className="row">
               <Link href={`/bookings/${b.id}`} className="mono">{b.reference_code}{b.is_demo && ` ${t("(تجريبي)", "(demo)")}`}</Link>
               <span>{fmtDateTime(b.starts_at)}</span>
               <Badge map={bookingStatus} value={b.status} />

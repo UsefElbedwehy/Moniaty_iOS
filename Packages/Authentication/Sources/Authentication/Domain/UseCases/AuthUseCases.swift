@@ -26,16 +26,23 @@ public struct SendOTP: SendOTPUseCase {
 // MARK: - Verify OTP
 
 public protocol VerifyOTPUseCase: Sendable {
-    func callAsFunction(challengeId: String, code: String) async throws -> User
+    func callAsFunction(challengeId: String, code: String, role: UserRole?) async throws -> User
+}
+
+public extension VerifyOTPUseCase {
+    /// Without a side: the number's oldest account (what older app versions get).
+    func callAsFunction(challengeId: String, code: String) async throws -> User {
+        try await self(challengeId: challengeId, code: code, role: nil)
+    }
 }
 
 public struct VerifyOTP: VerifyOTPUseCase {
     private let repository: AuthRepository
     public init(repository: AuthRepository) { self.repository = repository }
 
-    public func callAsFunction(challengeId: String, code: String) async throws -> User {
+    public func callAsFunction(challengeId: String, code: String, role: UserRole?) async throws -> User {
         try OTPCodeValidator.validate(code)
-        return try await repository.verifyOTP(challengeId: challengeId, code: code)
+        return try await repository.verifyOTP(challengeId: challengeId, code: code, role: role)
     }
 }
 

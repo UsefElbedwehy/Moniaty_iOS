@@ -6,6 +6,8 @@
     <string name="catalog_book_comingSoon_message">نعمل على إتاحة الحجز داخل التطبيق قريباً جداً.</string>
     <string name="catalog_book_comingSoon_title">الحجز قريباً</string>
     <string name="catalog_book_cta">طلب حجز</string>
+    <string name="catalog_book_ownService">هذه خدمتك، ولا يمكن حجزها من حسابك.</string>
+    <string name="catalog_book_providerAccount">للحجز، سجّلي الدخول بحساب عروس. يمكنك إنشاؤه بنفس رقمك.</string>
     <string name="catalog_budget_amount">الميزانية الكاملة للزفاف</string>
     <string name="catalog_budget_amountPlaceholder">مثال: ٢٥٬٠٠٠</string>
     <string name="catalog_budget_date">موعد الزفاف</string>

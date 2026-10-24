@@ -93,8 +93,8 @@ class SupabaseAuthRepository(
         return OtpChallenge(id = phoneE164, phoneE164 = phoneE164, resendIntervalSeconds = 60)
     }
 
-    override suspend fun verifyOtp(challengeId: String, code: String): User =
-        verifyOrRegister(challengeId, code, null, null, null)
+    override suspend fun verifyOtp(challengeId: String, code: String, role: UserRole?): User =
+        verifyOrRegister(challengeId, code, null, null, role)
 
     override suspend fun registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole): User =
         verifyOrRegister(challengeId, code, firstName, lastName, role)
@@ -104,7 +104,7 @@ class SupabaseAuthRepository(
             ApiEndpoint.Authentication.verifyOtp,
             VerifyOtpBody(phone, code, firstName, lastName, role?.rawValue),
         )
-        if (dto.requiresRegistration == true) throw RequiresRegistration()
+        if (dto.requiresRegistration == true) throw RequiresRegistration(UserRole.from(dto.otherRole))
         val accessToken = dto.accessToken ?: throw AppError.Unknown("Unexpected verify-otp response")
         val user = dto.user ?: throw AppError.Unknown("Unexpected verify-otp response")
         store(GoTrueSession(accessToken, dto.refreshToken, dto.expiresIn, user))
@@ -190,7 +190,10 @@ private data class VerifyOtpBody(
     val code: String,
     val firstName: String?,
     val lastName: String?,
-    /** "bride" | "provider"; sent only when registering a new number. */
+    /**
+     * "bride" | "provider": the side picked on the landing screen. One number may hold one account
+     * of each kind; the server signs in to (or creates) the one for this side.
+     */
     val role: String?,
 )
 
@@ -202,6 +205,8 @@ private data class VerifyOtpResponse(
     val expiresIn: Int? = null,
     val user: GoTrueUser? = null,
     val role: String? = null,
+    /** With `requires_registration`: the role of the number's other account, if it has one. */
+    val otherRole: String? = null,
 )
 
 @Serializable

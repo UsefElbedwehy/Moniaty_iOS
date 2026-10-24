@@ -24,11 +24,18 @@ export async function requireAdmin(): Promise<Admin> {
   };
 }
 
+/**
+ * Mirrors `has_admin_permission()`: the developer has everything; the audit log is developer-only;
+ * otherwise owners have everything and other roles their own list.
+ */
 export function can(admin: Admin, permission: string): boolean {
+  if (admin.roleId === "developer") return true;
+  if (permission === "audit.read") return false;
   return admin.roleId === "owner" || admin.permissions.has(permission);
 }
 
-/** Owners alone can delete records permanently. */
+/** Owners (and the developer) alone can delete records permanently. */
 export async function isOwner(): Promise<boolean> {
-  return (await requireAdmin()).roleId === "owner";
+  const { roleId } = await requireAdmin();
+  return roleId === "owner" || roleId === "developer";
 }

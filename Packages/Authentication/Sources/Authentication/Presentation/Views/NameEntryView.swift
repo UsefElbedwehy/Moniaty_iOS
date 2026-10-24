@@ -65,6 +65,17 @@ struct NameEntryView: View {
                 .font(.dsBody)
                 .foregroundStyle(Color.dsTextSecondary)
                 .fixedSize(horizontal: false, vertical: true)
+            // The number already has the other kind of account: say this one is separate, so
+            // nobody creates a second account by picking the wrong side by mistake.
+            if let other = coordinator.otherAccountRole {
+                AuthL10n.text(other == .provider ? "auth.name.secondAccount.bride" : "auth.name.secondAccount.provider")
+                    .font(.dsFootnote)
+                    .foregroundStyle(Color.dsTextPrimary)
+                    .padding(DSSpacing.sm)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(RoundedRectangle(cornerRadius: DSRadius.control).fill(Color.dsPrimaryMuted))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .accessibilityElement(children: .combine)
     }

@@ -50,6 +50,7 @@
     <string name="booking_error_invalid_mobile">The mobile number is invalid.</string>
     <string name="booking_error_no_payment_method">Add a payout method before approving bookings.</string>
     <string name="booking_error_not_started">You can\'t complete the service before its start time.</string>
+    <string name="booking_error_own_service">You can\'t book a service from your own provider account.</string>
     <string name="booking_error_service_unavailable">This service isn\'t available right now.</string>
     <string name="booking_error_slot_unavailable">This time is no longer available. Choose another one.</string>
     <string name="booking_error_too_soon">The proposed time is too soon. Choose a later time.</string>

@@ -61,6 +61,7 @@ targets:
       - path: App/Resources
         includes:
           - GoogleService-Info.plist
+          - PrivacyInfo.xcprivacy
       - path: App/Localization
     settings:
       base:

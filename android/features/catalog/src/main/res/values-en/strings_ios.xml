@@ -6,6 +6,8 @@
     <string name="catalog_book_comingSoon_message">In-app booking is coming very soon.</string>
     <string name="catalog_book_comingSoon_title">Booking is coming soon</string>
     <string name="catalog_book_cta">Request booking</string>
+    <string name="catalog_book_ownService">This is your service, so it can\'t be booked from your account.</string>
+    <string name="catalog_book_providerAccount">To book, sign in with a bride account. You can create one with this same number.</string>
     <string name="catalog_budget_amount">Total wedding budget</string>
     <string name="catalog_budget_amountPlaceholder">e.g. 25000</string>
     <string name="catalog_budget_date">Wedding date</string>

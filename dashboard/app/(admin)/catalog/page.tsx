@@ -13,7 +13,7 @@ type Category = { id: string; name_ar: string; name_en: string; icon_symbol: str
 async function CityForm({ c }: { c?: City }) {
   const { t } = await i18n();
   return (
-    <form className="inline" action={saveCity} style={{ padding: "8px 0", borderBottom: "1px solid var(--border)" }}>
+    <form className="inline" action={saveCity}>
       <input name="id" defaultValue={c?.id} placeholder={t("المعرّف (dammam)", "ID (dammam)")} required readOnly={!!c} dir="ltr" style={{ width: 120 }} />
       <input name="name_ar" defaultValue={c?.name_ar} placeholder={t("الاسم", "Arabic name")} required style={{ width: 120 }} />
       <input name="name_en" defaultValue={c?.name_en} placeholder={t("Name", "English name")} required dir="ltr" style={{ width: 120 }} />

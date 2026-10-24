@@ -98,6 +98,8 @@ class OtpViewModel(
     val challenge: OtpChallenge,
     private val verifyOtp: VerifyOtp,
     private val sendOtp: SendOtp,
+    /** The side picked on the landing screen; the number's account for that side is signed in. */
+    private val role: UserRole = UserRole.Bride,
 ) : ViewModel() {
     var code by mutableStateOf("")
         private set
@@ -134,15 +136,15 @@ class OtpViewModel(
      * Verifies the current code. For a brand-new number the code is accepted but the account can't
      * be created yet — [onNeedsName] fires so the flow can collect a name with the same code.
      */
-    fun verify(onUser: (User) -> Unit, onNeedsName: (String) -> Unit) {
+    fun verify(onUser: (User) -> Unit, onNeedsName: (String, UserRole?) -> Unit) {
         if (isVerifying) return
         state = ViewState.Loading
         val submitted = code
         viewModelScope.launch {
             state = try {
-                ViewState.Loaded(verifyOtp(challenge.id, submitted))
+                ViewState.Loaded(verifyOtp(challenge.id, submitted, role))
             } catch (e: RequiresRegistration) {
-                onNeedsName(submitted)
+                onNeedsName(submitted, e.otherRole)
                 ViewState.Empty // not an error — just needs a name
             } catch (e: CancellationException) {
                 throw e

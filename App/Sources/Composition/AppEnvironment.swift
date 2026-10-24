@@ -188,6 +188,7 @@ final class AppEnvironment {
         let context = catalog.context
         let wasGuest = context.isGuest
         context.isGuest = !session.hasAccount
+        context.canBook = session.user?.role != .provider
         context.displayName = session.user?.displayName
         context.cityIds = cities.queryCityIds
         context.citySummary = cities.summary(allLabel: L10n.string("cities.all"))

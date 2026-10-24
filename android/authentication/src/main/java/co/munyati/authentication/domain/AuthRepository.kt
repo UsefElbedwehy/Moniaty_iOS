@@ -9,10 +9,11 @@ interface AuthRepository {
     suspend fun sendOtp(phoneE164: String): OtpChallenge
 
     /**
-     * Verify a code. On success the user is authenticated. For a brand-new number this throws
+     * Verify a code and sign in to the number's account for [role] (one phone may hold a bride
+     * account and a provider account). If the number has no account for that side yet this throws
      * [RequiresRegistration]; the code stays valid for [registerWithName].
      */
-    suspend fun verifyOtp(challengeId: String, code: String): User
+    suspend fun verifyOtp(challengeId: String, code: String, role: UserRole? = null): User
 
     /** Complete a new user's signup with first + last name and the role picked on the landing screen. */
     suspend fun registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole): User

@@ -13,6 +13,8 @@
     <string name="auth_landing_tagline">كل تجهيزات العروس في مكان واحد</string>
     <string name="auth_name_first">الاسم الأول</string>
     <string name="auth_name_last">الاسم الأخير</string>
+    <string name="auth_name_secondAccount_bride">هذا الرقم لديه حساب مقدّمة خدمة. سننشئ لك حساب عروس منفصلاً به تحجزين خدمات الأخريات، ولا يمكن منه حجز خدماتك. للدخول إلى حساب مقدّمة الخدمة ارجعي واختاري «أنا مقدّمة خدمة».</string>
+    <string name="auth_name_secondAccount_provider">هذا الرقم لديه حساب عروس. سننشئ لك حساب مقدّمة خدمة منفصلاً. للدخول إلى حساب العروس ارجعي واختاري «أنا عروس».</string>
     <string name="auth_name_submit">إنشاء الحساب</string>
     <string name="auth_name_subtitle">أدخلي اسمك الأول والأخير لإكمال إنشاء حسابك.</string>
     <string name="auth_name_title">اسمك</string>

@@ -60,12 +60,12 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
         <DailyBars label={t("التسجيلات اليومية", "Daily sign-ups")} points={sumByDay(a.signups)} />
         <DailyBars label={t("الأحداث اليومية", "Daily events")} points={sumByDay(a.daily)} />
       </div>
-      <div className="grid two" style={{ marginTop: 12 }}>
+      <div className="grid two">
         <div className="card">
           <h2 style={{ marginTop: 0 }}>{t("مسار الحجز", "Booking funnel")}</h2>
           {Object.keys(funnelSteps).map((k) => (
-            <div key={k} style={{ marginBottom: 8 }}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}><span>{labelOf(funnelSteps, k)}</span><b>{fmtNum(a.funnel[k])}</b></div>
+            <div key={k} className="meter">
+              <div className="row" style={{ padding: 0 }}><span>{labelOf(funnelSteps, k)}</span><b>{fmtNum(a.funnel[k])}</b></div>
               <div className="bar"><i style={{ width: `${Math.min(100, ((a.funnel[k] ?? 0) / top) * 100)}%` }} /></div>
             </div>
           ))}
@@ -73,20 +73,20 @@ export default async function AnalyticsPage({ searchParams }: { searchParams: Pr
         </div>
         <div className="card">
           <h2 style={{ marginTop: 0 }}>{t("الأحداث", "Events")}</h2>
-          {eventTotals.map(([e, n]) => <div key={e} style={{ display: "flex", justifyContent: "space-between" }}><span className="mono">{e}</span><b>{fmtNum(n)}</b></div>)}
+          {eventTotals.map(([e, n]) => <div key={e} className="row"><span className="mono">{e}</span><b>{fmtNum(n)}</b></div>)}
         </div>
         <div className="card">
           <h2 style={{ marginTop: 0 }}>{t("أكثر عمليات البحث", "Top searches")}</h2>
           {a.top_searches.length === 0 ? <p className="muted">{t("لا يوجد.", "None.")}</p> : a.top_searches.map((s) => (
-            <div key={s.query} style={{ display: "flex", justifyContent: "space-between" }}><span>{s.query}</span><b>{fmtNum(s.n)}</b></div>
+            <div key={s.query} className="row"><span>{s.query}</span><b>{fmtNum(s.n)}</b></div>
           ))}
         </div>
         <div className="card">
           <h2 style={{ marginTop: 0 }}>{t("العرائس حسب المدينة", "Brides by city")}</h2>
-          {a.by_city.map((c) => <div key={c.city_id} style={{ display: "flex", justifyContent: "space-between" }}><span>{c.city_id}</span><b>{fmtNum(c.n)}</b></div>)}
+          {a.by_city.map((c) => <div key={c.city_id} className="row"><span>{c.city_id}</span><b>{fmtNum(c.n)}</b></div>)}
           <h2>{t("أكثر الأخطاء", "Top errors")}</h2>
           {a.top_errors.length === 0 ? <p className="muted">{t("لا توجد أخطاء مسجلة.", "No errors logged.")}</p> : a.top_errors.map((e) => (
-            <div key={e.code} className="small" style={{ display: "flex", justifyContent: "space-between" }}>
+            <div key={e.code} className="small row">
               <span className="mono">{e.code}</span><span>{fmtNum(e.n)} · {fmtDateTime(e.last)}</span>
             </div>
           ))}

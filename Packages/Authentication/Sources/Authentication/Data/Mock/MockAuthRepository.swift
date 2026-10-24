@@ -30,7 +30,7 @@ public actor MockAuthRepository: AuthRepository {
         return OTPChallenge(id: id, phoneE164: phoneE164, resendInterval: Self.resendIntervalSeconds)
     }
 
-    public func verifyOTP(challengeId: String, code: String) async throws -> User {
+    public func verifyOTP(challengeId: String, code: String, role: UserRole?) async throws -> User {
         try await tick()
         guard let phone = challenges[challengeId] else {
             throw AppError.authentication(.otpExpired)
@@ -46,7 +46,7 @@ public actor MockAuthRepository: AuthRepository {
 
     public func registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole) async throws -> User {
         // The mock has no server-side "is this a new number" state, so it just verifies.
-        try await verifyOTP(challengeId: challengeId, code: code)
+        try await verifyOTP(challengeId: challengeId, code: code, role: role)
     }
 
     public func signInWithApple(idToken: String, nonce: String) async throws -> User {

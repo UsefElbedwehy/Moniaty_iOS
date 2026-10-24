@@ -1,4 +1,6 @@
+import { notFound } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
+import { can, requireAdmin } from "@/lib/admin";
 import { Empty, Pager } from "@/components/ui";
 import { param, pageRange, PAGE_SIZE } from "@/lib/format";
 import { i18n } from "@/lib/i18n";
@@ -7,6 +9,8 @@ type Row = { id: number; admin_id: string | null; action: string; entity_type: s
   before: unknown; after: unknown; created_at: string };
 
 export default async function Audit({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  // Developer-only; the database refuses the rows to anyone else as well.
+  if (!can(await requireAdmin(), "audit.read")) notFound();
   const sp = await searchParams;
   const entity = param(sp.entity);
   const page = Math.max(1, Number(param(sp.page, "1")) || 1);

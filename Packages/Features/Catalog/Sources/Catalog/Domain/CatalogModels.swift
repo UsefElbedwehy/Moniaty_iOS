@@ -96,9 +96,12 @@ public struct ServiceDetail: Sendable, Decodable {
     public let provider: ProviderSummary
     public let store: StoreSummary?
     public let moreFromProvider: [ServiceCard]
+    /// The viewer's own service: she is its provider, or her bride account shares the provider's
+    /// phone number. It can't be booked (the server refuses it too).
+    public let isOwn: Bool
 
     private enum CodingKeys: String, CodingKey {
-        case description, durationMinutes, atCustomerLocation, imageUrls, videos, provider, store, moreFromProvider
+        case description, durationMinutes, atCustomerLocation, imageUrls, videos, provider, store, moreFromProvider, isOwn
     }
 
     public init(from decoder: Decoder) throws {
@@ -112,6 +115,7 @@ public struct ServiceDetail: Sendable, Decodable {
         provider = try c.decode(ProviderSummary.self, forKey: .provider)
         store = try c.decodeIfPresent(StoreSummary.self, forKey: .store)
         moreFromProvider = try c.decodeIfPresent([ServiceCard].self, forKey: .moreFromProvider) ?? []
+        isOwn = try c.decodeIfPresent(Bool.self, forKey: .isOwn) ?? false
     }
 
     /// The page's gallery: photos (or the card photo when there are none), then videos.

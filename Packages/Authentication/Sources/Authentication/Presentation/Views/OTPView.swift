@@ -196,8 +196,8 @@ struct OTPView: View {
         Task {
             await viewModel.verify { user in
                 coordinator.didAuthenticate(user)
-            } onNeedsName: { code in
-                coordinator.needsName(code: code)
+            } onNeedsName: { code, otherRole in
+                coordinator.needsName(code: code, otherRole: otherRole)
             }
         }
     }
