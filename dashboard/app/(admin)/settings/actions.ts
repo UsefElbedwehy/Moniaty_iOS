@@ -39,7 +39,13 @@ export async function saveSettings(form: FormData) {
     reviews_premoderation: bool(form, "reviews_premoderation"),
     banned_words: str(form, "banned_words").split("\n").map((w) => w.trim()).filter(Boolean),
     sms_events: smsEvents,
-    feature_flags: { ...obj(c.feature_flags), maintenanceMode: bool(form, "maintenance") },
+    feature_flags: {
+      ...obj(c.feature_flags),
+      maintenanceMode: bool(form, "maintenance"),
+      // Stored as "hide" flags so apps that never got the flag keep showing the slides.
+      hideHomeBudgetSlide: !bool(form, "show_budget_slide"),
+      hideHomeDiscoverSlide: !bool(form, "show_discover_slide"),
+    },
     update: {
       ...obj(c.update),
       min_required_version: str(form, "min_version") || null,

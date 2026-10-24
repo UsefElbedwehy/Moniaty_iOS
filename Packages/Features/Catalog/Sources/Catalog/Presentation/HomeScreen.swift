@@ -29,7 +29,10 @@ struct HomeScreen: View {
                     }
                     LoadableContent(state: state, retry: reload) { home in
                         VStack(alignment: .leading, spacing: DSSpacing.xl) {
-                            HomeCarousel(slides: slides(for: home.banners), onTap: open)
+                            let slides = slides(for: home.banners)
+                            if !slides.isEmpty {
+                                HomeCarousel(slides: slides, onTap: open)
+                            }
                             categories(home.categories)
                             ServiceCarousel(
                                 title: CatalogL10n.string(feature.budget.budget == nil ? "home.featured" : "home.withinBudget"),
@@ -178,9 +181,12 @@ struct HomeScreen: View {
 
     // MARK: Carousel
 
-    /// Dashboard banners first, then the built-in brand slides, so the carousel is never empty.
+    /// Dashboard banners first, then the built-in brand slides the dashboard hasn't hidden. With
+    /// both hidden and no banners, Home shows no carousel at all.
     private func slides(for banners: [HomeBanner]) -> [HomeSlide] {
-        banners.map(HomeSlide.banner) + [.budget, .discover]
+        banners.map(HomeSlide.banner)
+            + (context.showsBudgetSlide ? [.budget] : [])
+            + (context.showsDiscoverSlide ? [.discover] : [])
     }
 
     private func open(_ slide: HomeSlide) {
@@ -332,9 +338,11 @@ private struct HomeSlideCard: View {
 
     var body: some View {
         if imageOnly, case .banner(let banner) = slide, let url = banner.imageUrl {
-            // A designed banner: shown exactly as uploaded.
-            RemoteImageView(url: url)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            // A designed banner: shown exactly as uploaded. `Color.clear` takes the slot's exact size
+            // and the image fills it as an overlay, so the rounded clip matches the other slides
+            // (a fill image as the base view would size itself to the photo and escape the clip).
+            Color.clear
+                .overlay { RemoteImageView(url: url) }
                 .clipShape(RoundedRectangle(cornerRadius: DSRadius.card))
                 .contentShape(RoundedRectangle(cornerRadius: DSRadius.card))
                 .accessibilityElement()

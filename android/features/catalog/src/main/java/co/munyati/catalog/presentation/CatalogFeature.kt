@@ -35,6 +35,9 @@ class CatalogContext(cityIds: List<String>? = null, citySummary: String = "", di
      * the same number), so the service page shows a note instead of the Book button.
      */
     var canBook by mutableStateOf(true)
+    /** The built-in Home slides (budget, discover); the dashboard can hide them to leave the carousel to paid banners. */
+    var showsBudgetSlide by mutableStateOf(true)
+    var showsDiscoverSlide by mutableStateOf(true)
 }
 
 // Destinations inside the catalog. The App registers `destinations()` on each tab's NavHost and

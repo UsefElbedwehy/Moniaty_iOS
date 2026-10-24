@@ -82,6 +82,10 @@ export default async function Settings({ searchParams }: { searchParams: Promise
             </div>
             <label className="check"><input type="checkbox" name="force_update" defaultChecked={!!c.update?.force_update} /> {t("إجبار التحديث", "Force update")}</label>
             <label>{t("رسالة التحديث", "Update message")}<input name="update_message" defaultValue={c.update?.update_message ?? ""} /></label>
+            <h2 style={{ margin: 0 }}>{t("شريط العروض في الرئيسية", "Home carousel")}</h2>
+            <p className="muted small">{t("شريحتا منيتي الثابتتان تظهران بعد بنرات الإعلانات. أخفيهما ليبقى الشريط للإعلانات فقط؛ إن لم يوجد بنر فعّال يختفي الشريط كاملاً.", "Munyati's two built-in slides show after the ad banners. Hide them to keep the carousel for ads only; with no active banner, the carousel disappears.")}</p>
+            <label className="check"><input type="checkbox" name="show_budget_slide" defaultChecked={!c.feature_flags?.hideHomeBudgetSlide} /> {t("إظهار شريحة «احجزي ضمن ميزانيتك»", "Show the “Book within your budget” slide")}</label>
+            <label className="check"><input type="checkbox" name="show_discover_slide" defaultChecked={!c.feature_flags?.hideHomeDiscoverSlide} /> {t("إظهار شريحة «مقدّمات خدمة موثّقات في مدينتك»", "Show the “Verified providers in your city” slide")}</label>
             <h2 style={{ margin: 0 }}>{t("الدعم", "Support")}</h2>
             <label>{t("رابط الأسئلة الشائعة", "FAQ link")}<input name="help_center_url" dir="ltr" defaultValue={c.support?.help_center_url ?? ""} /></label>
             <label>{t("وسائل التواصل (سطر لكل وسيلة: email / whatsapp / phone)", "Contact methods (one per line: email / whatsapp / phone)")}

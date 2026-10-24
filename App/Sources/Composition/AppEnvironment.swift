@@ -189,6 +189,9 @@ final class AppEnvironment {
         let wasGuest = context.isGuest
         context.isGuest = !session.hasAccount
         context.canBook = session.user?.role != .provider
+        // "Hide" flags, so a missing flag (or a config not loaded yet) keeps the slides.
+        context.showsBudgetSlide = remoteConfig.config?.isFeatureEnabled("hideHomeBudgetSlide") != true
+        context.showsDiscoverSlide = remoteConfig.config?.isFeatureEnabled("hideHomeDiscoverSlide") != true
         context.displayName = session.user?.displayName
         context.cityIds = cities.queryCityIds
         context.citySummary = cities.summary(allLabel: L10n.string("cities.all"))
@@ -324,6 +327,7 @@ final class AppEnvironment {
         } else if let cached = await configurationRepository.cachedConfiguration() {
             remoteConfig.update(cached)
         }
+        refreshCatalogContext()
     }
 
     /// Installs dashboard-edited text for the current language (falls back to the bundle).
