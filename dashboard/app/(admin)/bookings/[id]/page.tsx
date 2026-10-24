@@ -41,7 +41,7 @@ export default async function BookingDetail({ params, searchParams }: {
           <h1 className="mono" style={{ fontSize: 22 }}>{b.reference_code}</h1>
           <Badge map={bookingStatus} value={b.status} /> {b.is_demo && <span className="badge">{t("تجريبي", "Demo")}</span>}
         </div>
-        <div style={{ display: "grid", gap: 6, justifyItems: "end" }}>
+        <div className="topbar-actions">
           <Link className="button secondary" href="/bookings">{t("رجوع", "Back")}</Link>
           <RecordActions entity="booking" id={b.id} archived={!!b.archived_at} back={`/bookings/${b.id}`} isOwner={owner} />
         </div>
@@ -67,7 +67,7 @@ export default async function BookingDetail({ params, searchParams }: {
         <div className="card">
           <h2 style={{ marginTop: 0 }}>{t("السجل", "History")}</h2>
           {(events.data ?? []).map((e, i) => (
-            <div key={i} className="small" style={{ marginBottom: 6 }}>
+            <div key={i} className="small row" style={{ display: "block" }}>
               <b>{label(bookingStatus, e.to_status)}</b> · {label(party, e.actor_role)} · {fmtDateTime(e.created_at)}
               {e.note && <div className="muted">{e.note}</div>}
             </div>
@@ -81,7 +81,7 @@ export default async function BookingDetail({ params, searchParams }: {
           {(receipts.data ?? []).map((r, i) => (
             <div key={r.id} className="card">
               {receiptUrls[i] && <a href={receiptUrls[i]!} target="_blank" rel="noreferrer"><img src={receiptUrls[i]!} alt={t("إيصال", "Receipt")} style={{ maxWidth: "100%", maxHeight: 320, borderRadius: 10 }} /></a>}
-              <dl className="kv" style={{ marginTop: 8 }}>
+              <dl className="kv">
                 <dt>{t("المبلغ", "Amount")}</dt><dd>{fmtSAR(r.amount)}</dd>
                 <dt>{t("وقت التحويل", "Transferred at")}</dt><dd>{fmtDateTime(r.transferred_at)}</dd>
                 <dt>{t("البنك", "Bank")}</dt><dd>{r.sender_bank ?? "—"}</dd>

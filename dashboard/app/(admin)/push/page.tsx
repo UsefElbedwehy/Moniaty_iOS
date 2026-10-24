@@ -37,7 +37,7 @@ export default async function Push({ searchParams }: { searchParams: Promise<Rec
           <h2 style={{ marginTop: 0 }}>{t("آخر الحملات", "Recent campaigns")}</h2>
           {(history ?? []).map((h, i) => {
             const a = h.after as { title?: string; audience?: string; recipients?: number };
-            return <div key={i} className="small" style={{ marginBottom: 6 }}><b>{a.title}</b> · {a.audience} · {a.recipients} · {fmtDateTime(h.created_at)}</div>;
+            return <div key={i} className="small row" style={{ display: "block" }}><b>{a.title}</b> · {a.audience} · {a.recipients} · {fmtDateTime(h.created_at)}</div>;
           })}
         </div>
       </div>

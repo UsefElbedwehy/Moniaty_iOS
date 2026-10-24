@@ -68,7 +68,7 @@ export default async function Content({ searchParams }: { searchParams: Promise<
         <div className="card">
           <p className="muted small">{t("الشروط والخصوصية وعن منيتي والأسئلة الشائعة. تظهر في التطبيق والموقع (Markdown).", "Terms, privacy, about and FAQ. Shown in the app and on the website (Markdown).")}</p>
           {pages.map((p) => (
-            <div key={`${p.slug}-${p.lang}`} style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+            <div key={`${p.slug}-${p.lang}`} className="row">
               <Link href={`/content?page=${p.slug}&lang=${p.lang}`}>{p.title} <span className="muted mono">{p.slug}/{p.lang}</span></Link>
               <span className="small muted">{p.is_published ? fmtDateTime(p.updated_at) : t("مسودة", "Draft")}</span>
             </div>

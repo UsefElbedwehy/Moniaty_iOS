@@ -56,14 +56,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             {can(admin, "team.manage") && item("/team", t("فريق الإدارة", "Admin team"))}
           </div>
         </nav>
-        <div className="small" style={{ opacity: 0.75, margin: "24px 0 6px" }}>
-          <span className="ltr">{admin.email}</span> · {admin.roleId}
-        </div>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          <form action={signOut}>
-            <button className="secondary" type="submit">{t("تسجيل الخروج", "Sign out")}</button>
-          </form>
-          <LangSwitch lang={lang} />
+        <div className="sidebar-foot">
+          <div className="small who"><span className="ltr">{admin.email}</span> · {admin.roleId}</div>
+          <div className="actions">
+            <form action={signOut}>
+              <button className="secondary" type="submit">{t("تسجيل الخروج", "Sign out")}</button>
+            </form>
+            <LangSwitch lang={lang} />
+          </div>
         </div>
       </aside>
       <main className="main">{children}</main>

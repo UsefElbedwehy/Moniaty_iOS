@@ -40,7 +40,7 @@ export default async function Team({ searchParams }: { searchParams: Promise<Rec
           ))}</tbody>
         </table>
       </div>
-      <div className="grid two" style={{ marginTop: 16 }}>
+      <div className="grid two">
         <form className="card stack" action={addAdmin}>
           <h2 style={{ margin: 0 }}>{t("إضافة عضو", "Add a member")}</h2>
           <p className="muted small">{t("أرسلي له دعوة أولاً من Supabase", "First invite them in Supabase")} {arrow} Authentication {arrow} Invite user{t("، ثم أضيفيه هنا بنفس البريد.", ", then add them here with the same email.")}</p>
