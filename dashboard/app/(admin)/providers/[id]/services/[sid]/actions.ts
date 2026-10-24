@@ -2,6 +2,7 @@
 import { revalidatePath } from "next/cache";
 import { supabaseServer } from "@/lib/supabase/server";
 import { done, rpcError, str, tr } from "@/lib/act";
+import { thumbUrl } from "@/lib/format";
 
 export type ServiceVideo = { url: string; poster_url: string | null; duration_seconds: number | null };
 
@@ -32,7 +33,9 @@ export async function addServiceMedia(serviceId: string, images: string[], video
 
 /** Files the dashboard uploaded are deleted with the item; a provider's own uploads stay theirs. */
 async function deleteIfOurs(supabase: Awaited<ReturnType<typeof supabaseServer>>, urls: (string | null | undefined)[]) {
-  const paths = urls.filter((u): u is string => !!u && u.includes(CONTENT_PREFIX + "services/"))
+  // A photo's small copy goes with it.
+  const withThumbs = urls.flatMap((u) => (u && thumbUrl(u) !== u ? [u, thumbUrl(u)] : [u]));
+  const paths = withThumbs.filter((u): u is string => !!u && u.includes(CONTENT_PREFIX + "services/"))
     .map((u) => u.slice(u.indexOf(CONTENT_PREFIX) + CONTENT_PREFIX.length));
   if (paths.length) await supabase.storage.from("content").remove(paths);
 }

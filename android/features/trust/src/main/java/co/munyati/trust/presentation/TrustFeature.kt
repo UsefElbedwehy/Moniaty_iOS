@@ -306,7 +306,8 @@ private fun ReviewRow(feature: TrustFeature, review: Review) {
                     val hint = stringResource(SharedR.string.shared_media_openHint)
                     RemoteImage(
                         url,
-                        Modifier.size(72.dp).clip(RoundedCornerShape(12.dp))
+                        thumbnail = true,
+                        modifier = Modifier.size(72.dp).clip(RoundedCornerShape(12.dp))
                             .clickable(onClickLabel = hint, role = Role.Button) { viewerStart = index }
                             .semantics { contentDescription = label },
                         placeholder = DS.colors.primaryMuted,
@@ -423,8 +424,8 @@ private fun ReviewComposer(feature: TrustFeature, bookingId: String, role: Revie
         scope.launch {
             var failed = false
             for (uri in uris.take(4 - photos.size)) {
-                val jpeg = withContext(Dispatchers.IO) { ImageCompressor.jpeg(context, uri) }
-                val url = jpeg?.let { runCatching { feature.uploader.uploadJpeg(it, "reviews") }.getOrNull() }
+                val photo = withContext(Dispatchers.IO) { ImageCompressor.photo(context, uri) }
+                val url = photo?.let { runCatching { feature.uploader.uploadPhoto(it, "reviews") }.getOrNull() }
                 if (url != null) photos = photos + url else failed = true
             }
             isUploading = false
@@ -462,7 +463,7 @@ private fun ReviewComposer(feature: TrustFeature, bookingId: String, role: Revie
             DSFormSection(stringResource(R.string.trust_review_photos)) {
                 if (photos.isNotEmpty()) {
                     Row(Modifier.horizontalScroll(rememberScrollState()).padding(DSSpacing.sm), horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
-                        photos.forEach { RemoteImage(it, Modifier.size(64.dp).clip(RoundedCornerShape(10.dp)), placeholder = DS.colors.primaryMuted) }
+                        photos.forEach { RemoteImage(it, thumbnail = true, modifier = Modifier.size(64.dp).clip(RoundedCornerShape(10.dp)), placeholder = DS.colors.primaryMuted) }
                     }
                 }
                 if (photos.size < 4) {

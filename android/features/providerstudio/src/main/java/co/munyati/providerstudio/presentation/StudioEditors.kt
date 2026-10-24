@@ -147,7 +147,7 @@ internal fun BusinessEditScreen(feature: StudioFeature) {
             DSTextFieldRow(draft.bio, { draft = draft.copy(bio = it) }, stringResource(R.string.studio_business_bio), minLines = 3)
             DSFormDivider()
             Row(Modifier.padding(horizontal = DSSpacing.md, vertical = DSSpacing.xs), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(DSSpacing.md)) {
-                RemoteImage(draft.logoUrl, Modifier.size(56.dp).clip(CircleShape), placeholder = DS.colors.primaryMuted)
+                RemoteImage(draft.logoUrl, thumbnail = true, modifier = Modifier.size(56.dp).clip(CircleShape), placeholder = DS.colors.primaryMuted)
                 PhotoUploadButton(feature.uploader, "logos", 1) { draft = draft.copy(logoUrl = it.first()) }
             }
             DSFormDivider()
@@ -238,7 +238,7 @@ private fun ServiceRow(store: StudioStore, service: MyService, onClick: () -> Un
         horizontalArrangement = Arrangement.spacedBy(DSSpacing.sm),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        RemoteImage(service.imageUrls.firstOrNull(), Modifier.size(52.dp).clip(RoundedCornerShape(12.dp)), placeholder = DS.colors.primaryMuted)
+        RemoteImage(service.imageUrls.firstOrNull(), thumbnail = true, modifier = Modifier.size(52.dp).clip(RoundedCornerShape(12.dp)), placeholder = DS.colors.primaryMuted)
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(service.title, style = DS.type.headline, color = DS.colors.textPrimary)
             Text("${store.categoryName(service.categoryId)} · ${formatSar(service.price)}", style = DS.type.footnote, color = DS.colors.textSecondary)
@@ -333,7 +333,7 @@ internal fun ServiceEditScreen(feature: StudioFeature, serviceId: String?) {
                 Row(Modifier.horizontalScroll(rememberScrollState()).padding(DSSpacing.sm), horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
                     draft.imageUrls.forEach { url ->
                         Box(Modifier.size(84.dp)) {
-                            RemoteImage(url, Modifier.size(84.dp).clip(RoundedCornerShape(12.dp)), placeholder = DS.colors.primaryMuted)
+                            RemoteImage(url, thumbnail = true, modifier = Modifier.size(84.dp).clip(RoundedCornerShape(12.dp)), placeholder = DS.colors.primaryMuted)
                             Icon(
                                 Icons.Filled.Cancel, contentDescription = stringResource(R.string.studio_photo_remove), tint = DS.colors.primary,
                                 modifier = Modifier.align(Alignment.TopEnd).padding(2.dp).background(DS.colors.surface, CircleShape)
@@ -483,7 +483,7 @@ internal fun StoreEditScreen(feature: StudioFeature, storeId: String?) {
             DSTextFieldRow(draft.description, { draft = draft.copy(description = it) }, stringResource(R.string.studio_store_description), minLines = 2)
             DSFormDivider()
             Row(Modifier.padding(horizontal = DSSpacing.md, vertical = DSSpacing.xs), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(DSSpacing.md)) {
-                RemoteImage(draft.logoUrl, Modifier.size(56.dp).clip(RoundedCornerShape(12.dp)), placeholder = DS.colors.primaryMuted)
+                RemoteImage(draft.logoUrl, thumbnail = true, modifier = Modifier.size(56.dp).clip(RoundedCornerShape(12.dp)), placeholder = DS.colors.primaryMuted)
                 PhotoUploadButton(feature.uploader, "stores", 1) { draft = draft.copy(logoUrl = it.first()) }
             }
             DSFormDivider()

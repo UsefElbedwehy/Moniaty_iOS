@@ -6,6 +6,7 @@ import { ConfirmButton } from "@/components/ConfirmButton";
 import { RecordActions } from "@/components/RecordActions";
 import { ProviderDecision } from "@/components/ProviderDecision";
 import { isOwner } from "@/lib/admin";
+import { thumbUrl } from "@/lib/format";
 import { i18n } from "@/lib/i18n";
 import { bookingStatus, providerStatus } from "@/lib/labels";
 import { grantSubscription, reviewProvider, setServiceStatus } from "../actions";
@@ -111,7 +112,7 @@ export default async function ProviderDetail({ params, searchParams }: {
           <tbody>
             {(services.data ?? []).map((s) => (
               <tr key={s.id}>
-                <td>{s.image_urls?.[0] && <img className="thumb" src={s.image_urls[0]} alt="" />}</td>
+                <td>{s.image_urls?.[0] && <img className="thumb" src={thumbUrl(s.image_urls[0])} alt="" />}</td>
                 <td>
                   <Link href={`/providers/${id}/services/${s.id}`}>{s.title}</Link>
                   <div className="muted small">

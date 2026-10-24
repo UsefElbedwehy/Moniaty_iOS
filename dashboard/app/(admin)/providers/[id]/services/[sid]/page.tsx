@@ -5,6 +5,7 @@ import { Flash } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { ServiceMediaUpload } from "@/components/ServiceMediaUpload";
 import { i18n } from "@/lib/i18n";
+import { thumbUrl } from "@/lib/format";
 import { removeServicePhoto, removeServiceVideo, type ServiceVideo } from "./actions";
 
 /** A service's photos and videos: watch them, remove anything inappropriate, or add media. */
@@ -60,7 +61,7 @@ export default async function ServiceMedia({ params, searchParams }: {
         <div className="media-grid">
           {photos.map((url, i) => (
             <figure key={url}>
-              <a href={url} target="_blank" rel="noreferrer"><img src={url} alt="" loading="lazy" /></a>
+              <a href={url} target="_blank" rel="noreferrer"><img src={thumbUrl(url)} alt="" loading="lazy" /></a>
               <figcaption>
                 <span className="muted small">{i === 0 ? t("صورة الغلاف", "Cover photo") : ""}</span>
                 <form className="inline" action={removeServicePhoto}>

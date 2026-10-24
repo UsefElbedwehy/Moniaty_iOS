@@ -23,12 +23,25 @@ struct SupabaseMediaUploader: MediaUploading {
         }
     }
 
-    private func upload(contentType: String, fileExtension: String, folder: String,
+    /// The small copy goes first: a full photo is only ever saved with its thumbnail beside it.
+    func uploadPhoto(_ photo: PreparedPhoto, folder: String) async throws -> URL {
+        let name = UUID().uuidString
+        _ = try await upload(contentType: "image/jpeg", fileExtension: "jpg", folder: folder,
+                             name: name + String(MediaThumbnail.thumbnailSuffix.dropLast(4))) { request in
+            try await session.upload(for: request, from: photo.thumbnail)
+        }
+        return try await upload(contentType: "image/jpeg", fileExtension: "jpg", folder: folder,
+                                name: name + String(MediaThumbnail.fullSuffix.dropLast(4))) { request in
+            try await session.upload(for: request, from: photo.full)
+        }
+    }
+
+    private func upload(contentType: String, fileExtension: String, folder: String, name: String = UUID().uuidString,
                         send: (URLRequest) async throws -> (Data, URLResponse)) async throws -> URL {
         guard let uid = await currentUserId(), let token = await accessToken() else {
             throw AppError.authentication(.notAuthenticated)
         }
-        let objectPath = "\(uid)/\(folder)/\(UUID().uuidString).\(fileExtension)"
+        let objectPath = "\(uid)/\(folder)/\(name).\(fileExtension)"
         var request = URLRequest(url: baseURL.appendingPathComponent("storage/v1/object/media/\(objectPath)"))
         request.httpMethod = "POST"
         request.setValue(anonKey, forHTTPHeaderField: "apikey")
@@ -55,6 +68,10 @@ struct SupabaseMediaUploader: MediaUploading {
 struct MockMediaUploader: MediaUploading {
     func uploadJPEG(_ jpeg: Data, folder: String) async throws -> URL {
         URL(string: "https://picsum.photos/seed/\(UUID().uuidString)/800/600")!
+    }
+
+    func uploadPhoto(_ photo: PreparedPhoto, folder: String) async throws -> URL {
+        try await uploadJPEG(photo.full, folder: folder)
     }
 
     func uploadFile(_ file: URL, contentType: String, fileExtension: String, folder: String) async throws -> URL {

@@ -237,7 +237,7 @@ struct ReviewRow: View {
                                 viewerStart = index
                                 viewerOpen = true
                             } label: {
-                                RemoteImageView(url: url)
+                                RemoteImageView(url: url, thumbnail: true)
                                     .frame(width: 72, height: 72)
                                     .clipShape(RoundedRectangle(cornerRadius: 12))
                             }
@@ -384,7 +384,7 @@ struct ReviewComposer: View {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack {
                                 ForEach(photos, id: \.self) { url in
-                                    RemoteImageView(url: url).frame(width: 64, height: 64).clipShape(RoundedRectangle(cornerRadius: 10))
+                                    RemoteImageView(url: url, thumbnail: true).frame(width: 64, height: 64).clipShape(RoundedRectangle(cornerRadius: 10))
                                 }
                             }
                         }
@@ -429,8 +429,8 @@ struct ReviewComposer: View {
         var failed = false
         for item in picked {
             guard let data = try? await item.loadTransferable(type: Data.self),
-                  let jpeg = ImageCompressor.jpeg(from: data) else { failed = true; continue }
-            if let url = try? await feature.uploader.uploadJPEG(jpeg, folder: "reviews") { photos.append(url) } else { failed = true }
+                  let photo = ImageCompressor.photo(from: data) else { failed = true; continue }
+            if let url = try? await feature.uploader.uploadPhoto(photo, folder: "reviews") { photos.append(url) } else { failed = true }
         }
         if failed { message = TrustL10n.string("error.invalid_photo") }
     }

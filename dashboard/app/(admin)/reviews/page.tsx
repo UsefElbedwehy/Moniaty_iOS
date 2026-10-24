@@ -5,7 +5,7 @@ import { isOwner } from "@/lib/admin";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Chips, Empty, Flash } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
-import { param } from "@/lib/format";
+import { param, thumbUrl } from "@/lib/format";
 import { i18n } from "@/lib/i18n";
 import { moderateReview, setBan } from "./actions";
 
@@ -47,7 +47,7 @@ export default async function Reviews({ searchParams }: { searchParams: Promise<
           </div>
           {r.body && <p>{r.body}</p>}
           {r.photo_urls?.length > 0 && (
-            <div style={{ display: "flex", gap: 6 }}>{r.photo_urls.map((u) => <a key={u} href={u} target="_blank" rel="noreferrer"><img className="thumb" src={u} alt="" /></a>)}</div>
+            <div style={{ display: "flex", gap: 6 }}>{r.photo_urls.map((u) => <a key={u} href={u} target="_blank" rel="noreferrer"><img className="thumb" src={thumbUrl(u)} alt="" /></a>)}</div>
           )}
           <form className="inline" action={moderateReview} style={{ marginTop: 10 }}>
             <input type="hidden" name="id" value={r.id} />

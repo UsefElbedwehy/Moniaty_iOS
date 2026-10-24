@@ -129,6 +129,7 @@ internal fun ServiceCardView(card: ServiceCard, feature: CatalogFeature, modifie
         Box(Modifier.fillMaxWidth().height(120.dp)) {
             RemoteImage(
                 card.imageUrl,
+                thumbnail = true,
                 modifier = Modifier.fillMaxWidth().height(120.dp).clip(RoundedCornerShape(18.dp)),
                 placeholder = DS.colors.primaryMuted,
             )
@@ -327,7 +328,7 @@ internal fun ProviderAvatar(url: String?, name: String?, size: Dp) {
         contentAlignment = Alignment.Center,
     ) {
         if (url != null) {
-            RemoteImage(url, Modifier.size(size))
+            RemoteImage(url, Modifier.size(size), thumbnail = true)
         } else {
             Text(
                 (name?.firstOrNull() ?: 'م').toString(),
