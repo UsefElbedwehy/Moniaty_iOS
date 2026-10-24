@@ -17,7 +17,7 @@ export async function saveBanner(form: FormData) {
     const ext = file.type === "image/jpeg" ? "jpg" : file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : null;
     if (!ext) return done("/banners", { message: await tr("الصورة يجب أن تكون JPG أو PNG أو WebP", "The image must be JPG, PNG or WebP") });
     const path = `banners/${Date.now()}.${ext}`;
-    const { error: uploadError } = await supabase.storage.from("content").upload(path, file, { contentType: file.type, upsert: false });
+    const { error: uploadError } = await supabase.storage.from("content").upload(path, file, { contentType: file.type, cacheControl: "31536000", upsert: false });
     if (uploadError) return done("/banners", uploadError);
     imageUrl = supabase.storage.from("content").getPublicUrl(path).data.publicUrl;
   }

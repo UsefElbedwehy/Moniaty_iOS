@@ -26,7 +26,7 @@ export async function saveCategory(form: FormData) {
     const ext = file.type === "image/svg+xml" ? "svg" : file.type === "image/png" ? "png" : null;
     if (!ext) return done("/catalog", { message: await tr("الأيقونة يجب أن تكون PNG أو SVG", "The icon must be PNG or SVG") });
     const path = `categories/${id}/${Date.now()}.${ext}`;
-    const { error: uploadError } = await supabase.storage.from("content").upload(path, file, { contentType: file.type, upsert: false });
+    const { error: uploadError } = await supabase.storage.from("content").upload(path, file, { contentType: file.type, cacheControl: "31536000", upsert: false });
     if (uploadError) return done("/catalog", uploadError);
     iconUrl = supabase.storage.from("content").getPublicUrl(path).data.publicUrl;
   }

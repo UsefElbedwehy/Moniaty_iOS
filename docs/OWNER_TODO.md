@@ -118,7 +118,7 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
 ## 10. Service videos and the photo viewer
 - [x] Apply `supabase/migrations/20261019000000_service_videos.sql` to the live project (after §9's migration). Until then the apps keep working with photos only, and the video upload fails to save.
 - [x] Redeploy the dashboard: each service on a provider's page now opens **الصور والفيديوهات / Photos and videos**, where admins watch, add (MP4 up to 60 s and 50 MB) and remove media. Reported services open there too.
-- [ ] Keep an eye on Supabase **egress**: videos are far heavier than photos (a 60-second 720p clip is roughly 5–15 MB, streamed each time a bride watches it). The free plan includes 5 GB of egress a month and Pro 250 GB. If it grows, move videos to a video CDN (e.g. Cloudflare Stream or Bunny); only the upload path changes.
+- [ ] Keep an eye on Supabase **egress**: videos are far heavier than photos (the apps encode at 720p and 2.5 Mbit/s, so a 60-second clip is at most about 20 MB, streamed each time a bride watches it; videos added from the dashboard are uploaded as they are). The free plan includes 5 GB of egress a month and Pro 250 GB. If it grows, move videos to a video CDN (e.g. Cloudflare Stream or Bunny); only the upload path changes.
 - [ ] Supabase's per-file upload limit must stay at least 50 MB (Storage settings), the size the apps allow.
 
 ## 10b. Security fix (apply now)

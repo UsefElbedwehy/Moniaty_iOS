@@ -1,6 +1,7 @@
 import Foundation
 import SwiftUI
 import DesignSystem
+import ImageIO
 import os
 
 #if canImport(UIKit)
@@ -59,17 +60,49 @@ extension RemoteImageLoading {
     /// The decoded photo for `url`, through the same caches as `RemoteImageView` (used by the
     /// full-screen viewer, which zooms a `UIImage`).
     public static func uiImage(for url: URL) async -> UIImage? {
-        if let cached = RemoteImageDecodeCache.shared.object(forKey: url as NSURL) { return cached }
+        // Full resolution for zooming; kept apart from the screen-size copies `RemoteImageView` caches.
+        let key = url.appendingPathComponent("#full") as NSURL
+        if let cached = RemoteImageDecodeCache.shared.object(forKey: key) { return cached }
         guard let (data, response) = try? await session.data(from: url) else { return nil }
         if !url.isFileURL {
             guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else { return nil }
         }
         guard let image = await decodeOffMain(data) else { return nil }
-        RemoteImageDecodeCache.shared.setObject(image, forKey: url as NSURL)
+        RemoteImageDecodeCache.shared.setObject(image, forKey: key)
         return image
     }
 
-    nonisolated private static func decodeOffMain(_ data: Data) async -> UIImage? { UIImage(data: data) }
+    nonisolated private static func decodeOffMain(_ data: Data) async -> UIImage? {
+        decodeDownsampled(data, maxPixelSize: nil)
+    }
+
+    /// Longest side of an image shown inside the app (cards, galleries, banners): a full phone
+    /// width at 3x. Uploads are 1600 px, so this alone saves about 45% memory per photo.
+    public static let displayMaxPixelSize: CGFloat = 1200
+
+    /// Decodes with ImageIO: shrunk to `maxPixelSize` while decoding (never holding the full bitmap)
+    /// and decoded right here, off the main thread. `UIImage(data:)` would instead decode the full
+    /// size lazily on the main thread the first time the image is drawn, which stutters scrolling.
+    nonisolated static func decodeDownsampled(_ data: Data, maxPixelSize: CGFloat?) -> UIImage? {
+        guard let source = CGImageSourceCreateWithData(data as CFData, [kCGImageSourceShouldCache: false] as CFDictionary)
+        else { return nil }
+        var options: [CFString: Any] = [
+            kCGImageSourceCreateThumbnailFromImageAlways: true,
+            kCGImageSourceCreateThumbnailWithTransform: true,
+            kCGImageSourceShouldCacheImmediately: true,
+        ]
+        if let maxPixelSize {
+            options[kCGImageSourceThumbnailMaxPixelSize] = maxPixelSize
+        } else if let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+                  let width = properties[kCGImagePropertyPixelWidth] as? CGFloat,
+                  let height = properties[kCGImagePropertyPixelHeight] as? CGFloat {
+            options[kCGImageSourceThumbnailMaxPixelSize] = max(width, height)
+        }
+        guard let image = CGImageSourceCreateThumbnailAtIndex(source, 0, options as CFDictionary) else {
+            return UIImage(data: data)   // formats ImageIO can't thumbnail
+        }
+        return UIImage(cgImage: image)
+    }
 }
 #endif
 
@@ -150,7 +183,9 @@ final class RemoteImageLoader {
     // `nonisolated func ... async` hops to the background cooperative pool rather than staying
     // pinned to whichever actor called it.
     #if canImport(UIKit)
-    nonisolated private static func decode(data: Data) async -> UIImage? { UIImage(data: data) }
+    nonisolated private static func decode(data: Data) async -> UIImage? {
+        RemoteImageLoading.decodeDownsampled(data, maxPixelSize: RemoteImageLoading.displayMaxPixelSize)
+    }
     #elseif canImport(AppKit)
     nonisolated private static func decode(data: Data) async -> NSImage? { NSImage(data: data) }
     #endif
