@@ -55,10 +55,15 @@ p { margin: 0 0 var(--s-3); }
 .brand { font-size: 22px; font-weight: 700; margin: 0 var(--s-3) var(--s-2); }
 .brand small { display: block; font-size: 12px; font-weight: 400; opacity: 0.75; }
 .nav-group { margin-top: var(--s-6); display: grid; gap: 2px; }
-.nav-group > span { display: block; font-size: 11px; opacity: 0.6; margin: 0 var(--s-3) var(--s-1); letter-spacing: 0.02em; }
-.nav a { display: flex; justify-content: space-between; align-items: center; gap: var(--s-2); color: #fff; padding: var(--s-2) var(--s-3); border-radius: 10px; }
-.nav a:hover { background: rgba(255, 255, 255, 0.12); text-decoration: none; }
-.nav .count { background: var(--gold); color: var(--primary); border-radius: 999px; padding: 0 var(--s-2); font-size: 12px; font-weight: 700; }
+.nav-group > span { display: block; font-size: 12px; font-weight: 600; color: var(--gold); margin: 0 var(--s-3) var(--s-1); letter-spacing: 0.02em; }
+.nav a { display: flex; justify-content: space-between; align-items: center; gap: var(--s-2); color: #fff; font-size: 15px; padding: 10px var(--s-3); border-radius: 10px; border-inline-start: 4px solid transparent; }
+.nav a:hover { background: rgba(255, 255, 255, 0.14); text-decoration: none; }
+.nav a:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+/* The section you're on: an ivory tab with burgundy bold text and a gold edge. */
+.nav a.active { background: var(--bg); color: var(--primary); font-weight: 700; border-inline-start-color: var(--gold); box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); }
+.nav a.active:hover { background: var(--bg); }
+.nav .count { background: var(--gold); color: var(--primary); border-radius: 999px; padding: 0 var(--s-2); font-size: 12px; font-weight: 700; min-width: 22px; text-align: center; }
+.nav a.active .count { background: var(--primary); color: #fff; }
 .sidebar-foot { margin: var(--s-8) var(--s-3) 0; padding-top: var(--s-4); border-top: 1px solid rgba(255, 255, 255, 0.18); display: grid; gap: var(--s-3); }
 .sidebar-foot .who { opacity: 0.75; overflow-wrap: anywhere; }
 .sidebar-foot .actions { display: flex; gap: var(--s-2); flex-wrap: wrap; }
