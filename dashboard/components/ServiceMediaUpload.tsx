@@ -8,7 +8,8 @@ import { addServiceMedia, type ServiceVideo } from "@/app/(admin)/providers/[id]
 /** Same limits as the apps: 60-second videos, at most 50 MB (the storage upload limit). */
 const MAX_SECONDS = 60;
 const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
-const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+/** Picked photos can be large camera files; they are shrunk in the browser before upload. */
+const MAX_PHOTO_BYTES = 20 * 1024 * 1024;
 const PHOTO_TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 
 /**
@@ -41,9 +42,11 @@ export function ServiceMediaUpload({ serviceId, lang, photosLeft, videosLeft }: 
       for (const file of Array.from(files)) {
         if (PHOTO_TYPES[file.type]) {
           if (images.length >= photosLeft) throw new Error(t("وصلت الخدمة إلى الحد الأقصى للصور", "The service has reached its photo limit"));
-          if (file.size > MAX_PHOTO_BYTES) throw new Error(t(`${file.name}: الصورة أكبر من ٥ ميغابايت`, `${file.name}: the photo is larger than 5 MB`));
+          if (file.size > MAX_PHOTO_BYTES) throw new Error(t(`${file.name}: الصورة أكبر من ٢٠ ميغابايت`, `${file.name}: the photo is larger than 20 MB`));
+          setBusy(t(`جارٍ تجهيز ${file.name}…`, `Preparing ${file.name}…`));
+          const photo = await shrinkPhoto(file);
           setBusy(t(`جارٍ رفع ${file.name}…`, `Uploading ${file.name}…`));
-          images.push(await put(file, PHOTO_TYPES[file.type], file.type));
+          images.push(photo ? await put(photo, "jpg", "image/jpeg") : await put(file, PHOTO_TYPES[file.type], file.type));
         } else if (file.type === "video/mp4") {
           if (videos.length >= videosLeft) throw new Error(t("وصلت الخدمة إلى الحد الأقصى للفيديوهات (٣)", "The service has reached its video limit (3)"));
           if (file.size > MAX_VIDEO_BYTES) throw new Error(t(`${file.name}: الفيديو أكبر من ٥٠ ميغابايت`, `${file.name}: the video is larger than 50 MB`));
@@ -78,12 +81,38 @@ export function ServiceMediaUpload({ serviceId, lang, photosLeft, videosLeft }: 
           onChange={(e) => { void upload(e.target.files); e.target.value = ""; }} />
       </label>
       <p className="muted small">
-        {t(`الصور: JPG أو PNG أو WebP حتى ٥ ميغابايت. الفيديو: MP4 حتى ${MAX_SECONDS} ثانية و٥٠ ميغابايت (يتبقّى ${videosLeft}).`,
-           `Photos: JPG, PNG or WebP up to 5 MB. Video: MP4 up to ${MAX_SECONDS} seconds and 50 MB (${videosLeft} left).`)}
+        {t(`الصور: JPG أو PNG أو WebP حتى ٢٠ ميغابايت، وتُصغَّر تلقائياً قبل الرفع. الفيديو: MP4 حتى ${MAX_SECONDS} ثانية و٥٠ ميغابايت (يتبقّى ${videosLeft}).`,
+           `Photos: JPG, PNG or WebP up to 20 MB, shrunk automatically before upload. Video: MP4 up to ${MAX_SECONDS} seconds and 50 MB (${videosLeft} left).`)}
       </p>
       {error && <p className="flash err">{error}</p>}
     </div>
   );
+}
+
+/**
+ * The photo as the apps upload it: longest side at most 1600 px, JPEG at quality 0.8 (usually a few
+ * hundred KB). Returns null to upload the original instead, when it is already smaller or the
+ * browser can't decode it.
+ */
+async function shrinkPhoto(file: File): Promise<Blob | null> {
+  try {
+    const bitmap = await createImageBitmap(file, { imageOrientation: "from-image" });
+    const scale = Math.min(1, 1600 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    const ctx = canvas.getContext("2d");
+    if (!ctx || !canvas.width) return null;
+    ctx.fillStyle = "#fff";   // transparent PNG areas become white, not black
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.imageSmoothingQuality = "high";
+    ctx.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.8));
+    return blob && (scale < 1 || blob.size < file.size) ? blob : null;
+  } catch {
+    return null;
+  }
 }
 
 /** The video's length, and a JPEG of the frame about a second in (longest side ≤ 1280 px). */

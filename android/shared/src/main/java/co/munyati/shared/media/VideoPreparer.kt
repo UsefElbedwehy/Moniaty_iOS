@@ -10,11 +10,14 @@ import androidx.media3.common.MimeTypes
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.effect.Presentation
 import androidx.media3.transformer.Composition
+import androidx.media3.transformer.DefaultEncoderFactory
 import androidx.media3.transformer.EditedMediaItem
 import androidx.media3.transformer.Effects
 import androidx.media3.transformer.ExportException
 import androidx.media3.transformer.ExportResult
+import androidx.media3.transformer.InAppMuxer
 import androidx.media3.transformer.Transformer
+import androidx.media3.transformer.VideoEncoderSettings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -53,7 +56,13 @@ object VideoPreparer {
 
         val output = File(context.cacheDir, "${UUID.randomUUID()}.mp4")
         try {
-            export(context, uri, output, info)
+            try {
+                export(context, uri, output, info, tuned = true)
+            } catch (e: Failure) {
+                // An unusual file or encoder: retry the plain way (system muxer, default bitrate).
+                output.delete()
+                export(context, uri, output, info, tuned = false)
+            }
         } catch (e: Exception) {
             output.delete()
             throw if (e is Failure) e else Failure.Unreadable
@@ -67,7 +76,21 @@ object VideoPreparer {
         return Prepared(output, info.poster, (info.durationMs / 1000.0).roundToInt())
     }
 
-    private class Info(val durationMs: Long, val width: Int, val height: Int, val poster: ByteArray?)
+    private class Info(val durationMs: Long, val width: Int, val height: Int, val bitrate: Int, val poster: ByteArray?)
+
+    /**
+     * The video bitrate to encode at, or null to keep the original stream (already 720p or less and
+     * light enough). 2.5 Mbit/s is clear 720p on a phone, about 19 MB a minute; a lighter source keeps
+     * its own rate, so re-encoding never makes a file bigger. Same numbers as iOS `VideoEncoding`.
+     */
+    internal fun targetVideoBitrate(shortSide: Int, sourceBitrate: Int): Int? {
+        if (shortSide in 1..720 && sourceBitrate in 1..KEEP_UNDER_BITRATE) return null
+        if (sourceBitrate <= 0) return TARGET_VIDEO_BITRATE
+        return sourceBitrate.coerceIn(500_000, TARGET_VIDEO_BITRATE)
+    }
+
+    internal const val TARGET_VIDEO_BITRATE = 2_500_000
+    private const val KEEP_UNDER_BITRATE = 3_000_000
 
     /** Length, displayed size (rotation applied) and a poster frame about a second in. */
     private fun probe(context: Context, uri: Uri): Info? = runCatching {
@@ -80,8 +103,9 @@ object VideoPreparer {
             val h = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toIntOrNull() ?: 0
             val rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)?.toIntOrNull() ?: 0
             val (width, height) = if (rotation % 180 != 0) h to w else w to h
+            val bitrate = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE)?.toIntOrNull() ?: 0
             val frame = retriever.getFrameAtTime(min(1_000_000L, duration * 500), MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
-            Info(duration, width, height, frame?.let(::posterJpeg))
+            Info(duration, width, height, bitrate, frame?.let(::posterJpeg))
         } finally {
             retriever.release()
         }
@@ -100,9 +124,13 @@ object VideoPreparer {
         }
     }
 
-    /** Re-encodes with the short side at most 720 px. Transformer must run on a looper thread. */
+    /**
+     * Re-encodes with the short side at most 720 px at `targetVideoBitrate`, into an MP4 whose index
+     * comes first (the in-app muxer), so playback starts before the download ends. Transformer must
+     * run on a looper thread.
+     */
     @OptIn(UnstableApi::class)
-    private suspend fun export(context: Context, uri: Uri, output: File, info: Info) = withContext(Dispatchers.Main) {
+    private suspend fun export(context: Context, uri: Uri, output: File, info: Info, tuned: Boolean) = withContext(Dispatchers.Main) {
         suspendCancellableCoroutine { cont ->
             val shortSide = min(info.width, info.height)
             val effects = if (shortSide > 720) {
@@ -114,7 +142,18 @@ object VideoPreparer {
             } else {
                 Effects.EMPTY
             }
+            val bitrate = if (tuned) targetVideoBitrate(shortSide, info.bitrate) else null
             val transformer = Transformer.Builder(context)
+                .apply {
+                    if (bitrate != null) {
+                        setEncoderFactory(
+                            DefaultEncoderFactory.Builder(context)
+                                .setRequestedVideoEncoderSettings(VideoEncoderSettings.Builder().setBitrate(bitrate).build())
+                                .build(),
+                        )
+                    }
+                    if (tuned) setMuxerFactory(InAppMuxer.Factory.Builder().build())
+                }
                 .setVideoMimeType(MimeTypes.VIDEO_H264)
                 .setAudioMimeType(MimeTypes.AUDIO_AAC)
                 .addListener(object : Transformer.Listener {
