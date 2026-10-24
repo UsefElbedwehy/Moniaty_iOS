@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { requireAdmin, can } from "@/lib/admin";
 import { i18n } from "@/lib/i18n";
 import { LangSwitch } from "@/components/LangSwitch";
+import { NavLink } from "@/components/NavLink";
 import { signOut } from "./actions";
 import { getQueues, totalQueue } from "@/lib/queues";
 
@@ -10,12 +10,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { t, lang } = await i18n();
   const q = await getQueues();
 
-  const item = (href: string, label: string, count?: number) => (
-    <Link href={href}>
-      <span>{label}</span>
-      {count ? <span className="count">{count}</span> : null}
-    </Link>
-  );
+  const item = (href: string, label: string, count?: number) => <NavLink href={href} label={label} count={count} />;
 
   return (
     <div className="shell">
