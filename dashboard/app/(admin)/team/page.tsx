@@ -30,11 +30,11 @@ export default async function Team({ searchParams }: { searchParams: Promise<Rec
               <td>{roleName(a.role_id)}</td>
               <td>{fmtDate(a.created_at)}</td>
               <td>
-                <form action={setActive}>
+                {a.role_id !== "developer" && <form action={setActive}>
                   <input type="hidden" name="user" value={a.user_id} />
                   <input type="hidden" name="active" value={a.is_active ? "false" : "true"} />
                   <ConfirmButton message={t("تأكيد؟", "Are you sure?")} className="ghost">{a.is_active ? t("إيقاف", "Suspend") : t("تفعيل", "Activate")}</ConfirmButton>
-                </form>
+                </form>}
               </td>
             </tr>
           ))}</tbody>
@@ -45,13 +45,13 @@ export default async function Team({ searchParams }: { searchParams: Promise<Rec
           <h2 style={{ margin: 0 }}>{t("إضافة عضو", "Add a member")}</h2>
           <p className="muted small">{t("أرسلي له دعوة أولاً من Supabase", "First invite them in Supabase")} {arrow} Authentication {arrow} Invite user{t("، ثم أضيفيه هنا بنفس البريد.", ", then add them here with the same email.")}</p>
           <label>{t("البريد", "Email")}<input name="email" type="email" required dir="ltr" /></label>
-          <label>{t("الدور", "Role")}<select name="role">{(roles ?? []).map((r) => <option key={r.id} value={r.id}>{nameOf(r)}</option>)}</select></label>
+          <label>{t("الدور", "Role")}<select name="role">{(roles ?? []).filter((r) => r.id !== "developer").map((r) => <option key={r.id} value={r.id}>{nameOf(r)}</option>)}</select></label>
           <ConfirmButton message={t("إضافة هذا العضو للإدارة؟", "Add this member to the admin team?")}>{t("إضافة", "Add")}</ConfirmButton>
         </form>
         <div className="card">
           <h2 style={{ marginTop: 0 }}>{t("صلاحيات الأدوار", "Role permissions")}</h2>
           <p className="small"><b>{t("المالك", "Owner")}</b>: {t("كل الصلاحيات", "all permissions")}</p>
-          {(roles ?? []).filter((r) => r.id !== "owner").map((r) => (
+          {(roles ?? []).filter((r) => r.id !== "owner" && r.id !== "developer").map((r) => (
             <p key={r.id} className="small"><b>{nameOf(r)}</b>: <span className="mono">{list((perms ?? []).filter((p) => p.role_id === r.id).map((p) => p.permission)) || "—"}</span></p>
           ))}
         </div>

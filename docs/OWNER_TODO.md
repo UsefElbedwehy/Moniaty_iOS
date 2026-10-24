@@ -146,6 +146,18 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
   don't book; they see «للحجز، سجّلي الدخول بحساب عروس».
 - A number whose existing account is banned can't open a second one.
 
+## 10e. Developer role and the audit log
+- [ ] In Supabase → Authentication → Users → **Add user**, create `youssef.m.elbedwehy@gmail.com`
+      with a password (or invite it), **then** run
+      `supabase/migrations/20261024000000_developer_role.sql` in the SQL editor. (If the user didn't
+      exist yet, the migration says so in a notice; add the user and run it again — it is safe to
+      re-run.)
+- What changes: the **Audit log** is now visible only to the `developer` role — the owner and every
+  other role no longer see it (the Push page still shows its own sent campaigns). The developer has
+  every permission, including permanent delete, and is hidden from the Admin team page and its role
+  list. Nobody can give the developer role, change it or suspend it from the dashboard; it is set
+  only by SQL.
+
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy
       answers from `docs/STORE_LISTING.md`; upload the screenshots in `design/store/ios/`

@@ -6,6 +6,7 @@ export async function addAdmin(form: FormData) {
   const supabase = await supabaseServer();
   const result = await supabase.rpc("admin_add_admin", { p_email: str(form, "email"), p_role: str(form, "role") });
   const err = rpcError(result);
+  if (err?.message === "role_not_allowed") return done("/team", { message: await tr("لا يمكن إعطاء هذا الدور أو تعديل هذا الحساب.", "This role can't be given, or this account can't be changed.") });
   return done("/team", err?.message === "no_auth_user" ? { message: await tr("أضيفي هذا البريد أولاً من Supabase ← Authentication ← Invite user", "Add this email first in Supabase → Authentication → Invite user") } : err);
 }
 
