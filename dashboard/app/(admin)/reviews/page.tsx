@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
+import { RecordActions } from "@/components/RecordActions";
+import { isOwner } from "@/lib/admin";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Chips, Empty, Flash } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
@@ -21,11 +24,13 @@ export default async function Reviews({ searchParams }: { searchParams: Promise<
   const { data, error } = await supabase.rpc("admin_get_reviews", { p_status: status, p_limit: 100, p_offset: 0 });
   const rows = (data ?? []) as Review[];
 
+  const owner = await isOwner();
+  const counts = await countBy("reviews", "status", ["pending", "approved", "rejected", "hidden"]);
   return (
     <>
       <div className="topbar"><h1>{t("التقييمات", "Reviews")}</h1></div>
       <Flash sp={sp} />
-      <Chips base="/reviews" current={status} options={[["pending", t("بانتظار المراجعة", "Pending")], ["approved", t("منشورة", "Published")], ["rejected", t("مرفوضة", "Rejected")], ["hidden", t("مخفية", "Hidden")]]} />
+      <Chips base="/reviews" current={status} options={[["pending", t("بانتظار المراجعة", "Pending")], ["approved", t("منشورة", "Published")], ["rejected", t("مرفوضة", "Rejected")], ["hidden", t("مخفية", "Hidden")]]}  counts={counts} />
       {error && <div className="flash err">{error.message}</div>}
       {rows.length === 0 ? <div className="card"><Empty text={t("لا توجد تقييمات هنا.", "No reviews here.")} /></div> : rows.map((r) => (
         <div key={r.id} className="card" style={{ marginBottom: 10 }}>
@@ -52,6 +57,7 @@ export default async function Reviews({ searchParams }: { searchParams: Promise<
             {status !== "rejected" && <button className="secondary" name="status" value="rejected">{t("رفض", "Reject")}</button>}
             {status === "approved" && <button className="secondary" name="status" value="hidden">{t("إخفاء", "Hide")}</button>}
           </form>
+          <div style={{ marginTop: 6 }}><RecordActions entity="review" id={r.id} back={`/reviews?status=${status}`} isOwner={owner} edit={false} /></div>
           {r.author_id && (
             <form className="inline" action={setBan} style={{ marginTop: 6 }}>
               <input type="hidden" name="user" value={r.author_id} />

@@ -27,3 +27,8 @@ export async function requireAdmin(): Promise<Admin> {
 export function can(admin: Admin, permission: string): boolean {
   return admin.roleId === "owner" || admin.permissions.has(permission);
 }
+
+/** Owners alone can delete records permanently. */
+export async function isOwner(): Promise<boolean> {
+  return (await requireAdmin()).roleId === "owner";
+}

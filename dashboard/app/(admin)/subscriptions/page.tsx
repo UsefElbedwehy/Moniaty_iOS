@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Badge, Chips, Empty, Pager } from "@/components/ui";
 import { param, pageRange, PAGE_SIZE } from "@/lib/format";
@@ -22,11 +23,12 @@ export default async function Subscriptions({ searchParams }: { searchParams: Pr
   const rows = (data ?? []) as unknown as Payment[];
   const total = rows.filter((r) => r.status === "captured").reduce((a, r) => a + Number(r.amount), 0);
 
+  const counts = await countBy("subscription_payments", "status", ["captured", "review", "failed", "initiated", ""]);
   return (
     <>
       <div className="topbar"><h1>{t("مدفوعات الاشتراكات (Tap)", "Subscription payments (Tap)")}</h1>{status === "captured" && <span className="badge good">{t("مجموع الصفحة:", "Page total:")} {fmtSAR(total)}</span>}</div>
       <p className="muted">{t("الحالة «مدفوعة» يضعها الخادم فقط بعد التحقق من Tap مباشرة. «تحتاج مراجعة» تعني أن المبلغ أو العملة لم تطابق الباقة.", "Only the server sets “Paid”, after checking with Tap directly. “Needs review” means the amount or currency didn't match the plan.")}</p>
-      <Chips base="/subscriptions" current={status} options={[["captured", t("مدفوعة", "Paid")], ["review", t("تحتاج مراجعة", "Needs review")], ["failed", t("فشلت", "Failed")], ["initiated", t("لم تكتمل", "Not completed")], ["", t("الكل", "All")]]} />
+      <Chips base="/subscriptions" current={status} options={[["captured", t("مدفوعة", "Paid")], ["review", t("تحتاج مراجعة", "Needs review")], ["failed", t("فشلت", "Failed")], ["initiated", t("لم تكتمل", "Not completed")], ["", t("الكل", "All")]]}  counts={counts} />
       <div className="table-wrap">
         {rows.length === 0 ? <Empty /> : (
           <table>

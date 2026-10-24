@@ -8,7 +8,7 @@ export async function reviewProvider(form: FormData) {
   const result = await supabase.rpc("admin_review_provider", {
     p_provider: id, p_status: str(form, "status"), p_note: optStr(form, "note"), p_verified: bool(form, "verified"),
   });
-  return done(`/providers/${id}`, rpcError(result));
+  return done(str(form, "back_path") || `/providers/${id}`, rpcError(result), ["تم حفظ القرار وإشعار مقدّمة الخدمة", "Decision saved and the provider notified"]);
 }
 
 export async function setServiceStatus(form: FormData) {

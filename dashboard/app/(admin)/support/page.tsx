@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
+import { RecordActions } from "@/components/RecordActions";
+import { isOwner } from "@/lib/admin";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Badge, Chips, Empty, Flash } from "@/components/ui";
 import { param } from "@/lib/format";
@@ -14,14 +17,16 @@ export default async function Support({ searchParams }: { searchParams: Promise<
   const status = param(sp.status, "open");
   const { t, dateTime: fmtDateTime } = await i18n();
   const supabase = await supabaseServer();
-  const { data } = await supabase.from("support_tickets").select("*, profiles(display_name, phone, role)").eq("status", status)
+  const { data } = await supabase.from("support_tickets").select("*, profiles(display_name, phone, role)").eq("status", status).is("archived_at", null)
     .order("created_at", { ascending: status === "open" }).limit(100);
   const rows = (data ?? []) as unknown as Ticket[];
+  const owner = await isOwner();
+  const counts = await countBy("support_tickets", "status", ["open", "answered", "closed"], notArchived);
   return (
     <>
       <div className="topbar"><h1>{t("طلبات الدعم", "Support tickets")}</h1></div>
       <Flash sp={sp} />
-      <Chips base="/support" current={status} options={[["open", t("مفتوحة", "Open")], ["answered", t("تم الرد", "Answered")], ["closed", t("مغلقة", "Closed")]]} />
+      <Chips base="/support" current={status} options={[["open", t("مفتوحة", "Open")], ["answered", t("تم الرد", "Answered")], ["closed", t("مغلقة", "Closed")]]}  counts={counts} />
       {rows.length === 0 ? <div className="card"><Empty text={t("لا توجد طلبات.", "No tickets.")} /></div> : rows.map((tk) => (
         <div key={tk.id} className="card" style={{ marginBottom: 10 }}>
           <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 8 }}>
@@ -34,6 +39,7 @@ export default async function Support({ searchParams }: { searchParams: Promise<
           </div>
           <p style={{ whiteSpace: "pre-wrap" }}>{tk.message}</p>
           {tk.admin_reply && <p className="flash ok" style={{ whiteSpace: "pre-wrap" }}>{tk.admin_reply}</p>}
+          <div style={{ marginBottom: 8 }}><RecordActions entity="ticket" id={tk.id} back={`/support?status=${status}`} isOwner={owner} /></div>
           {tk.status !== "closed" && (
             <form className="stack" action={replyTicket}>
               <input type="hidden" name="id" value={tk.id} />

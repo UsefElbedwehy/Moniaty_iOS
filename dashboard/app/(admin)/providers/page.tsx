@@ -1,6 +1,10 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
 import { supabaseServer } from "@/lib/supabase/server";
-import { Badge, Chips, Empty, Pager } from "@/components/ui";
+import { Badge, Chips, Empty, Flash, Pager } from "@/components/ui";
+import { RecordActions } from "@/components/RecordActions";
+import { ProviderDecision } from "@/components/ProviderDecision";
+import { isOwner } from "@/lib/admin";
 import { param, pageRange, PAGE_SIZE } from "@/lib/format";
 import { i18n } from "@/lib/i18n";
 import { providerStatus } from "@/lib/labels";
@@ -20,13 +24,17 @@ export default async function Providers({ searchParams }: { searchParams: Promis
   const supabase = await supabaseServer();
   let query = supabase.from("providers")
     .select("id, status, business_name, is_verified, created_at, trial_ends_at, cr_number, freelance_doc_number, rating_avg, profiles!providers_id_fkey(phone, display_name)")
+    .is("archived_at", null)
     .order("created_at", { ascending: status !== "pending" ? false : true })
     .range(...pageRange(page));
   if (status) query = query.eq("status", status);
   if (q) query = query.ilike("business_name", `%${q}%`);
   const { data, error } = await query;
   const rows = (data ?? []) as unknown as Row[];
+  const owner = await isOwner();
+  const back = `/providers?${new URLSearchParams({ status, q })}`;
 
+  const counts = await countBy("providers", "status", ["", "pending", "approved", "rejected", "suspended"], notArchived);
   return (
     <>
       <div className="topbar">
@@ -37,12 +45,13 @@ export default async function Providers({ searchParams }: { searchParams: Promis
           <button className="secondary">{t("بحث", "Search")}</button>
         </form>
       </div>
-      <Chips base="/providers" current={status} options={[["", t("الكل", "All")], ["pending", t("قيد المراجعة", "Pending")], ["approved", t("مفعّلة", "Approved")], ["rejected", t("مرفوضة", "Rejected")], ["suspended", t("موقوفة", "Suspended")]]} />
+      <Flash sp={sp} />
+      <Chips base="/providers" current={status} options={[["", t("الكل", "All")], ["pending", t("قيد المراجعة", "Pending")], ["approved", t("مفعّلة", "Approved")], ["rejected", t("مرفوضة", "Rejected")], ["suspended", t("موقوفة", "Suspended")]]}  counts={counts} />
       {error && <div className="flash err">{error.message}</div>}
       <div className="table-wrap">
         {rows.length === 0 ? <Empty /> : (
           <table>
-            <thead><tr><th>{t("النشاط", "Business")}</th><th>{t("الجوال", "Mobile")}</th><th>{t("الحالة", "Status")}</th><th>{t("التوثيق", "Verification")}</th><th>{t("نهاية التجربة", "Trial ends")}</th><th>{t("التقييم", "Rating")}</th><th>{t("التسجيل", "Joined")}</th></tr></thead>
+            <thead><tr><th>{t("النشاط", "Business")}</th><th>{t("الجوال", "Mobile")}</th><th>{t("الحالة", "Status")}</th><th>{t("التوثيق", "Verification")}</th><th>{t("نهاية التجربة", "Trial ends")}</th><th>{t("التقييم", "Rating")}</th><th>{t("التسجيل", "Joined")}</th><th></th></tr></thead>
             <tbody>
               {rows.map((p) => (
                 <tr key={p.id}>
@@ -53,6 +62,10 @@ export default async function Providers({ searchParams }: { searchParams: Promis
                   <td>{fmtDate(p.trial_ends_at)}</td>
                   <td>{p.rating_avg ?? "—"}</td>
                   <td>{fmtDate(p.created_at)}</td>
+                  <td>
+                    {p.status === "pending" && <ProviderDecision id={p.id} back={back} compact />}
+                    <RecordActions entity="provider" id={p.id} back={back} isOwner={owner} />
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -1,4 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
+import { RecordActions } from "@/components/RecordActions";
+import { isOwner } from "@/lib/admin";
 import { Flash } from "@/components/ui";
 import { i18n } from "@/lib/i18n";
 import { saveCategory, saveCity } from "./actions";
@@ -57,22 +59,27 @@ export default async function Catalog({ searchParams }: { searchParams: Promise<
   const { t } = await i18n();
   const supabase = await supabaseServer();
   const [cities, categories] = await Promise.all([
-    supabase.from("cities").select("*").order("sort_order"),
-    supabase.from("categories").select("*").order("sort_order"),
+    supabase.from("cities").select("*").is("archived_at", null).order("sort_order"),
+    supabase.from("categories").select("*").is("archived_at", null).order("sort_order"),
   ]);
+  const owner = await isOwner();
   return (
     <>
       <div className="topbar"><h1>{t("المدن والأقسام", "Cities & categories")}</h1></div>
       <Flash sp={sp} />
       <div className="card">
         <h2 style={{ marginTop: 0 }}>{t("المدن", "Cities")}</h2>
-        {((cities.data ?? []) as City[]).map((c) => <CityForm key={c.id} c={c} />)}
+        {((cities.data ?? []) as City[]).map((c) => (
+          <div key={c.id} className="record-block"><CityForm c={c} /><RecordActions entity="city" id={c.id} back="/catalog" isOwner={owner} edit={false} /></div>
+        ))}
         <h2>{t("مدينة جديدة", "New city")}</h2>
         <CityForm />
       </div>
       <h2>{t("الأقسام", "Categories")}</h2>
       <p className="muted">{t("«يسمح بأكثر من حجز نشط» يستثني القسم من قاعدة حجز واحد لكل قسم (القرار ٥). الأيقونة الجديدة تظهر في التطبيق دون تحديث.", "“Allows parallel bookings” exempts the category from the one-active-booking-per-category rule (decision 5). A new icon shows in the app without an update.")}</p>
-      {((categories.data ?? []) as Category[]).map((c) => <CategoryForm key={c.id} c={c} />)}
+      {((categories.data ?? []) as Category[]).map((c) => (
+        <div key={c.id} className="record-block"><CategoryForm c={c} /><RecordActions entity="category" id={c.id} back="/catalog" isOwner={owner} edit={false} /></div>
+      ))}
       <h2>{t("قسم جديد", "New category")}</h2>
       <CategoryForm />
     </>

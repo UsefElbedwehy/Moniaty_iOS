@@ -7,5 +7,5 @@ export async function resolveReport(form: FormData) {
   const result = await supabase.rpc("admin_resolve_report", {
     p_report: str(form, "id"), p_status: str(form, "status"), p_note: optStr(form, "note"),
   });
-  return done("/reports", rpcError(result));
+  return done(str(form, "back_path") || "/reports", rpcError(result));
 }

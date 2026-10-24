@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { countBy, notArchived } from "@/lib/counts";
+import { RecordActions } from "@/components/RecordActions";
+import { isOwner } from "@/lib/admin";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Badge, Chips, Empty, Flash } from "@/components/ui";
 import { param } from "@/lib/format";
@@ -27,16 +30,18 @@ export default async function Reports({ searchParams }: { searchParams: Promise<
   const status = param(sp.status, "open");
   const { t, label: labelOf, dateTime: fmtDateTime } = await i18n();
   const supabase = await supabaseServer();
-  const { data } = await supabase.from("reports").select("*").eq("status", status)
+  const { data } = await supabase.from("reports").select("*").eq("status", status).is("archived_at", null)
     .order("created_at", { ascending: status === "open" }).limit(100);
   const rows = (data ?? []) as Report[];
   const hours = (iso: string) => Math.floor((Date.now() - new Date(iso).getTime()) / 3_600_000);
 
+  const owner = await isOwner();
+  const counts = await countBy("reports", "status", ["open", "actioned", "dismissed"], notArchived);
   return (
     <>
       <div className="topbar"><h1>{t("البلاغات", "Reports")}</h1><span className="muted">{t("الهدف: الإجراء خلال ٢٤ ساعة (إرشادات Apple)", "Goal: act within 24 hours (Apple guidelines)")}</span></div>
       <Flash sp={sp} />
-      <Chips base="/reports" current={status} options={[["open", t("مفتوحة", "Open")], ["actioned", t("تم الإجراء", "Actioned")], ["dismissed", t("مرفوضة", "Dismissed")]]} />
+      <Chips base="/reports" current={status} options={[["open", t("مفتوحة", "Open")], ["actioned", t("تم الإجراء", "Actioned")], ["dismissed", t("مرفوضة", "Dismissed")]]}  counts={counts} />
       {rows.length === 0 ? <div className="card"><Empty text={t("لا توجد بلاغات.", "No reports.")} /></div> : rows.map((r) => {
         const [href, label] = targetLink(r.target_type, r.target_id, t);
         const age = hours(r.created_at);
@@ -61,6 +66,7 @@ export default async function Reports({ searchParams }: { searchParams: Promise<
                 <button className="secondary" name="status" value="dismissed">{t("رفض البلاغ", "Dismiss")}</button>
               </form>
             ) : <p className="muted small">{r.resolution_note}</p>}
+            <div style={{ marginTop: 6 }}><RecordActions entity="report" id={r.id} back={`/reports?status=${status}`} isOwner={owner} /></div>
           </div>
         );
       })}

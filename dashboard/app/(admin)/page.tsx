@@ -1,5 +1,8 @@
 import { supabaseServer } from "@/lib/supabase/server";
 import { Stat } from "@/components/ui";
+import { Inbox } from "@/components/Inbox";
+import { requireAdmin } from "@/lib/admin";
+import { getQueues } from "@/lib/queues";
 import { i18n } from "@/lib/i18n";
 import { bookingStatus, providerStatus } from "@/lib/labels";
 
@@ -22,15 +25,17 @@ export default async function Overview() {
   const { data, error } = await supabase.rpc("admin_stats");
   if (error || !data) return <div className="flash err">{t("تعذّر تحميل الأرقام:", "Couldn't load the numbers:")} {error?.message}</div>;
   const s = data as Stats;
-  const q = s.queues;
+  const q = await getQueues();
+  const admin = await requireAdmin();
   const bookingsTotal = Object.values(s.bookings_30d).reduce((a, b) => a + b, 0);
   const subs = Object.entries(s.subscriptions_active);
 
   return (
     <>
-      <div className="topbar"><h1>{t("الرئيسية", "Overview")}</h1></div>
+      <div className="topbar"><h1>{t("تحتاج إجراء", "Needs action")}</h1></div>
+      <Inbox admin={admin} />
 
-      <h2>{t("تحتاج إجراء", "Needs action")}</h2>
+      <h2>{t("العدّادات", "Queues")}</h2>
       <div className="grid stats">
         <Stat label={t("طلبات انضمام", "Provider applications")} value={fmtNum(q.providers_pending)} alert={q.providers_pending > 0} href="/providers?status=pending" />
         <Stat label={t("نزاعات مفتوحة", "Open disputes")} value={fmtNum(q.disputes_open)} alert={q.disputes_open > 0} href="/disputes" />

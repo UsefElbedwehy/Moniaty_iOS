@@ -1,4 +1,6 @@
 import { supabaseServer } from "@/lib/supabase/server";
+import { RecordActions } from "@/components/RecordActions";
+import { isOwner } from "@/lib/admin";
 import { Flash } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { i18n } from "@/lib/i18n";
@@ -10,10 +12,11 @@ export default async function Plans({ searchParams }: { searchParams: Promise<Re
   const sp = await searchParams;
   const { t, lang } = await i18n();
   const supabase = await supabaseServer();
-  const { data } = await supabase.from("subscription_plans").select("*").order("sort_order");
+  const { data } = await supabase.from("subscription_plans").select("*").is("archived_at", null).order("sort_order");
   const plans = (data ?? []) as Plan[];
   const v = (p: Plan, k: string) => (p[k] == null ? "" : String(p[k]));
 
+  const owner = await isOwner();
   return (
     <>
       <div className="topbar"><h1>{t("الباقات", "Plans")}</h1></div>
@@ -21,7 +24,8 @@ export default async function Plans({ searchParams }: { searchParams: Promise<Re
       <Flash sp={sp} />
       <div className="grid two">
         {plans.map((p) => (
-          <form key={p.id} className="card stack" action={savePlan}>
+          <div key={p.id} className="record-block">
+          <form className="card stack" action={savePlan}>
             <input type="hidden" name="id" value={p.id} />
             <h2 style={{ margin: 0 }}>{v(p, lang === "ar" ? "name_ar" : "name_en")} <span className="mono muted">{p.id}</span></h2>
             <div className="grid two">
@@ -50,6 +54,8 @@ export default async function Plans({ searchParams }: { searchParams: Promise<Re
             </div>
             <ConfirmButton message={t("حفظ الباقة؟ تظهر التغييرات للمزوّدات فوراً.", "Save the plan? Providers see the changes immediately.")}>{t("حفظ", "Save")}</ConfirmButton>
           </form>
+          <RecordActions entity="plan" id={p.id} back="/plans" isOwner={owner} edit={false} />
+          </div>
         ))}
       </div>
     </>

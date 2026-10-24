@@ -27,13 +27,17 @@ export function Flash({ sp }: { sp: Record<string, string | string[] | undefined
   return null;
 }
 
-export function Chips({ base, current, options, name = "status" }: {
-  base: string; current: string; options: [string, string][]; name?: string;
+/** Filter chips; `counts` (by option value, "" = all) shows how many records each one holds. */
+export function Chips({ base, current, options, name = "status", counts }: {
+  base: string; current: string; options: [string, string][]; name?: string; counts?: Record<string, number>;
 }) {
   return (
     <div className="chips">
       {options.map(([value, label]) => (
-        <Link key={value} className={current === value ? "on" : ""} href={value ? `${base}?${name}=${value}` : base}>{label}</Link>
+        <Link key={value} className={current === value ? "on" : ""} href={value ? `${base}?${name}=${value}` : base}>
+          {label}
+          {counts && counts[value] !== undefined && <span className="chip-count">{counts[value].toLocaleString("en")}</span>}
+        </Link>
       ))}
     </div>
   );
