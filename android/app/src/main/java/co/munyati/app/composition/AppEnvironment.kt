@@ -221,6 +221,9 @@ class AppEnvironment(private val context: Context) {
         val wasGuest = ctx.isGuest
         ctx.isGuest = !session.hasAccount
         ctx.canBook = session.role != UserRole.Provider
+        // "Hide" flags, so a missing flag (or a config not loaded yet) keeps the slides.
+        ctx.showsBudgetSlide = remoteConfig.config?.isFeatureEnabled("hideHomeBudgetSlide") != true
+        ctx.showsDiscoverSlide = remoteConfig.config?.isFeatureEnabled("hideHomeDiscoverSlide") != true
         ctx.displayName = session.user?.displayName
         ctx.cityIds = cities.queryCityIds
         ctx.citySummary = cities.summary(allCitiesLabel())
@@ -366,6 +369,7 @@ class AppEnvironment(private val context: Context) {
         val config = runCatching { configurationRepository.fetchConfiguration() }.getOrNull()
             ?: configurationRepository.cachedConfiguration()
         config?.let(remoteConfig::update)
+        refreshCatalogContext()
     }
 
     /** Installs dashboard-edited text for the current language (falls back to the bundle). */

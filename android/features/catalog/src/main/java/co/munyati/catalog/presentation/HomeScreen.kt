@@ -151,7 +151,10 @@ internal fun HomeScreen(feature: CatalogFeature) {
                     }
                     LoadableContent(state, retry = { scope.launch { load() } }) { home ->
                         Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.xl)) {
-                            HomeCarousel(home.banners.map { HomeSlide.Banner(it) } + listOf(HomeSlide.Budget, HomeSlide.Discover)) { slide ->
+                            // Dashboard banners first, then the built-in slides the dashboard hasn't hidden.
+                            val slides = home.banners.map { HomeSlide.Banner(it) } +
+                                listOfNotNull(HomeSlide.Budget.takeIf { context.showsBudgetSlide }, HomeSlide.Discover.takeIf { context.showsDiscoverSlide })
+                            if (slides.isNotEmpty()) HomeCarousel(slides) { slide ->
                                 when (slide) {
                                     is HomeSlide.Banner -> {
                                         analytics(AnalyticsEvent.BannerClick, slide.banner.id)

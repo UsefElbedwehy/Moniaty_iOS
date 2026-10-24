@@ -18,6 +18,10 @@ public final class CatalogContext {
     /// False for provider accounts: bookings are made from a bride account (which can be created
     /// on the same number), so the service page shows a note instead of the Book button.
     public var canBook = true
+    /// The built-in Home slides (budget, discover); the dashboard can hide them to leave the
+    /// carousel to paid banners.
+    public var showsBudgetSlide = true
+    public var showsDiscoverSlide = true
 
     public init(cityIds: [String]? = nil, citySummary: String = "", displayName: String? = nil, isGuest: Bool = true) {
         self.cityIds = cityIds
