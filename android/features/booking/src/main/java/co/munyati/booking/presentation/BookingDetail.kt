@@ -27,6 +27,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.AddPhotoAlternate
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material.icons.outlined.Description
@@ -124,6 +125,7 @@ internal fun BookingDetailScreen(feature: BookingFeature, bookingId: String, rol
     var viewing by remember { mutableStateOf<BookingReceipt?>(null) }
     var confirmCancel by remember { mutableStateOf(false) }
     var showHelp by remember { mutableStateOf(false) }
+    var showDemoIntro by remember { mutableStateOf(false) }
 
     suspend fun load() {
         val fresh = loadState { feature.repository.booking(bookingId) }
@@ -134,6 +136,9 @@ internal fun BookingDetailScreen(feature: BookingFeature, bookingId: String, rol
             fresh is ViewState.Error -> fresh
             else -> ViewState.Empty
         }
+        // The provider's one-time practice booking explains itself the first time it opens.
+        val loaded = state.value
+        if (role == BookingRole.Provider && loaded?.summary?.isDemo == true && !DemoIntro.isSeen(context, bookingId)) showDemoIntro = true
     }
 
     fun run(action: suspend () -> ActionResult) {
@@ -177,7 +182,8 @@ internal fun BookingDetailScreen(feature: BookingFeature, bookingId: String, rol
                         onSheet = { sheet = it },
                         onReceipt = { viewing = it },
                         onCancel = { confirmCancel = true },
-                        onHelp = { showHelp = true })
+                        onHelp = { showHelp = true },
+                        onDemoHow = { showDemoIntro = true })
                 }
             }
         }
@@ -200,6 +206,12 @@ internal fun BookingDetailScreen(feature: BookingFeature, bookingId: String, rol
     }
     viewing?.let { ReceiptViewer(feature, it) { viewing = null } }
     if (showHelp) feature.trustViews?.helpSheet?.invoke(bookingId) { showHelp = false }
+    if (showDemoIntro) {
+        DemoIntroSheet {
+            DemoIntro.markSeen(context, bookingId)
+            showDemoIntro = false
+        }
+    }
     if (confirmCancel) {
         AlertDialog(
             onDismissRequest = { confirmCancel = false },
@@ -227,6 +239,7 @@ private fun DetailContent(
     onReceipt: (BookingReceipt) -> Unit,
     onCancel: () -> Unit,
     onHelp: () -> Unit,
+    onDemoHow: () -> Unit,
 ) {
     val navigator = LocalNavigator.current
     val b = detail.summary
@@ -238,7 +251,16 @@ private fun DetailContent(
                 horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs), verticalAlignment = Alignment.CenterVertically,
             ) {
                 Icon(Icons.Outlined.AutoAwesome, contentDescription = null, tint = DS.colors.primary, modifier = Modifier.size(18.dp))
-                Text(stringResource(R.string.booking_demo_banner), style = DS.type.footnote, color = DS.colors.textPrimary)
+                Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(stringResource(R.string.booking_demo_banner), style = DS.type.footnote, color = DS.colors.textPrimary)
+                    if (role == BookingRole.Provider) {
+                        Text(
+                            stringResource(R.string.booking_demo_intro_how),
+                            style = DS.type.footnote.copy(fontWeight = FontWeight.SemiBold), color = DS.colors.primary,
+                            modifier = Modifier.clickable(role = Role.Button, onClick = onDemoHow),
+                        )
+                    }
+                }
             }
         }
         DSCard(Modifier.fillMaxWidth()) {
@@ -740,3 +762,49 @@ private fun DisputeSheet(onDismiss: () -> Unit, action: suspend (DisputeReason, 
     MessageDialog(message) { message = null }
 }
 
+/** Remembers, on this device, that the provider has read the demo explanation for a booking. */
+private object DemoIntro {
+    private fun prefs(context: android.content.Context) = context.getSharedPreferences("demo_intro", android.content.Context.MODE_PRIVATE)
+    fun isSeen(context: android.content.Context, bookingId: String) = prefs(context).getBoolean(bookingId, false)
+    fun markSeen(context: android.content.Context, bookingId: String) = prefs(context).edit().putBoolean(bookingId, true).apply()
+}
+
+/**
+ * Shown the first time a new provider opens her practice booking: what it is, the three steps to
+ * try, and that it comes only once and doesn't count. Same as iOS `DemoIntroSheet`.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DemoIntroSheet(onStart: () -> Unit) {
+    val steps = listOf(R.string.booking_demo_intro_step1, R.string.booking_demo_intro_step2, R.string.booking_demo_intro_step3)
+    ModalBottomSheet(onDismissRequest = onStart, sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true), containerColor = DS.colors.background) {
+        Column(
+            Modifier.fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = DSSpacing.lg).padding(bottom = DSSpacing.lg),
+            verticalArrangement = Arrangement.spacedBy(DSSpacing.lg),
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
+                Icon(Icons.Outlined.AutoAwesome, contentDescription = null, tint = DS.colors.primary, modifier = Modifier.size(30.dp))
+                Text(stringResource(R.string.booking_demo_intro_title), style = DS.type.title2, color = DS.colors.textPrimary)
+                Text(stringResource(R.string.booking_demo_intro_subtitle), style = DS.type.body, color = DS.colors.textSecondary)
+            }
+            Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.md)) {
+                steps.forEachIndexed { index, step ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(DSSpacing.sm), verticalAlignment = Alignment.Top) {
+                        Box(Modifier.size(26.dp).clip(CircleShape).background(DS.colors.primary), contentAlignment = Alignment.Center) {
+                            Text(java.text.NumberFormat.getIntegerInstance().format(index + 1), style = DS.type.subhead.copy(fontWeight = FontWeight.SemiBold), color = DS.colors.background)
+                        }
+                        Text(stringResource(step), style = DS.type.body, color = DS.colors.textPrimary, modifier = Modifier.weight(1f))
+                    }
+                }
+            }
+            Row(
+                Modifier.fillMaxWidth().clip(RoundedCornerShape(DSRadius.control)).background(DS.colors.primaryMuted).padding(DSSpacing.sm),
+                horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs), verticalAlignment = Alignment.Top,
+            ) {
+                Icon(Icons.Outlined.Info, contentDescription = null, tint = DS.colors.textPrimary, modifier = Modifier.size(18.dp))
+                Text(stringResource(R.string.booking_demo_intro_note), style = DS.type.footnote, color = DS.colors.textPrimary)
+            }
+            PrimaryButton(stringResource(R.string.booking_demo_intro_start)) { onStart() }
+        }
+    }
+}

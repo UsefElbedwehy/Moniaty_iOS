@@ -172,6 +172,7 @@ struct BookingDetailScreen: View {
     @State private var sheet: Sheet?
     @State private var confirmCancel = false
     @State private var showHelp = false
+    @State private var showDemoIntro = false
 
     enum Sheet: Identifiable {
         case pay, propose, decline, rejectPayment, dispute, receipt(BookingReceipt)
@@ -214,6 +215,9 @@ struct BookingDetailScreen: View {
         .sheet(isPresented: $showHelp) {
             feature.trustViews?.helpSheet(bookingId)
         }
+        .sheet(isPresented: $showDemoIntro, onDismiss: { DemoIntro.markSeen(bookingId) }) {
+            DemoIntroSheet { showDemoIntro = false }
+        }
         .refreshable { await load() }
         .task { await load() }
         .sheet(item: $sheet) { sheet in
@@ -235,11 +239,18 @@ struct BookingDetailScreen: View {
         let b = detail.summary
         VStack(alignment: .leading, spacing: DSSpacing.lg) {
             if b.isDemo {
-                Label(BookingL10n.string("demo.banner"), systemImage: "sparkles")
-                    .font(.dsFootnote)
-                    .padding(DSSpacing.sm)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(RoundedRectangle(cornerRadius: 14).fill(Color.dsPrimaryMuted))
+                VStack(alignment: .leading, spacing: DSSpacing.xs) {
+                    Label(BookingL10n.string("demo.banner"), systemImage: "sparkles")
+                        .font(.dsFootnote)
+                    if role == .provider {
+                        Button(BookingL10n.string("demo.intro.how")) { showDemoIntro = true }
+                            .font(.dsFootnote.weight(.semibold))
+                            .foregroundStyle(Color.dsPrimary)
+                    }
+                }
+                .padding(DSSpacing.sm)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(RoundedRectangle(cornerRadius: 14).fill(Color.dsPrimaryMuted))
             }
             DSCard {
                 VStack(alignment: .leading, spacing: DSSpacing.xs) {
@@ -429,6 +440,8 @@ struct BookingDetailScreen: View {
         do {
             if let detail = try await feature.repository.booking(id: bookingId) {
                 state = .loaded(detail)
+                // The provider's one-time practice booking explains itself the first time it opens.
+                if role == .provider, detail.summary.isDemo, !DemoIntro.isSeen(bookingId) { showDemoIntro = true }
             } else {
                 state = .empty
             }
@@ -830,6 +843,81 @@ struct DisputeSheet: View {
         }
         .alert(BookingL10n.string("error.generic"), isPresented: $failed) {
             Button(BookingL10n.string("common.ok"), role: .cancel) {}
+        }
+    }
+}
+
+// MARK: - Demo booking introduction
+
+/// Remembers, on this device, that the provider has read the demo explanation for a booking.
+enum DemoIntro {
+    private static func key(_ bookingId: String) -> String { "demoIntroSeen.\(bookingId)" }
+    static func isSeen(_ bookingId: String) -> Bool { UserDefaults.standard.bool(forKey: key(bookingId)) }
+    static func markSeen(_ bookingId: String) { UserDefaults.standard.set(true, forKey: key(bookingId)) }
+}
+
+/// Shown the first time a new provider opens her practice booking: what it is, the three steps
+/// to try, and that it comes only once and doesn't count.
+struct DemoIntroSheet: View {
+    let onStart: () -> Void
+
+    var body: some View {
+        ScrollView {
+            DemoIntroContent()
+                .padding(DSSpacing.lg)
+        }
+        .safeAreaInset(edge: .bottom) {
+            PrimaryButton(BookingL10n.key("demo.intro.start")) { onStart() }
+                .padding(.horizontal, DSSpacing.lg)
+                .padding(.vertical, DSSpacing.sm)
+                .background(.bar)
+        }
+        .dsScreenBackground()
+        .presentationDetents([.large])
+        .trackScreen("booking_demo_intro")
+    }
+}
+
+/// The explanation itself: title, the three steps, and the one-time note.
+struct DemoIntroContent: View {
+    private let steps = ["demo.intro.step1", "demo.intro.step2", "demo.intro.step3"]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: DSSpacing.lg) {
+            VStack(alignment: .leading, spacing: DSSpacing.xs) {
+                Image(systemName: "sparkles")
+                    .font(.title)
+                    .foregroundStyle(Color.dsPrimary)
+                    .accessibilityHidden(true)
+                BookingL10n.text("demo.intro.title")
+                    .font(.dsTitle2)
+                    .foregroundStyle(Color.dsTextPrimary)
+                BookingL10n.text("demo.intro.subtitle")
+                    .font(.dsBody)
+                    .foregroundStyle(Color.dsTextSecondary)
+            }
+            VStack(alignment: .leading, spacing: DSSpacing.md) {
+                ForEach(Array(steps.enumerated()), id: \.offset) { index, key in
+                    HStack(alignment: .top, spacing: DSSpacing.sm) {
+                        Text(verbatim: (index + 1).formatted())
+                            .font(.dsSubhead.weight(.semibold))
+                            .foregroundStyle(Color.dsBackground)
+                            .frame(width: 26, height: 26)
+                            .background(Circle().fill(Color.dsPrimary))
+                            .accessibilityHidden(true)
+                        BookingL10n.text(key)
+                            .font(.dsBody)
+                            .foregroundStyle(Color.dsTextPrimary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+            }
+            Label(BookingL10n.string("demo.intro.note"), systemImage: "info.circle")
+                .font(.dsFootnote)
+                .foregroundStyle(Color.dsTextPrimary)
+                .padding(DSSpacing.sm)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(RoundedRectangle(cornerRadius: DSRadius.control).fill(Color.dsPrimaryMuted))
         }
     }
 }

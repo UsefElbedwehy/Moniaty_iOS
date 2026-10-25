@@ -26,7 +26,15 @@
 "list.empty.provider" = "Booking requests from brides will appear here.";
 
 "demo.badge" = "Demo";
-"demo.banner" = "This is a demo booking to walk you through the steps. There is no real bride and no money involved.";
+"demo.banner" = "This is a one-time demo booking to walk you through the steps. There is no real bride and no money involved.";
+"demo.intro.title" = "A one-time practice request";
+"demo.intro.subtitle" = "We sent you this request so you can try how booking works on Munyati before your first real bride.";
+"demo.intro.step1" = "Accept the request, or suggest another time.";
+"demo.intro.step2" = "The practice bride agrees by herself and uploads a sample transfer receipt.";
+"demo.intro.step3" = "Confirm you received the money, and the booking becomes confirmed, just like with real brides.";
+"demo.intro.note" = "You get this request only once. There's no real bride and no money, and it doesn't count in your stats or ratings.";
+"demo.intro.start" = "Start practising";
+"demo.intro.how" = "How it works";
 "demo.receipt" = "Sample receipt";
 
 "status.requested" = "Awaiting approval";

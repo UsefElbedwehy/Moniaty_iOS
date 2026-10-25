@@ -30,7 +30,15 @@
     <string name="booking_common_save">Save</string>
     <string name="booking_common_send">Send</string>
     <string name="booking_demo_badge">Demo</string>
-    <string name="booking_demo_banner">This is a demo booking to walk you through the steps. There is no real bride and no money involved.</string>
+    <string name="booking_demo_banner">This is a one-time demo booking to walk you through the steps. There is no real bride and no money involved.</string>
+    <string name="booking_demo_intro_how">How it works</string>
+    <string name="booking_demo_intro_note">You get this request only once. There\'s no real bride and no money, and it doesn\'t count in your stats or ratings.</string>
+    <string name="booking_demo_intro_start">Start practising</string>
+    <string name="booking_demo_intro_step1">Accept the request, or suggest another time.</string>
+    <string name="booking_demo_intro_step2">The practice bride agrees by herself and uploads a sample transfer receipt.</string>
+    <string name="booking_demo_intro_step3">Confirm you received the money, and the booking becomes confirmed, just like with real brides.</string>
+    <string name="booking_demo_intro_subtitle">We sent you this request so you can try how booking works on Munyati before your first real bride.</string>
+    <string name="booking_demo_intro_title">A one-time practice request</string>
     <string name="booking_demo_receipt">Sample receipt</string>
     <string name="booking_detail_missing">Booking not found.</string>
     <string name="booking_detail_payBy">Pay by %s</string>

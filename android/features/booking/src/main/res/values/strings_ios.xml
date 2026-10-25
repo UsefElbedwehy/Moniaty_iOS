@@ -30,7 +30,15 @@
     <string name="booking_common_save">حفظ</string>
     <string name="booking_common_send">إرسال</string>
     <string name="booking_demo_badge">تجريبي</string>
-    <string name="booking_demo_banner">هذا حجز تجريبي لتتعرّفي على خطوات الحجز. لا توجد عروس حقيقية ولا مبالغ.</string>
+    <string name="booking_demo_banner">هذا حجز تجريبي لمرة واحدة لتتعرّفي على خطوات الحجز. لا توجد عروس حقيقية ولا مبالغ.</string>
+    <string name="booking_demo_intro_how">كيف يعمل؟</string>
+    <string name="booking_demo_intro_note">يصلكِ هذا الطلب مرة واحدة فقط. لا توجد عروس حقيقية ولا مبالغ، ولا يُحتسب في إحصائياتك أو تقييماتك.</string>
+    <string name="booking_demo_intro_start">ابدئي التجربة</string>
+    <string name="booking_demo_intro_step1">اقبلي الطلب، أو اقترحي موعداً آخر.</string>
+    <string name="booking_demo_intro_step2">العروس التجريبية توافق تلقائياً وترفع إيصال تحويل تجريبياً.</string>
+    <string name="booking_demo_intro_step3">أكّدي استلام المبلغ، فيصبح الحجز مؤكداً كما يحدث مع العرائس الحقيقيات.</string>
+    <string name="booking_demo_intro_subtitle">أرسلنا لكِ هذا الطلب لتجرّبي طريقة الحجز في منيتي قبل أول عروس حقيقية.</string>
+    <string name="booking_demo_intro_title">طلب تجريبي لمرة واحدة</string>
     <string name="booking_demo_receipt">إيصال تجريبي</string>
     <string name="booking_detail_missing">تعذّر العثور على الحجز.</string>
     <string name="booking_detail_payBy">ادفعي قبل %s</string>
