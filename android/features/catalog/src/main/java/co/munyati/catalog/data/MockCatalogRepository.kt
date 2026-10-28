@@ -2,6 +2,7 @@ package co.munyati.catalog.data
 
 import co.munyati.shared.media.VideoAsset
 import co.munyati.catalog.domain.Budget
+import co.munyati.catalog.domain.Preparation
 import co.munyati.catalog.domain.CatalogCategory
 import co.munyati.catalog.domain.HomeBanner
 import co.munyati.catalog.domain.HomeContent
@@ -20,6 +21,7 @@ class MockCatalogRepository : CatalogRepository {
     private val mutex = Mutex()
     private val favoriteIds = mutableSetOf<String>()
     private var storedBudget: Budget? = null
+    private val storedPreparations = mutableListOf<Preparation>()
 
     private data class Provider(val summary: ProviderSummary, val lat: Double, val lng: Double)
     private data class Service(
@@ -145,4 +147,34 @@ class MockCatalogRepository : CatalogRepository {
     override suspend fun setBudget(total: Double, weddingDate: String?) = mutex.withLock {
         Budget(total, 0.0, total, weddingDate).also { storedBudget = it }
     }
+
+    override suspend fun preparations() = mutex.withLock { orderedPreparations() }
+
+    override suspend fun savePreparation(id: String?, title: String, note: String?) = mutex.withLock {
+        val cleanNote = note?.trim()?.ifEmpty { null }
+        val index = storedPreparations.indexOfFirst { it.id == id }
+        if (id != null && index >= 0) {
+            storedPreparations[index] = storedPreparations[index].copy(title = title, note = cleanNote)
+        } else {
+            storedPreparations += Preparation(java.util.UUID.randomUUID().toString(), title, cleanNote)
+        }
+        orderedPreparations()
+    }
+
+    override suspend fun setPreparationDone(id: String, done: Boolean) = mutex.withLock {
+        val index = storedPreparations.indexOfFirst { it.id == id }
+        if (index >= 0) {
+            val item = storedPreparations.removeAt(index).copy(isDone = done)
+            // Like the server: open items keep their order, the latest done one comes first.
+            if (done) storedPreparations.add(0, item) else storedPreparations += item
+        }
+        orderedPreparations()
+    }
+
+    override suspend fun deletePreparation(id: String) = mutex.withLock {
+        storedPreparations.removeAll { it.id == id }
+        orderedPreparations()
+    }
+
+    private fun orderedPreparations() = storedPreparations.filter { !it.isDone } + storedPreparations.filter { it.isDone }
 }

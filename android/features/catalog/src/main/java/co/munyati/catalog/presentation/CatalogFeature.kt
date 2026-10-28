@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import co.munyati.catalog.data.CatalogRepository
 import co.munyati.catalog.domain.Budget
+import co.munyati.catalog.domain.Preparation
 import co.munyati.catalog.domain.ServiceCard
 import co.munyati.catalog.domain.ServiceFilter
 import kotlinx.coroutines.CoroutineScope
@@ -55,6 +56,7 @@ data class ServicesRoute(
 @Serializable data class ProviderRoute(val id: String)
 @Serializable data class StoreRoute(val id: String)
 @Serializable data object FavoritesRoute
+@Serializable data object PreparationsRoute
 
 /** Content a catalog screen can report. */
 sealed interface CatalogContentRef {
@@ -85,6 +87,7 @@ class CatalogFeature(
     internal val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     internal val favorites = FavoritesStore(repository, scope)
     val budget = BudgetStore(repository)
+    val preparations = PreparationsStore(repository)
 
     /** The "Book" action on a service; null shows "coming soon". Set by the App (Booking). */
     internal var onBook: ((ServiceCard) -> Unit)? = null
@@ -108,6 +111,10 @@ class CatalogFeature(
 
     /** Days until the wedding (null without a date or once it has passed), for Home and Profile. */
     val daysUntilWedding: Int? get() = budget.budget?.daysUntilWedding()
+
+    /** "My preparations" progress for Profile: done to total (null before it has loaded). */
+    val preparationsProgress: Pair<Int, Int>?
+        get() = if (preparations.hasLoaded) preparations.items.count { it.isDone } to preparations.items.size else null
 
     /** How many services the bride saved, for Profile (null for guests or on failure). */
     suspend fun favoritesCount(): Int? {
@@ -133,6 +140,7 @@ class CatalogFeature(
     fun accountChanged() {
         favorites.reset()
         refreshBudget()
+        scope.launch { preparations.load(context.isGuest) }
     }
 
     /** Reloads the budget after bookings change what is reserved. */
@@ -160,6 +168,7 @@ class CatalogFeature(
         composable<ProviderRoute> { ProviderScreen(this@CatalogFeature, it.toRoute<ProviderRoute>().id) }
         composable<StoreRoute> { StoreScreen(this@CatalogFeature, it.toRoute<StoreRoute>().id) }
         composable<FavoritesRoute> { FavoritesScreen(this@CatalogFeature) }
+        composable<PreparationsRoute> { PreparationsScreen(this@CatalogFeature) }
     }
 
     internal fun toggleFavorite(card: ServiceCard) {
@@ -207,5 +216,56 @@ class BudgetStore internal constructor(private val repository: CatalogRepository
 
     suspend fun save(total: Double, weddingDate: String?) {
         budget = repository.setBudget(total, weddingDate)
+    }
+}
+
+/**
+ * The bride's "My preparations" checklist (تجهيزاتي). Ticking an item shows at once and is undone
+ * if the server refuses; every other change shows the list the server sends back.
+ */
+class PreparationsStore internal constructor(private val repository: CatalogRepository) {
+    var items: List<Preparation> by mutableStateOf(emptyList())
+        private set
+    var hasLoaded by mutableStateOf(false)
+        private set
+
+    internal val open get() = items.filter { !it.isDone }
+    internal val done get() = items.filter { it.isDone }
+
+    suspend fun load(isGuest: Boolean) {
+        if (isGuest) {
+            items = emptyList()
+            hasLoaded = false
+            return
+        }
+        runCatching { repository.preparations() }.getOrNull()?.let {
+            items = it
+            hasLoaded = true
+        }
+    }
+
+    /** Loads, throwing, for the screen's first load and pull to refresh. */
+    internal suspend fun reload() {
+        items = repository.preparations()
+        hasLoaded = true
+    }
+
+    internal suspend fun save(id: String?, title: String, note: String?) {
+        items = repository.savePreparation(id, title, note)
+    }
+
+    internal suspend fun toggle(item: Preparation) {
+        val before = items
+        items = items.map { if (it.id == item.id) it.copy(isDone = !it.isDone) else it }
+        try {
+            items = repository.setPreparationDone(item.id, !item.isDone)
+        } catch (e: Exception) {
+            items = before
+            throw e
+        }
+    }
+
+    internal suspend fun delete(item: Preparation) {
+        items = repository.deletePreparation(item.id)
     }
 }

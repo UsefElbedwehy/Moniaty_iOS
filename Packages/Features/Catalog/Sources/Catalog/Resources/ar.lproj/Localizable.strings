@@ -86,3 +86,23 @@
 "home.why.reviews" = "تقييمات من عرائس حقيقيات";
 "home.join.title" = "تقدّمين خدمات للعرائس؟";
 "home.join.subtitle" = "انضمي لمنيتي · أول شهرين مجاناً";
+
+/* My preparations (تجهيزاتي) */
+"preparations.title" = "تجهيزاتي";
+"preparations.add.placeholder" = "أضيفي تجهيزاً، مثل: قياس الفستان";
+"preparations.add" = "إضافة";
+"preparations.new" = "تجهيز جديد";
+"preparations.edit" = "تعديل التجهيز";
+"preparations.field.title" = "التجهيز";
+"preparations.field.note" = "ملاحظة (اختياري)";
+"preparations.note.placeholder" = "مثال: الموعد يوم الخميس الساعة ٥ مساءً";
+"preparations.section.todo" = "قيد التجهيز";
+"preparations.section.done" = "تمّت";
+"preparations.progress" = "أنجزتِ %1$d من %2$d";
+"preparations.allDone" = "ما شاء الله، أنجزتِ كل تجهيزاتك!";
+"preparations.markDone" = "تحديد كمُنجَز";
+"preparations.markOpen" = "إلغاء الإنجاز";
+"preparations.delete" = "حذف التجهيز";
+"preparations.delete.confirm" = "حذف هذا التجهيز؟";
+"preparations.empty.title" = "ابدئي قائمة تجهيزاتك";
+"preparations.empty.message" = "اكتبي كل ما تجهّزينه للزفاف: الفستان، الدعوات، ليلة الحناء… وأضيفي ملاحظة لأي تجهيز، ثم أشّري عليه حين تنتهين منه.";

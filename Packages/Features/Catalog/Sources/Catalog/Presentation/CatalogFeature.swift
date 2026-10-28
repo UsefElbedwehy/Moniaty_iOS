@@ -40,6 +40,7 @@ public final class CatalogFeature {
     let repository: CatalogRepository
     let favorites: FavoritesStore
     let budget: BudgetStore
+    let preparations: PreparationsStore
     let openCityPicker: () -> Void
     let requireSignIn: () -> Void
     /// The "Book" action on a service. Phase 3 wires the booking flow; nil shows "coming soon".
@@ -62,12 +63,14 @@ public final class CatalogFeature {
         self.requireSignIn = requireSignIn
         self.favorites = FavoritesStore(repository: repository)
         self.budget = BudgetStore(repository: repository)
+        self.preparations = PreparationsStore(repository: repository)
     }
 
     /// Reloads per-account state after sign-in / sign-out.
     public func accountChanged() {
         favorites.reset()
         Task { await budget.load(isGuest: context.isGuest) }
+        Task { await preparations.load(isGuest: context.isGuest) }
     }
 
     public func homeScreen() -> some View {
@@ -91,6 +94,7 @@ public final class CatalogFeature {
         case .provider(let id): ProviderScreen(feature: self, providerId: id)
         case .store(let id): StoreScreen(feature: self, storeId: id)
         case .favorites: FavoritesScreen(feature: self)
+        case .preparations: PreparationsScreen(feature: self)
         }
     }
 
@@ -114,6 +118,12 @@ public final class CatalogFeature {
 
     /// The bride's budget, for Profile.
     public var currentBudget: Budget? { budget.budget }
+
+    /// "My preparations" progress for Profile: done and total (nil before it has loaded).
+    public var preparationsProgress: (done: Int, total: Int)? {
+        guard preparations.hasLoaded else { return nil }
+        return (preparations.items.filter(\.isDone).count, preparations.items.count)
+    }
 
     /// Days until the wedding (nil without a date or once it has passed), for Home and Profile.
     public var daysUntilWedding: Int? { budget.budget?.daysUntilWedding() }
@@ -187,6 +197,56 @@ public final class BudgetStore {
 
     func save(total: Decimal, weddingDate: String?) async throws {
         budget = try await repository.setBudget(total: total, weddingDate: weddingDate)
+    }
+}
+
+/// The bride's "My preparations" checklist (تجهيزاتي). Ticking an item shows at once and is
+/// undone if the server refuses; every other change shows the list the server sends back.
+@MainActor
+@Observable
+public final class PreparationsStore {
+    public private(set) var items: [Preparation] = []
+    public private(set) var hasLoaded = false
+    private let repository: CatalogRepository
+
+    init(repository: CatalogRepository) {
+        self.repository = repository
+    }
+
+    var open: [Preparation] { items.filter { !$0.isDone } }
+    var done: [Preparation] { items.filter(\.isDone) }
+
+    func load(isGuest: Bool) async {
+        guard !isGuest else { items = []; hasLoaded = false; return }
+        if let loaded = try? await repository.preparations() {
+            items = loaded
+            hasLoaded = true
+        }
+    }
+
+    /// Loads, throwing, for the screen's first load and pull to refresh.
+    func reload() async throws {
+        items = try await repository.preparations()
+        hasLoaded = true
+    }
+
+    func save(id: String?, title: String, note: String?) async throws {
+        items = try await repository.savePreparation(id: id, title: title, note: note)
+    }
+
+    func toggle(_ item: Preparation) async throws {
+        let before = items
+        if let index = items.firstIndex(where: { $0.id == item.id }) { items[index].isDone.toggle() }
+        do {
+            items = try await repository.setPreparationDone(id: item.id, done: !item.isDone)
+        } catch {
+            items = before
+            throw error
+        }
+    }
+
+    func delete(_ item: Preparation) async throws {
+        items = try await repository.deletePreparation(id: item.id)
     }
 }
 

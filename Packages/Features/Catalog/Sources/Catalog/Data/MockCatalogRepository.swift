@@ -6,6 +6,7 @@ import Core
 public actor MockCatalogRepository: CatalogRepository {
     private var favoriteIds: Set<String> = []
     private var storedBudget: Budget?
+    private var storedPreparations: [Preparation] = []
 
     public init() {}
 
@@ -151,5 +152,37 @@ public actor MockCatalogRepository: CatalogRepository {
     public func setBudget(total: Decimal, weddingDate: String?) async throws -> Budget? {
         storedBudget = Budget(total: total, reserved: 0, remaining: total, weddingDate: weddingDate)
         return storedBudget
+    }
+
+    public func preparations() async throws -> [Preparation] { orderedPreparations() }
+
+    public func savePreparation(id: String?, title: String, note: String?) async throws -> [Preparation] {
+        let note = note?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
+        if let id, let index = storedPreparations.firstIndex(where: { $0.id == id }) {
+            storedPreparations[index].title = title
+            storedPreparations[index].note = note
+        } else {
+            storedPreparations.append(Preparation(id: UUID().uuidString, title: title, note: note))
+        }
+        return orderedPreparations()
+    }
+
+    public func setPreparationDone(id: String, done: Bool) async throws -> [Preparation] {
+        if let index = storedPreparations.firstIndex(where: { $0.id == id }) {
+            var item = storedPreparations.remove(at: index)
+            item.isDone = done
+            // Like the server: open items keep their order, the latest done one comes first.
+            if done { storedPreparations.insert(item, at: 0) } else { storedPreparations.append(item) }
+        }
+        return orderedPreparations()
+    }
+
+    public func deletePreparation(id: String) async throws -> [Preparation] {
+        storedPreparations.removeAll { $0.id == id }
+        return orderedPreparations()
+    }
+
+    private func orderedPreparations() -> [Preparation] {
+        storedPreparations.filter { !$0.isDone } + storedPreparations.filter(\.isDone)
     }
 }

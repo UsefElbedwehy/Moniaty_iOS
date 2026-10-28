@@ -284,7 +284,21 @@ struct ProfileScreen: View {
                 ProfileRow(symbol: "mappin.and.ellipse", tint: .brand, titleKey: "profile.cities",
                            value: environment.cities.summary(allLabel: L10n.string("cities.all")))
             }
+            ProfileDivider()
+            if session.hasAccount {
+                NavigationLink(value: CatalogRoute.preparations) { preparationsRow }
+            } else {
+                Button { session.isPresentingAuth = true } label: { preparationsRow }
+            }
         }
+    }
+
+    /// "My preparations" with how many are done, e.g. "٢/٥".
+    private var preparationsRow: some View {
+        ProfileRow(symbol: "checklist", tint: .purple, titleKey: "profile.preparations",
+                   value: environment.catalog.preparationsProgress.flatMap { progress in
+                       progress.total == 0 ? nil : "\(progress.done.formatted())/\(progress.total.formatted())"
+                   })
     }
 
     private var appSection: some View {

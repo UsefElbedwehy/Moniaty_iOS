@@ -214,6 +214,21 @@ public struct MapPin: Identifiable, Hashable, Sendable, Decodable {
     public let logoUrl: URL?
 }
 
+/// One item on the bride's "My preparations" checklist (تجهيزاتي), with an optional note.
+public struct Preparation: Identifiable, Equatable, Sendable, Decodable {
+    public let id: String
+    public var title: String
+    public var note: String?
+    public var isDone: Bool
+
+    public init(id: String, title: String, note: String? = nil, isDone: Bool = false) {
+        self.id = id
+        self.title = title
+        self.note = note
+        self.isDone = isDone
+    }
+}
+
 /// The bride's wedding budget (requirement 13). `reserved` is the sum of approved bookings.
 public struct Budget: Equatable, Sendable, Decodable {
     public let total: Decimal
@@ -281,6 +296,7 @@ public enum CatalogRoute: Hashable, Sendable {
     case provider(id: String)
     case store(id: String)
     case favorites
+    case preparations
 }
 
 extension String {

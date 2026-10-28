@@ -165,6 +165,10 @@ data class MapPin(
     val logoUrl: String? = null,
 )
 
+/** One item on the bride's "My preparations" checklist (تجهيزاتي), with an optional note. */
+@Serializable
+data class Preparation(val id: String, val title: String, val note: String? = null, val isDone: Boolean = false)
+
 /** The bride's wedding budget (requirement 13). `reserved` is the sum of approved bookings. */
 @Serializable
 data class Budget(val total: Double, val reserved: Double, val remaining: Double, val weddingDate: String? = null) {

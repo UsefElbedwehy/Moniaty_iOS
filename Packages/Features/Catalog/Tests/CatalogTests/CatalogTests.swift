@@ -47,6 +47,39 @@ struct CatalogTests {
         #expect(detail == nil)
     }
 
+    @Test("a preparation decodes as get_my_preparations returns it")
+    func decodesPreparation() throws {
+        let json = #"[{"id":"a1","title":"قياس الفستان","note":null,"is_done":true,"created_at":"2026-10-28T10:00:00+03:00"}]"#
+        let items = try decoder.decode([Preparation].self, from: Data(json.utf8))
+        #expect(items == [Preparation(id: "a1", title: "قياس الفستان", note: nil, isDone: true)])
+    }
+
+    @Test("preparations: add, tick (done ones move below), edit the note and delete")
+    @MainActor
+    func preparationsFlow() async throws {
+        let store = PreparationsStore(repository: MockCatalogRepository())
+        await store.load(isGuest: false)
+        #expect(store.hasLoaded && store.items.isEmpty)
+        try await store.save(id: nil, title: "الفستان", note: nil)
+        try await store.save(id: nil, title: "الدعوات", note: "  ")
+        #expect(store.items.map(\.title) == ["الفستان", "الدعوات"])
+        #expect(store.items[1].note == nil)
+
+        try await store.toggle(store.items[0])
+        #expect(store.open.map(\.title) == ["الدعوات"])
+        #expect(store.done.map(\.title) == ["الفستان"])
+
+        let invitations = store.open[0]
+        try await store.save(id: invitations.id, title: "الدعوات", note: "٢٠٠ دعوة")
+        #expect(store.open[0].note == "٢٠٠ دعوة")
+
+        try await store.delete(store.done[0])
+        #expect(store.items.count == 1)
+
+        await store.load(isGuest: true)
+        #expect(!store.hasLoaded && store.items.isEmpty)
+    }
+
     @Test("budget used fraction is clamped to 0…1")
     func budgetFraction() {
         #expect(Budget(total: 1000, reserved: 250, remaining: 750, weddingDate: nil).usedFraction == 0.25)

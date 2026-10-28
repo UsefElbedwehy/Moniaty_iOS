@@ -43,6 +43,7 @@
     <string name="profile_guest_title">Welcome to Munyati</string>
     <string name="profile_language">Language</string>
     <string name="profile_language_current">English</string>
+    <string name="profile_preparations">My preparations</string>
     <string name="profile_privacy">Privacy policy</string>
     <string name="profile_rate">Rate Munyati</string>
     <string name="profile_role_bride">Bride account</string>

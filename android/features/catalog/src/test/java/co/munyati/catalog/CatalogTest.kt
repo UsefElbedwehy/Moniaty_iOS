@@ -5,6 +5,7 @@ import co.munyati.catalog.data.RemoteCatalogRepository
 import co.munyati.catalog.domain.Budget
 import co.munyati.catalog.domain.ServiceFilter
 import co.munyati.catalog.domain.formatAmount
+import co.munyati.catalog.presentation.PreparationsStore
 import co.munyati.networking.ApiClient
 import co.munyati.networking.ApiEndpoint
 import kotlinx.coroutines.test.runTest
@@ -33,6 +34,29 @@ class CatalogTest {
         assertTrue(repo.toggleFavorite("s1"))
         assertEquals(listOf("s1"), repo.favorites().map { it.id })
         assertTrue(!repo.toggleFavorite("s1"))
+    }
+
+    @Test fun `preparations add, tick (done ones move below), edit the note and delete`() = runTest {
+        val store = PreparationsStore(MockCatalogRepository())
+        store.load(isGuest = false)
+        assertTrue(store.hasLoaded && store.items.isEmpty())
+        store.save(null, "الفستان", null)
+        store.save(null, "الدعوات", "  ")
+        assertEquals(listOf("الفستان", "الدعوات"), store.items.map { it.title })
+        assertNull(store.items[1].note)
+
+        store.toggle(store.items[0])
+        assertEquals(listOf("الدعوات", "الفستان"), store.items.map { it.title })
+        assertTrue(store.items[1].isDone)
+
+        store.save(store.items[0].id, "الدعوات", "٢٠٠ دعوة")
+        assertEquals("٢٠٠ دعوة", store.items[0].note)
+
+        store.delete(store.items[1])
+        assertEquals(1, store.items.size)
+
+        store.load(isGuest = true)
+        assertTrue(!store.hasLoaded && store.items.isEmpty())
     }
 
     @Test fun `budget fraction is clamped`() {

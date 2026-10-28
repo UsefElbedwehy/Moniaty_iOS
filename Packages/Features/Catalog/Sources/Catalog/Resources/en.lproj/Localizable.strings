@@ -86,3 +86,23 @@
 "home.why.reviews" = "Reviews from real brides";
 "home.join.title" = "Do you serve brides?";
 "home.join.subtitle" = "Join Munyati · first two months free";
+
+/* My preparations */
+"preparations.title" = "My preparations";
+"preparations.add.placeholder" = "Add a preparation, e.g. dress fitting";
+"preparations.add" = "Add";
+"preparations.new" = "New preparation";
+"preparations.edit" = "Edit preparation";
+"preparations.field.title" = "Preparation";
+"preparations.field.note" = "Note (optional)";
+"preparations.note.placeholder" = "e.g. Appointment on Thursday at 5 pm";
+"preparations.section.todo" = "To do";
+"preparations.section.done" = "Done";
+"preparations.progress" = "%1$d of %2$d done";
+"preparations.allDone" = "Well done, everything is ready!";
+"preparations.markDone" = "Mark as done";
+"preparations.markOpen" = "Mark as not done";
+"preparations.delete" = "Delete preparation";
+"preparations.delete.confirm" = "Delete this preparation?";
+"preparations.empty.title" = "Start your preparations list";
+"preparations.empty.message" = "Write down everything you're preparing for the wedding: the dress, invitations, henna night… add a note to any of them, and tick each one off when it's done.";
