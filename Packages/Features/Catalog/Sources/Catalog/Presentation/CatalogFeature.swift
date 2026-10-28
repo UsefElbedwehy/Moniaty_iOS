@@ -13,6 +13,8 @@ public final class CatalogContext {
     /// Short label for the city button, e.g. "الدمام، الخبر".
     public var citySummary: String
     public var displayName: String?
+    /// The account's phone, to pre-fill Bride details.
+    public var phone: String?
     /// Guests (no account) are asked to sign in before favoriting or setting a budget.
     public var isGuest: Bool
     /// False for provider accounts: bookings are made from a bride account (which can be created

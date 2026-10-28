@@ -32,6 +32,8 @@ class CatalogContext(cityIds: List<String>? = null, citySummary: String = "", di
     /** Short label for the city button, e.g. "الدمام، الخبر". */
     var citySummary by mutableStateOf(citySummary)
     var displayName by mutableStateOf(displayName)
+    /** The account's phone, to pre-fill Bride details. */
+    var phone by mutableStateOf<String?>(null)
     /** Guests (no account) are asked to sign in before favoriting or setting a budget. */
     var isGuest by mutableStateOf(isGuest)
     /**

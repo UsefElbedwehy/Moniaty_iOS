@@ -112,6 +112,9 @@ public struct RemoteCatalogRepository: CatalogRepository {
 
     public func setBrideDetails(_ details: BrideDetails) async throws -> BrideDetails? {
         try await client.send(.rpc("set_my_bride_details"), body: BrideDetailsArgs(
+            pFullName: details.fullName, pAge: details.age, pNationality: details.nationality, pPhone: details.phone,
+            pSkinType: details.skinType, pSkinTone: details.skinTone, pHairType: details.hairType,
+            pHairLength: details.hairLength, pAllergies: details.allergies,
             pWeddingDate: details.weddingDate, pCityId: details.cityId, pVenue: details.venue,
             pGuestCount: details.guestCount, pNotes: details.notes))
     }
@@ -141,6 +144,15 @@ private struct BudgetArgs: Encodable, Sendable { let pTotal: Decimal; let pWeddi
 private struct PreparationDoneArgs: Encodable, Sendable { let pId: String; let pDone: Bool }
 /// Every field is replaced; one left out is cleared.
 private struct BrideDetailsArgs: Encodable, Sendable {
+    let pFullName: String?
+    let pAge: Int?
+    let pNationality: String?
+    let pPhone: String?
+    let pSkinType: String?
+    let pSkinTone: String?
+    let pHairType: String?
+    let pHairLength: String?
+    let pAllergies: String?
     let pWeddingDate: String?
     let pCityId: String?
     let pVenue: String?

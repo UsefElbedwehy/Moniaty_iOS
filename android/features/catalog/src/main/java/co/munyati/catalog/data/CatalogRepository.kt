@@ -116,7 +116,11 @@ class RemoteCatalogRepository(private val client: ApiClient) : CatalogRepository
 
     override suspend fun setBrideDetails(details: BrideDetails): BrideDetails? = client.send(
         ApiEndpoint.rpc("set_my_bride_details"),
-        BrideDetailsArgs(details.weddingDate, details.cityId, details.venue, details.guestCount, details.notes),
+        BrideDetailsArgs(
+            details.fullName, details.age, details.nationality, details.phone, details.skinType, details.skinTone,
+            details.hairType, details.hairLength, details.allergies,
+            details.weddingDate, details.cityId, details.venue, details.guestCount, details.notes,
+        ),
     )
 
     /** Detail RPCs answer `null` when missing, or one object holding a summary plus extras. */
@@ -147,7 +151,11 @@ private data class MapArgs(val pMinLat: Double, val pMinLng: Double, val pMaxLat
 @Serializable private data class BudgetArgs(val pTotal: Double, val pWeddingDate: String?)
 /** Every field is replaced; one left out is cleared. */
 @Serializable
-private data class BrideDetailsArgs(val pWeddingDate: String?, val pCityId: String?, val pVenue: String?, val pGuestCount: Int?, val pNotes: String?)
+private data class BrideDetailsArgs(
+    val pFullName: String?, val pAge: Int?, val pNationality: String?, val pPhone: String?,
+    val pSkinType: String?, val pSkinTone: String?, val pHairType: String?, val pHairLength: String?, val pAllergies: String?,
+    val pWeddingDate: String?, val pCityId: String?, val pVenue: String?, val pGuestCount: Int?, val pNotes: String?,
+)
 /** Without `pId` the RPC adds a new item. */
 @Serializable private data class PreparationArgs(val pId: String?, val pTitle: String, val pNote: String?)
 @Serializable private data class PreparationDoneArgs(val pId: String, val pDone: Boolean)

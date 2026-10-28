@@ -130,6 +130,16 @@ public struct BookingDetail: Sendable, Decodable {
 
 /// What the bride filled in "Bride details" (Profile), as her booking's provider sees it.
 public struct BookingBrideDetails: Sendable, Decodable, Equatable {
+    /// Name and phone are nil until the payment is confirmed (privacy, like `brideName`).
+    public let fullName: String?
+    public let age: Int?
+    public let nationality: String?
+    public let phone: String?
+    public let skinType: String?
+    public let skinTone: String?
+    public let hairType: String?
+    public let hairLength: String?
+    public let allergies: String?
     public let weddingDate: String?
     public let cityNameAr: String?
     public let cityNameEn: String?
@@ -137,8 +147,16 @@ public struct BookingBrideDetails: Sendable, Decodable, Equatable {
     public let guestCount: Int?
     public let notes: String?
 
-    public var isEmpty: Bool {
-        weddingDate == nil && cityNameAr == nil && venue?.isEmpty != false && guestCount == nil && notes?.isEmpty != false
+    public var isEmpty: Bool { !hasPersonal && !hasWedding }
+
+    /// Anything about her (besides the name and phone, which may be hidden).
+    public var hasPersonal: Bool {
+        fullName != nil || age != nil || nationality?.isEmpty == false || phone != nil || skinType != nil
+            || skinTone != nil || hairType != nil || hairLength != nil || allergies?.isEmpty == false
+    }
+
+    public var hasWedding: Bool {
+        weddingDate != nil || cityNameAr != nil || venue?.isEmpty == false || guestCount != nil || notes?.isEmpty == false
     }
 }
 

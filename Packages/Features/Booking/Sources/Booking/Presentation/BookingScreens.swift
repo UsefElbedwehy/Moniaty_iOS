@@ -277,7 +277,7 @@ struct BookingDetailScreen: View {
             }
 
             if role == .provider, let details = detail.brideDetails, !details.isEmpty {
-                BrideDetailsCard(details: details)
+                BrideDetailsCard(details: details, isRevealed: [.paymentConfirmed, .completed, .disputed].contains(b.status))
             }
 
             if let proposal = detail.proposal {
@@ -931,6 +931,8 @@ struct DemoIntroContent: View {
 /// The bride's details on her booking, for the provider: date, city, venue, guests and notes.
 private struct BrideDetailsCard: View {
     let details: BookingBrideDetails
+    /// The payment is confirmed, so her name and phone are sent; before that a line says when.
+    let isRevealed: Bool
 
     private var isArabic: Bool { Locale.current.language.languageCode?.identifier == "ar" }
 
@@ -952,6 +954,29 @@ private struct BrideDetailsCard: View {
                 Label(BookingL10n.string("brideDetails.title"), systemImage: "person.text.rectangle")
                     .font(.dsHeadline)
                     .foregroundStyle(Color.dsTextPrimary)
+                row("brideDetails.name", "person", details.fullName)
+                row("brideDetails.age", "number", details.age.map { $0.formatted() })
+                row("brideDetails.nationality", "globe", details.nationality)
+                row("brideDetails.phone", "phone", details.phone.map(localPhone))
+                if !isRevealed {
+                    Text(verbatim: BookingL10n.string("brideDetails.hidden"))
+                        .font(.dsCaption).foregroundStyle(Color.dsTextSecondary)
+                }
+                row("brideDetails.skinType", "drop", choice("brideDetails.skinType", details.skinType))
+                row("brideDetails.skinTone", "paintpalette", choice("brideDetails.skinTone", details.skinTone))
+                row("brideDetails.hairType", "comb", choice("brideDetails.hairType", details.hairType))
+                row("brideDetails.hairLength", "ruler", choice("brideDetails.hairLength", details.hairLength))
+                if let allergies = details.allergies, !allergies.isEmpty {
+                    VStack(alignment: .leading, spacing: DSSpacing.xxs) {
+                        Label(BookingL10n.string("brideDetails.allergies"), systemImage: "exclamationmark.triangle")
+                            .font(.dsCaption).foregroundStyle(Color.dsWarning)
+                        Text(verbatim: allergies).font(.dsBody).foregroundStyle(Color.dsTextPrimary)
+                    }
+                }
+                if details.hasWedding {
+                    if details.hasPersonal || !isRevealed { Divider() }
+                    BookingL10n.text("brideDetails.section.wedding").font(.dsSubhead.weight(.semibold)).foregroundStyle(Color.dsTextPrimary)
+                }
                 row("brideDetails.date", "calendar", dateText)
                 row("brideDetails.city", "mappin.and.ellipse", isArabic ? details.cityNameAr : details.cityNameEn)
                 row("brideDetails.venue", "building.2", details.venue)
@@ -965,6 +990,16 @@ private struct BrideDetailsCard: View {
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
+    }
+
+    /// A choice field's label ("dry" → «جافة»), nil when unset.
+    private func choice(_ key: String, _ value: String?) -> String? {
+        value.map { BookingL10n.string("\(key).\($0)") }
+    }
+
+    /// +9665XXXXXXXX → 05XXXXXXXX, how people write it.
+    private func localPhone(_ phone: String) -> String {
+        phone.hasPrefix("+966") ? "0" + phone.dropFirst(4) : phone
     }
 
     @ViewBuilder

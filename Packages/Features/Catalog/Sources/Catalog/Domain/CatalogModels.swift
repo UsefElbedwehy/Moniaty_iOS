@@ -214,9 +214,21 @@ public struct MapPin: Identifiable, Hashable, Sendable, Decodable {
     public let logoUrl: URL?
 }
 
-/// The bride's details (تفاصيل العروس): filled once in Profile, shown to the provider of each of
-/// her bookings. `weddingDate` ("yyyy-MM-dd") is the same date the budget stores.
+/// The bride's details (تفاصيل العروس): about her, then the wedding. Every field is optional. Filled
+/// once in Profile and shown to the provider of each of her bookings (name and phone only once
+/// the payment is confirmed). `weddingDate` ("yyyy-MM-dd") is the same date the budget stores.
 public struct BrideDetails: Equatable, Sendable, Decodable {
+    public var fullName: String?
+    public var age: Int?
+    public var nationality: String?
+    /// +9665XXXXXXXX.
+    public var phone: String?
+    /// One of `BrideDetails.skinTypes` (and likewise for the other choice fields).
+    public var skinType: String?
+    public var skinTone: String?
+    public var hairType: String?
+    public var hairLength: String?
+    public var allergies: String?
     public var weddingDate: String?
     public var cityId: String?
     public var cityNameAr: String?
@@ -225,8 +237,25 @@ public struct BrideDetails: Equatable, Sendable, Decodable {
     public var guestCount: Int?
     public var notes: String?
 
-    public init(weddingDate: String? = nil, cityId: String? = nil, cityNameAr: String? = nil, cityNameEn: String? = nil,
-                venue: String? = nil, guestCount: Int? = nil, notes: String? = nil) {
+    /// The values the server accepts for each choice field (labels are localized by the apps).
+    public static let skinTypes = ["normal", "dry", "oily", "combination", "sensitive"]
+    public static let skinTones = ["light", "medium", "tan", "deep"]
+    public static let hairTypes = ["straight", "wavy", "curly"]
+    public static let hairLengths = ["short", "medium", "long"]
+
+    public init(fullName: String? = nil, age: Int? = nil, nationality: String? = nil, phone: String? = nil,
+                skinType: String? = nil, skinTone: String? = nil, hairType: String? = nil, hairLength: String? = nil,
+                allergies: String? = nil, weddingDate: String? = nil, cityId: String? = nil, cityNameAr: String? = nil,
+                cityNameEn: String? = nil, venue: String? = nil, guestCount: Int? = nil, notes: String? = nil) {
+        self.fullName = fullName
+        self.age = age
+        self.nationality = nationality
+        self.phone = phone
+        self.skinType = skinType
+        self.skinTone = skinTone
+        self.hairType = hairType
+        self.hairLength = hairLength
+        self.allergies = allergies
         self.weddingDate = weddingDate
         self.cityId = cityId
         self.cityNameAr = cityNameAr

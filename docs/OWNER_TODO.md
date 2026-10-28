@@ -180,9 +180,13 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
   - `supabase/migrations/20261029000100_bride_details.sql` (once): «تفاصيل العروس».
   - `supabase/migrations/20261029000200_photographer_name.sql`: «مصوّرات» becomes «مصورة فوتو»
     (or rename it in the dashboard). Safe to re-run; shows without an app update.
-- What «تفاصيل العروس» is: in Profile → زفافي, the bride fills her wedding date and city, the
-  venue, the number of guests and notes, once. The provider of each of her bookings sees them on
-  the booking (not on demo bookings). The wedding date is the same one the budget asks for.
+  - `supabase/migrations/20261029000300_bride_details_personal.sql` (once, after 000100): her own
+    details on the same page.
+- What «تفاصيل العروس» is: in Profile → زفافي, the bride fills, once and all optional, details
+  about herself (name, age, nationality, phone, skin type and tone, hair type and length,
+  allergies) and about the wedding (date, city, venue, guests, notes). The provider of each of her
+  bookings sees them on the booking (not on demo bookings); her name and phone only once the
+  payment is confirmed. The wedding date is the same one the budget asks for.
 
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy

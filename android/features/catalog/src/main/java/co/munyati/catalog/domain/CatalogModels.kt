@@ -171,6 +171,16 @@ data class MapPin(
  */
 @Serializable
 data class BrideDetails(
+    val fullName: String? = null,
+    val age: Int? = null,
+    val nationality: String? = null,
+    /** +9665XXXXXXXX. */
+    val phone: String? = null,
+    val skinType: String? = null,
+    val skinTone: String? = null,
+    val hairType: String? = null,
+    val hairLength: String? = null,
+    val allergies: String? = null,
     val weddingDate: String? = null,
     val cityId: String? = null,
     val cityNameAr: String? = null,
@@ -181,6 +191,14 @@ data class BrideDetails(
 ) {
     /** True when she has filled anything besides the date. */
     val hasEventDetails: Boolean get() = cityId != null || !venue.isNullOrEmpty() || guestCount != null || !notes.isNullOrEmpty()
+
+    companion object {
+        /** The values the server accepts for each choice field (labels are localized by the apps). */
+        val skinTypes = listOf("normal", "dry", "oily", "combination", "sensitive")
+        val skinTones = listOf("light", "medium", "tan", "deep")
+        val hairTypes = listOf("straight", "wavy", "curly")
+        val hairLengths = listOf("short", "medium", "long")
+    }
 }
 
 /** Whole days from today to a "yyyy-MM-dd" day (0 on the day), null without one or after it. */

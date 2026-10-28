@@ -225,6 +225,7 @@ class AppEnvironment(private val context: Context) {
         ctx.showsBudgetSlide = remoteConfig.config?.isFeatureEnabled("hideHomeBudgetSlide") != true
         ctx.showsDiscoverSlide = remoteConfig.config?.isFeatureEnabled("hideHomeDiscoverSlide") != true
         ctx.displayName = session.user?.displayName
+        ctx.phone = session.user?.phone
         ctx.cityIds = cities.queryCityIds
         ctx.citySummary = cities.summary(allCitiesLabel())
         ctx.cities = cities.available
