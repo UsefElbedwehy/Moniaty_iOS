@@ -22,6 +22,8 @@ public protocol CatalogRepository: Sendable {
     /// "Bride details": nil until she has any.
     func brideDetails() async throws -> BrideDetails?
     func setBrideDetails(_ details: BrideDetails) async throws -> BrideDetails?
+    /// «فساتين»: one list of dresses for rent, with the notice for dress owners.
+    func dresses(kind: DressListing.Kind) async throws -> DressListingsPage
 }
 
 /// Supabase RPCs from `supabase/migrations/20261011000000_catalog.sql`.
@@ -104,6 +106,12 @@ public struct RemoteCatalogRepository: CatalogRepository {
         try await client.send(.rpc("delete_my_preparation"), body: IdArgs(pId: id))
     }
 
+    // «فساتين»: `supabase/migrations/20261029000500_dress_listings.sql`.
+
+    public func dresses(kind: DressListing.Kind) async throws -> DressListingsPage {
+        try await client.send(.rpc("get_dress_listings"), body: DressArgs(pKind: kind.rawValue))
+    }
+
     // "Bride details": `supabase/migrations/20261029000100_bride_details.sql`.
 
     public func brideDetails() async throws -> BrideDetails? {
@@ -142,6 +150,7 @@ private struct FavoriteArgs: Encodable, Sendable { let pServiceId: String }
 private struct FavoriteResult: Decodable, Sendable { let isFavorite: Bool }
 private struct BudgetArgs: Encodable, Sendable { let pTotal: Decimal; let pWeddingDate: String? }
 private struct PreparationDoneArgs: Encodable, Sendable { let pId: String; let pDone: Bool }
+private struct DressArgs: Encodable, Sendable { let pKind: String }
 /// Every field is replaced; one left out is cleared.
 private struct BrideDetailsArgs: Encodable, Sendable {
     let pFullName: String?

@@ -30,6 +30,8 @@ data class CatalogCategory(
     val priceHintAr: String? = null,
     val priceHintEn: String? = null,
     val serviceCount: Int? = null,
+    /** Listed by the admin (the dresses for rent), not by providers: opens the dresses lists. */
+    val adminListings: Boolean = false,
 ) {
     val name: String get() = localized(nameAr, nameEn)
     val priceHint: String? get() = localized(priceHintAr.orEmpty(), priceHintEn.orEmpty()).ifEmpty { null }
@@ -164,6 +166,32 @@ data class MapPin(
     val lng: Double,
     val logoUrl: String? = null,
 )
+
+/** A dress for rent in «فساتين», listed by the admin: a photo, the price and the owner's number. */
+@Serializable
+data class DressListing(
+    val id: String,
+    val kind: String,
+    val imageUrl: String,
+    val price: Double,
+    /** +9665XXXXXXXX. */
+    val contactPhone: String,
+    /** The last day it is listed, "yyyy-MM-dd". */
+    val endsOn: String? = null,
+) {
+    companion object {
+        /** The three lists, in order. */
+        val kinds = listOf("wedding", "jalwa", "evening")
+    }
+}
+
+/** The notice for dress owners: list a dress for [price] riyals by contacting [phone]. */
+@Serializable
+data class DressNotice(val price: Double? = null, val days: Int? = null, val phone: String? = null)
+
+/** One of the three dress lists, with the notice. */
+@Serializable
+data class DressListingsPage(val listings: List<DressListing> = emptyList(), val notice: DressNotice? = null)
 
 /**
  * The bride's details (تفاصيل العروس): filled once in Profile, shown to the provider of each of her

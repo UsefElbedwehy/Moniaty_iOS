@@ -106,6 +106,7 @@ public final class CatalogFeature {
         case .favorites: FavoritesScreen(feature: self)
         case .preparations: PreparationsScreen(feature: self)
         case .brideDetails: BrideDetailsScreen(feature: self)
+        case .dresses: DressesScreen(feature: self)
         }
     }
 

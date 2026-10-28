@@ -38,6 +38,8 @@ public struct CatalogCategory: Identifiable, Hashable, Sendable, Decodable {
     public let priceHintAr: String?
     public let priceHintEn: String?
     public let serviceCount: Int?
+    /// Listed by the admin (the dresses for rent), not by providers: opens `CatalogRoute.dresses`.
+    public let adminListings: Bool?
 
     public var name: String { localized(ar: nameAr, en: nameEn) }
     public var priceHint: String? {
@@ -214,6 +216,40 @@ public struct MapPin: Identifiable, Hashable, Sendable, Decodable {
     public let logoUrl: URL?
 }
 
+/// A dress for rent in «فساتين», listed by the admin: a photo, the price and the owner's number.
+public struct DressListing: Identifiable, Hashable, Sendable, Decodable {
+    public enum Kind: String, CaseIterable, Sendable, Decodable { case wedding, jalwa, evening }
+
+    public let id: String
+    public let kind: Kind
+    public let imageUrl: URL
+    public let price: Decimal
+    /// +9665XXXXXXXX.
+    public let contactPhone: String
+    /// The last day it is listed, "yyyy-MM-dd".
+    public let endsOn: String?
+
+    /// wa.me wants the number without "+".
+    public var whatsAppURL: URL? { URL(string: "https://wa.me/\(contactPhone.filter(\.isNumber))") }
+    public var callURL: URL? { URL(string: "tel:\(contactPhone)") }
+}
+
+/// The notice for dress owners: list a dress for `price` riyals for `days` days by contacting `phone`.
+public struct DressNotice: Hashable, Sendable, Decodable {
+    public let price: Decimal?
+    public let days: Int?
+    public let phone: String?
+
+    public var whatsAppURL: URL? { phone.flatMap { URL(string: "https://wa.me/\($0.filter(\.isNumber))") } }
+    public var callURL: URL? { phone.flatMap { URL(string: "tel:\($0)") } }
+}
+
+/// One of the three dress lists, with the notice.
+public struct DressListingsPage: Sendable, Decodable {
+    public let listings: [DressListing]
+    public let notice: DressNotice?
+}
+
 /// The bride's details (تفاصيل العروس): about her, then the wedding. Every field is optional. Filled
 /// once in Profile and shown to the provider of each of her bookings (name and phone only once
 /// the payment is confirmed). `weddingDate` ("yyyy-MM-dd") is the same date the budget stores.
@@ -363,6 +399,7 @@ public enum CatalogRoute: Hashable, Sendable {
     case favorites
     case preparations
     case brideDetails
+    case dresses
 }
 
 extension String {

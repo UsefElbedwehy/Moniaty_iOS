@@ -3,6 +3,7 @@ package co.munyati.catalog.data
 import co.munyati.shared.media.VideoAsset
 import co.munyati.catalog.domain.Budget
 import co.munyati.catalog.domain.BrideDetails
+import co.munyati.catalog.domain.DressListingsPage
 import co.munyati.catalog.domain.HomeContent
 import co.munyati.catalog.domain.MapPin
 import co.munyati.catalog.domain.Preparation
@@ -40,6 +41,8 @@ interface CatalogRepository {
     /** "Bride details": null until she has any. */
     suspend fun brideDetails(): BrideDetails?
     suspend fun setBrideDetails(details: BrideDetails): BrideDetails?
+    /** «فساتين»: one list of dresses for rent ("wedding", "jalwa", "evening"), with the notice. */
+    suspend fun dresses(kind: String): DressListingsPage
 }
 
 /** Page size of `search_services`, shared with the list's "load more" rule. */
@@ -110,6 +113,10 @@ class RemoteCatalogRepository(private val client: ApiClient) : CatalogRepository
     override suspend fun deletePreparation(id: String): List<Preparation> =
         client.send(ApiEndpoint.rpc("delete_my_preparation"), IdArgs(id))
 
+    // «فساتين»: `supabase/migrations/20261029000500_dress_listings.sql`.
+
+    override suspend fun dresses(kind: String): DressListingsPage = client.send(ApiEndpoint.rpc("get_dress_listings"), DressArgs(kind))
+
     // "Bride details": `supabase/migrations/20261029000100_bride_details.sql`.
 
     override suspend fun brideDetails(): BrideDetails? = client.send(ApiEndpoint.rpc("get_my_bride_details"), EmptyBody())
@@ -149,6 +156,7 @@ private data class MapArgs(val pMinLat: Double, val pMinLng: Double, val pMaxLat
 @Serializable private data class FavoriteArgs(val pServiceId: String)
 @Serializable private data class FavoriteResult(val isFavorite: Boolean)
 @Serializable private data class BudgetArgs(val pTotal: Double, val pWeddingDate: String?)
+@Serializable private data class DressArgs(val pKind: String)
 /** Every field is replaced; one left out is cleared. */
 @Serializable
 private data class BrideDetailsArgs(

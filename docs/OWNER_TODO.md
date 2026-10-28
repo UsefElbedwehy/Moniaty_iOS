@@ -190,6 +190,16 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
   bookings sees them on the booking (not on demo bookings); her name and phone only once the
   payment is confirmed. The wedding date is the same one the budget asks for.
 
+## 10i. Dresses for rent («فساتين»)
+- [ ] Run `supabase/migrations/20261029000500_dress_listings.sql` once in the SQL editor.
+- [ ] Dashboard → الفساتين: type Munyati's number in «إعلان عرض الفساتين» (the notice is hidden
+      until a number is set), then add dresses: list (زفاف / جلوات / سهرة), photo, price, the
+      owner's number, start date.
+- What it is: the dresses category is renamed «فساتين» and lists only the dresses the admin adds,
+  in three tabs. Each shows for 30 days from its start date, then hides itself (renew it from the
+  dashboard). Brides contact the owner by WhatsApp or phone. Providers can no longer pick this
+  category, and their old dress services stop showing.
+
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy
       answers from `docs/STORE_LISTING.md`; upload the screenshots in `design/store/ios/`

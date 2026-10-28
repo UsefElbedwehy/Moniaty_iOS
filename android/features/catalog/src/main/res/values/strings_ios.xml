@@ -66,6 +66,7 @@
     <string name="catalog_budget_title">ميزانية زفافي</string>
     <string name="catalog_cities_hint">اختاري المدن التي تريدين التصفّح فيها</string>
     <string name="catalog_common_cancel">إلغاء</string>
+    <string name="catalog_common_close">إغلاق</string>
     <string name="catalog_common_empty_message">جرّبي مدينة أو قسماً آخر.</string>
     <string name="catalog_common_empty_title">لا يوجد شيء هنا بعد</string>
     <string name="catalog_common_ok">حسناً</string>
@@ -81,6 +82,18 @@
     <string name="catalog_detail_price">السعر</string>
     <string name="catalog_detail_services">الخدمات</string>
     <string name="catalog_detail_stores">المتاجر</string>
+    <string name="catalog_dresses_call">اتصال</string>
+    <string name="catalog_dresses_contactOwner">تواصلي مع صاحبة الفستان</string>
+    <string name="catalog_dresses_empty_message">تُضاف فساتين جديدة باستمرار، عودي قريباً.</string>
+    <string name="catalog_dresses_empty_title">لا توجد فساتين هنا بعد</string>
+    <string name="catalog_dresses_kind_evening">فساتين سهرة</string>
+    <string name="catalog_dresses_kind_jalwa">فساتين جلوات</string>
+    <string name="catalog_dresses_kind_wedding">فساتين زفاف</string>
+    <string name="catalog_dresses_notice_body">تواصلي معنا، ونضيف فستانك بصورته وسعره ورقمك ليصل إلى العرائس.</string>
+    <string name="catalog_dresses_notice_title">اعرضي فستانك للإيجار بـ %s لمدة شهر</string>
+    <string name="catalog_dresses_rentPrice">سعر الإيجار</string>
+    <string name="catalog_dresses_title">فساتين</string>
+    <string name="catalog_dresses_whatsapp">واتساب</string>
     <string name="catalog_explore_all">الكل</string>
     <string name="catalog_explore_title">استكشفي</string>
     <string name="catalog_favorite_add">إضافة إلى المفضلة</string>

@@ -202,7 +202,9 @@ internal fun CategoryTile(category: CatalogCategory, modifier: Modifier = Modifi
     Column(
         modifier = modifier.clickable {
             onOpen()
-            navigator.navigate(ServicesRoute(categoryId = category.id, title = category.name))
+            // The dresses for rent open their own lists; every other category, its providers' services.
+            if (category.adminListings) navigator.navigate(DressesRoute)
+            else navigator.navigate(ServicesRoute(categoryId = category.id, title = category.name))
         },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),

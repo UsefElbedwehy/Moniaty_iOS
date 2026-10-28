@@ -116,7 +116,10 @@ struct CategoryTile: View {
     let category: CatalogCategory
 
     var body: some View {
-        NavigationLink(value: CatalogRoute.services(ServiceFilter(categoryId: category.id, title: category.name))) {
+        // The dresses for rent open their own lists; every other category, its providers' services.
+        NavigationLink(value: category.adminListings == true
+                       ? CatalogRoute.dresses
+                       : CatalogRoute.services(ServiceFilter(categoryId: category.id, title: category.name))) {
             VStack(spacing: 6) {
                 Group {
                     if let url = category.iconUrl {

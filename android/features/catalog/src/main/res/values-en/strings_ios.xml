@@ -66,6 +66,7 @@
     <string name="catalog_budget_title">My wedding budget</string>
     <string name="catalog_cities_hint">Choose the cities to browse</string>
     <string name="catalog_common_cancel">Cancel</string>
+    <string name="catalog_common_close">Close</string>
     <string name="catalog_common_empty_message">Try another city or category.</string>
     <string name="catalog_common_empty_title">Nothing here yet</string>
     <string name="catalog_common_ok">OK</string>
@@ -81,6 +82,18 @@
     <string name="catalog_detail_price">Price</string>
     <string name="catalog_detail_services">Services</string>
     <string name="catalog_detail_stores">Stores</string>
+    <string name="catalog_dresses_call">Call</string>
+    <string name="catalog_dresses_contactOwner">Contact the dress owner</string>
+    <string name="catalog_dresses_empty_message">New dresses are added all the time; check back soon.</string>
+    <string name="catalog_dresses_empty_title">No dresses here yet</string>
+    <string name="catalog_dresses_kind_evening">Evening</string>
+    <string name="catalog_dresses_kind_jalwa">Jalwa</string>
+    <string name="catalog_dresses_kind_wedding">Wedding</string>
+    <string name="catalog_dresses_notice_body">Contact us and we\'ll add your dress with its photo, price and your number so brides can reach you.</string>
+    <string name="catalog_dresses_notice_title">List your dress for rent for %s a month</string>
+    <string name="catalog_dresses_rentPrice">Rental price</string>
+    <string name="catalog_dresses_title">Dresses</string>
+    <string name="catalog_dresses_whatsapp">WhatsApp</string>
     <string name="catalog_explore_all">All</string>
     <string name="catalog_explore_title">Explore</string>
     <string name="catalog_favorite_add">Add to favorites</string>

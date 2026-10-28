@@ -154,3 +154,18 @@
 "brideDetails.phone.locked" = "Your sign-in number; it can't be changed.";
 "brideDetails.extraPhone" = "Extra number (optional)";
 "brideDetails.nationality.default" = "Saudi";
+
+/* Dresses for rent */
+"common.close" = "Close";
+"dresses.title" = "Dresses";
+"dresses.kind.wedding" = "Wedding";
+"dresses.kind.jalwa" = "Jalwa";
+"dresses.kind.evening" = "Evening";
+"dresses.empty.title" = "No dresses here yet";
+"dresses.empty.message" = "New dresses are added all the time; check back soon.";
+"dresses.rentPrice" = "Rental price";
+"dresses.contactOwner" = "Contact the dress owner";
+"dresses.whatsapp" = "WhatsApp";
+"dresses.call" = "Call";
+"dresses.notice.title" = "List your dress for rent for %@ a month";
+"dresses.notice.body" = "Contact us and we'll add your dress with its photo, price and your number so brides can reach you.";

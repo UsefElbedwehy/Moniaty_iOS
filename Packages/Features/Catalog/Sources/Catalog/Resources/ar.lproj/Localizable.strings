@@ -154,3 +154,18 @@
 "brideDetails.phone.locked" = "رقم تسجيل الدخول، لا يمكن تغييره.";
 "brideDetails.extraPhone" = "رقم إضافي (اختياري)";
 "brideDetails.nationality.default" = "سعودية";
+
+/* Dresses for rent (فساتين) */
+"common.close" = "إغلاق";
+"dresses.title" = "فساتين";
+"dresses.kind.wedding" = "فساتين زفاف";
+"dresses.kind.jalwa" = "فساتين جلوات";
+"dresses.kind.evening" = "فساتين سهرة";
+"dresses.empty.title" = "لا توجد فساتين هنا بعد";
+"dresses.empty.message" = "تُضاف فساتين جديدة باستمرار، عودي قريباً.";
+"dresses.rentPrice" = "سعر الإيجار";
+"dresses.contactOwner" = "تواصلي مع صاحبة الفستان";
+"dresses.whatsapp" = "واتساب";
+"dresses.call" = "اتصال";
+"dresses.notice.title" = "اعرضي فستانك للإيجار بـ %@ لمدة شهر";
+"dresses.notice.body" = "تواصلي معنا، ونضيف فستانك بصورته وسعره ورقمك ليصل إلى العرائس.";
