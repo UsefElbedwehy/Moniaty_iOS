@@ -36,7 +36,7 @@ class MockCatalogRepository : CatalogRepository {
         CatalogCategory("henna", "نقش الحناء", "Henna artist", iconSymbol = "hand.raised"),
         CatalogCategory("kosha_decor", "الكوش والتنسيق", "Kosha & décor", iconSymbol = "sparkles.rectangle.stack"),
         CatalogCategory("dresses", "فساتين الزفاف", "Wedding dresses", iconSymbol = "tshirt"),
-        CatalogCategory("coffee_servers", "القهوجيات", "Coffee servers", iconSymbol = "cup.and.saucer"),
+        CatalogCategory("coffee_servers", "الضيافة", "Hospitality", iconSymbol = "dallah"),
         CatalogCategory("cakes_sweets", "الكيك والحلويات", "Cakes & sweets", iconSymbol = "birthday.cake"),
     )
 

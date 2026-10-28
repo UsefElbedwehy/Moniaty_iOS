@@ -57,6 +57,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -171,8 +172,13 @@ internal fun FavoriteButton(card: ServiceCard, feature: CatalogFeature, modifier
     }
 }
 
-/** Material icons for the SF Symbol names the dashboard stores (`categories.icon_symbol`). */
+/**
+ * Material icons for the SF Symbol names the dashboard stores (`categories.icon_symbol`), plus
+ * Munyati's own drawings for what neither set has a picture of (same names as iOS).
+ */
+@Composable
 internal fun categoryIcon(symbol: String?): ImageVector = when (symbol) {
+    "dallah" -> ImageVector.vectorResource(co.munyati.designsystem.R.drawable.category_dallah)
     "paintbrush.pointed" -> Icons.Outlined.Brush
     "comb" -> Icons.Outlined.ContentCut
     "hand.raised" -> Icons.Outlined.PanTool

@@ -23,7 +23,7 @@ public actor MockCatalogRepository: CatalogRepository {
         ["id": "henna", "name_ar": "نقش الحناء", "name_en": "Henna artist", "icon_symbol": "hand.raised"],
         ["id": "kosha_decor", "name_ar": "الكوش والتنسيق", "name_en": "Kosha & décor", "icon_symbol": "sparkles.rectangle.stack"],
         ["id": "dresses", "name_ar": "فساتين الزفاف", "name_en": "Wedding dresses", "icon_symbol": "tshirt"],
-        ["id": "coffee_servers", "name_ar": "القهوجيات", "name_en": "Coffee servers", "icon_symbol": "cup.and.saucer"],
+        ["id": "coffee_servers", "name_ar": "الضيافة", "name_en": "Hospitality", "icon_symbol": "dallah"],
         ["id": "cakes_sweets", "name_ar": "الكيك والحلويات", "name_en": "Cakes & sweets", "icon_symbol": "birthday.cake"]
     ]
 

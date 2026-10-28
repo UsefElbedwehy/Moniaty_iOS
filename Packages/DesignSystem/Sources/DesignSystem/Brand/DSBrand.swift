@@ -10,6 +10,27 @@ public enum DSBrand {
     public static let ring = Image("BrandRing", bundle: .module)
 }
 
+/// A category's icon from the name the dashboard stores (`categories.icon_symbol`): an SF Symbol,
+/// or one of Munyati's own drawings for what SF Symbols has no picture of.
+public enum DSCategoryIcon {
+    /// Drawings bundled here, by the name the dashboard uses for them.
+    private static let custom: [String: String] = [
+        "dallah": "CategoryDallah", // hospitality (الضيافة): an Arabic coffee pot
+    ]
+
+    /// True when `symbol` is one of the bundled drawings (they need a frame, not a font size).
+    public static func isCustom(_ symbol: String?) -> Bool {
+        symbol.map { custom[$0] != nil } ?? false
+    }
+
+    public static func image(_ symbol: String?) -> Image {
+        if let symbol, let asset = custom[symbol] {
+            return Image(asset, bundle: .module).renderingMode(.template)
+        }
+        return Image(systemName: symbol ?? "sparkles")
+    }
+}
+
 /// The small four-point gold sparkle from the logo, used as an ornament between sections.
 public struct DSSparkle: View {
     private let size: CGFloat
