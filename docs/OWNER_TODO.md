@@ -165,6 +165,29 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
   exactly as uploaded (no fade, no text); a tap still opens its link. Design such images at 2:1 and
   keep text away from the edges. A banner needs an image or a title in both languages.
 
+## 10g. My preparations (تجهيزاتي)
+- [ ] Run `supabase/migrations/20261028000000_bride_preparations.sql` once in the SQL editor,
+      before releasing a build that has it. Until then the screen shows a loading error.
+- What it is: in Profile → زفافي, under the cities, the bride keeps her own checklist of what she
+  is preparing (dress fitting, invitations…), each item with an optional note; she ticks items
+  off and sees how many are done. Only she can see it (admins don't), and deleting her account
+  deletes it.
+
+## 10h. Bride details, the hospitality icon and the photographer name
+- [ ] Run these three in the SQL editor, before releasing a build that has them:
+  - `supabase/migrations/20261029000000_hospitality_icon.sql`: «الضيافة» gets the dallah icon
+    (or type `dallah` in the category's SF Symbol field in the dashboard). Safe to re-run.
+  - `supabase/migrations/20261029000100_bride_details.sql` (once): «تفاصيل العروس».
+  - `supabase/migrations/20261029000200_photographer_name.sql`: «مصوّرات» becomes «مصورة فوتو»
+    (or rename it in the dashboard). Safe to re-run; shows without an app update.
+  - `supabase/migrations/20261029000300_bride_details_personal.sql` (once, after 000100): her own
+    details on the same page.
+- What «تفاصيل العروس» is: in Profile → زفافي, the bride fills, once and all optional, details
+  about herself (name, age, nationality, phone, skin type and tone, hair type and length,
+  allergies) and about the wedding (date, city, venue, guests, notes). The provider of each of her
+  bookings sees them on the booking (not on demo bookings); her name and phone only once the
+  payment is confirmed. The wedding date is the same one the budget asks for.
+
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy
       answers from `docs/STORE_LISTING.md`; upload the screenshots in `design/store/ios/`

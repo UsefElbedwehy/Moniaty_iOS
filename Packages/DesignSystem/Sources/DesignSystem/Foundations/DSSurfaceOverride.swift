@@ -30,10 +30,11 @@ public extension View {
         modifier(DSScreenBackground(base: base))
     }
 
-    /// The ground for a `Form` or `List`: hides the system grouped grey so it matches every
-    /// other screen (ivory in light mode, the dark token in dark mode).
+    /// The ground for a `Form` or `List`: hides the system grouped grey. Light mode paints it
+    /// ivory (`.dsSurface`) rather than the white screen ground, because a Form's rows are the
+    /// system's white and would vanish on white; dark mode is the same dark token as before.
     func dsFormBackground() -> some View {
-        scrollContentBackground(.hidden).dsScreenBackground()
+        scrollContentBackground(.hidden).dsScreenBackground(.dsSurface)
     }
 }
 

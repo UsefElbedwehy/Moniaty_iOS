@@ -619,8 +619,7 @@ struct BlockedUsersScreen: View {
                     .listRowBackground(Color.clear)
             }
         }
-        .scrollContentBackground(.hidden)
-        .dsScreenBackground()
+        .dsFormBackground()
         .navigationTitle(TrustL10n.string("block.list.title"))
         .alert(TrustL10n.string("error.generic"), isPresented: $unblockFailed) {
             Button(TrustL10n.string("common.ok"), role: .cancel) {}
@@ -708,8 +707,7 @@ struct SupportScreen: View {
                 TrustL10n.text("support.tickets")
             }
         }
-        .scrollContentBackground(.hidden)
-        .dsScreenBackground()
+        .dsFormBackground()
         .navigationTitle(TrustL10n.string("support.title"))
         .sheet(isPresented: $composing) {
             NavigationStack {

@@ -122,8 +122,14 @@ struct CategoryTile: View {
                     if let url = category.iconUrl {
                         RemoteImageView(url: url, contentMode: .fit)
                             .frame(width: 30, height: 30)
+                    } else if DSCategoryIcon.isCustom(category.iconSymbol) {
+                        DSCategoryIcon.image(category.iconSymbol)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30, height: 30)
+                            .foregroundStyle(Color.dsPrimary)
                     } else {
-                        Image(systemName: category.iconSymbol ?? "sparkles")
+                        DSCategoryIcon.image(category.iconSymbol)
                             .font(.system(size: 24))
                             .foregroundStyle(Color.dsPrimary)
                     }

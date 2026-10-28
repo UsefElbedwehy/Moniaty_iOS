@@ -6,6 +6,8 @@ import Core
 public actor MockCatalogRepository: CatalogRepository {
     private var favoriteIds: Set<String> = []
     private var storedBudget: Budget?
+    private var storedPreparations: [Preparation] = []
+    private var storedBrideDetails: BrideDetails?
 
     public init() {}
 
@@ -17,12 +19,12 @@ public actor MockCatalogRepository: CatalogRepository {
 
     nonisolated(unsafe) private static let categories: [[String: Any]] = [
         ["id": "makeup", "name_ar": "خبيرة مكياج", "name_en": "Makeup artist", "icon_symbol": "paintbrush.pointed", "price_hint_ar": "٣٥٠ – ٣٬٠٠٠ ر.س", "price_hint_en": "SAR 350 – 3,000"],
-        ["id": "photography", "name_ar": "مصوّرات", "name_en": "Female photographers", "icon_symbol": "camera"],
+        ["id": "photography", "name_ar": "مصورة فوتو", "name_en": "Photographer", "icon_symbol": "camera"],
         ["id": "venues", "name_ar": "قصور وقاعات الأفراح", "name_en": "Wedding halls & venues", "icon_symbol": "building.columns"],
         ["id": "henna", "name_ar": "نقش الحناء", "name_en": "Henna artist", "icon_symbol": "hand.raised"],
         ["id": "kosha_decor", "name_ar": "الكوش والتنسيق", "name_en": "Kosha & décor", "icon_symbol": "sparkles.rectangle.stack"],
         ["id": "dresses", "name_ar": "فساتين الزفاف", "name_en": "Wedding dresses", "icon_symbol": "tshirt"],
-        ["id": "coffee_servers", "name_ar": "القهوجيات", "name_en": "Coffee servers", "icon_symbol": "cup.and.saucer"],
+        ["id": "coffee_servers", "name_ar": "الضيافة", "name_en": "Hospitality", "icon_symbol": "dallah"],
         ["id": "cakes_sweets", "name_ar": "الكيك والحلويات", "name_en": "Cakes & sweets", "icon_symbol": "birthday.cake"]
     ]
 
@@ -150,6 +152,57 @@ public actor MockCatalogRepository: CatalogRepository {
 
     public func setBudget(total: Decimal, weddingDate: String?) async throws -> Budget? {
         storedBudget = Budget(total: total, reserved: 0, remaining: total, weddingDate: weddingDate)
+        storedBrideDetails?.weddingDate = weddingDate
         return storedBudget
+    }
+
+    public func preparations() async throws -> [Preparation] { orderedPreparations() }
+
+    public func savePreparation(id: String?, title: String, note: String?) async throws -> [Preparation] {
+        let note = note?.trimmingCharacters(in: .whitespacesAndNewlines).nilIfEmpty
+        if let id, let index = storedPreparations.firstIndex(where: { $0.id == id }) {
+            storedPreparations[index].title = title
+            storedPreparations[index].note = note
+        } else {
+            storedPreparations.append(Preparation(id: UUID().uuidString, title: title, note: note))
+        }
+        return orderedPreparations()
+    }
+
+    public func setPreparationDone(id: String, done: Bool) async throws -> [Preparation] {
+        if let index = storedPreparations.firstIndex(where: { $0.id == id }) {
+            var item = storedPreparations.remove(at: index)
+            item.isDone = done
+            // Like the server: open items keep their order, the latest done one comes first.
+            if done { storedPreparations.insert(item, at: 0) } else { storedPreparations.append(item) }
+        }
+        return orderedPreparations()
+    }
+
+    public func deletePreparation(id: String) async throws -> [Preparation] {
+        storedPreparations.removeAll { $0.id == id }
+        return orderedPreparations()
+    }
+
+    public func brideDetails() async throws -> BrideDetails? {
+        storedBrideDetails ?? storedBudget?.weddingDate.map { BrideDetails(weddingDate: $0) }
+    }
+
+    public func setBrideDetails(_ details: BrideDetails) async throws -> BrideDetails? {
+        var saved = details
+        let names = ["dammam": ("الدمام", "Dammam"), "khobar": ("الخبر", "Khobar"), "qatif": ("القطيف", "Qatif")]
+        saved.cityNameAr = details.cityId.flatMap { names[$0]?.0 }
+        saved.cityNameEn = details.cityId.flatMap { names[$0]?.1 }
+        storedBrideDetails = saved
+        // One wedding date, like the server.
+        if let budget = storedBudget {
+            storedBudget = Budget(total: budget.total, reserved: budget.reserved, remaining: budget.remaining,
+                                  weddingDate: details.weddingDate)
+        }
+        return saved
+    }
+
+    private func orderedPreparations() -> [Preparation] {
+        storedPreparations.filter { !$0.isDone } + storedPreparations.filter(\.isDone)
     }
 }

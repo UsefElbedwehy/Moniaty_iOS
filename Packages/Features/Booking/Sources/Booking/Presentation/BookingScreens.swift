@@ -46,6 +46,8 @@ struct BookingsListScreen: View {
                             .listRowSeparator(.hidden)
                         }
                     }
+                    // Ivory cards on the white ground, like every other card in the app.
+                    .listRowBackground(Color.dsSurface)
                 }
             case .offline:
                 ErrorStateView(error: .offline) { Task { await load() } }.listRowBackground(Color.clear)
@@ -272,6 +274,10 @@ struct BookingDetailScreen: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
+            }
+
+            if role == .provider, let details = detail.brideDetails, !details.isEmpty {
+                BrideDetailsCard(details: details, isRevealed: [.paymentConfirmed, .completed, .disputed].contains(b.status))
             }
 
             if let proposal = detail.proposal {
@@ -918,6 +924,94 @@ struct DemoIntroContent: View {
                 .padding(DSSpacing.sm)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(RoundedRectangle(cornerRadius: DSRadius.control).fill(Color.dsPrimaryMuted))
+        }
+    }
+}
+
+/// The bride's details on her booking, for the provider: date, city, venue, guests and notes.
+private struct BrideDetailsCard: View {
+    let details: BookingBrideDetails
+    /// The payment is confirmed, so her name and phone are sent; before that a line says when.
+    let isRevealed: Bool
+
+    private var isArabic: Bool { Locale.current.language.languageCode?.identifier == "ar" }
+
+    /// "yyyy-MM-dd" → a long date in the current language.
+    private var dateText: String? {
+        guard let day = details.weddingDate else { return nil }
+        let parser = DateFormatter()
+        parser.calendar = Calendar(identifier: .gregorian)
+        parser.locale = Locale(identifier: "en_US_POSIX")
+        parser.dateFormat = "yyyy-MM-dd"
+        guard let date = parser.date(from: day) else { return day }
+        // Like every other date in bookings: Gregorian, in the app's language.
+        return date.displayFormatted(.dateTime.day().month(.wide).year().locale(.current))
+    }
+
+    var body: some View {
+        DSCard {
+            VStack(alignment: .leading, spacing: DSSpacing.sm) {
+                Label(BookingL10n.string("brideDetails.title"), systemImage: "person.text.rectangle")
+                    .font(.dsHeadline)
+                    .foregroundStyle(Color.dsTextPrimary)
+                row("brideDetails.name", "person", details.fullName)
+                row("brideDetails.age", "number", details.age.map { $0.formatted() })
+                row("brideDetails.nationality", "globe", details.nationality)
+                row("brideDetails.phone", "phone", details.phone.map(localPhone))
+                if !isRevealed {
+                    Text(verbatim: BookingL10n.string("brideDetails.hidden"))
+                        .font(.dsCaption).foregroundStyle(Color.dsTextSecondary)
+                }
+                row("brideDetails.skinType", "drop", choice("brideDetails.skinType", details.skinType))
+                row("brideDetails.skinTone", "paintpalette", choice("brideDetails.skinTone", details.skinTone))
+                row("brideDetails.hairType", "comb", choice("brideDetails.hairType", details.hairType))
+                row("brideDetails.hairLength", "ruler", choice("brideDetails.hairLength", details.hairLength))
+                if let allergies = details.allergies, !allergies.isEmpty {
+                    VStack(alignment: .leading, spacing: DSSpacing.xxs) {
+                        Label(BookingL10n.string("brideDetails.allergies"), systemImage: "exclamationmark.triangle")
+                            .font(.dsCaption).foregroundStyle(Color.dsWarning)
+                        Text(verbatim: allergies).font(.dsBody).foregroundStyle(Color.dsTextPrimary)
+                    }
+                }
+                if details.hasWedding {
+                    if details.hasPersonal || !isRevealed { Divider() }
+                    BookingL10n.text("brideDetails.section.wedding").font(.dsSubhead.weight(.semibold)).foregroundStyle(Color.dsTextPrimary)
+                }
+                row("brideDetails.date", "calendar", dateText)
+                row("brideDetails.city", "mappin.and.ellipse", isArabic ? details.cityNameAr : details.cityNameEn)
+                row("brideDetails.venue", "building.2", details.venue)
+                row("brideDetails.guests", "person.3", details.guestCount.map { $0.formatted() })
+                if let notes = details.notes, !notes.isEmpty {
+                    VStack(alignment: .leading, spacing: DSSpacing.xxs) {
+                        BookingL10n.text("brideDetails.notes").font(.dsCaption).foregroundStyle(Color.dsTextSecondary)
+                        Text(verbatim: notes).font(.dsBody).foregroundStyle(Color.dsTextPrimary)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    /// A choice field's label ("dry" → «جافة»), nil when unset.
+    private func choice(_ key: String, _ value: String?) -> String? {
+        value.map { BookingL10n.string("\(key).\($0)") }
+    }
+
+    /// +9665XXXXXXXX → 05XXXXXXXX, how people write it.
+    private func localPhone(_ phone: String) -> String {
+        phone.hasPrefix("+966") ? "0" + phone.dropFirst(4) : phone
+    }
+
+    @ViewBuilder
+    private func row(_ key: String, _ symbol: String, _ value: String?) -> some View {
+        if let value, !value.isEmpty {
+            HStack(spacing: DSSpacing.sm) {
+                Image(systemName: symbol).foregroundStyle(Color.dsPrimary).frame(width: 22)
+                BookingL10n.text(key).font(.dsSubhead).foregroundStyle(Color.dsTextSecondary)
+                Spacer(minLength: DSSpacing.sm)
+                Text(verbatim: value).font(.dsSubhead).foregroundStyle(Color.dsTextPrimary).multilineTextAlignment(.trailing)
+            }
+            .accessibilityElement(children: .combine)
         }
     }
 }

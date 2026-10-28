@@ -2,6 +2,8 @@ package co.munyati.catalog.data
 
 import co.munyati.shared.media.VideoAsset
 import co.munyati.catalog.domain.Budget
+import co.munyati.catalog.domain.BrideDetails
+import co.munyati.catalog.domain.Preparation
 import co.munyati.catalog.domain.CatalogCategory
 import co.munyati.catalog.domain.HomeBanner
 import co.munyati.catalog.domain.HomeContent
@@ -20,6 +22,8 @@ class MockCatalogRepository : CatalogRepository {
     private val mutex = Mutex()
     private val favoriteIds = mutableSetOf<String>()
     private var storedBudget: Budget? = null
+    private val storedPreparations = mutableListOf<Preparation>()
+    private var storedBrideDetails: BrideDetails? = null
 
     private data class Provider(val summary: ProviderSummary, val lat: Double, val lng: Double)
     private data class Service(
@@ -29,12 +33,12 @@ class MockCatalogRepository : CatalogRepository {
 
     private val categories = listOf(
         CatalogCategory("makeup", "خبيرة مكياج", "Makeup artist", iconSymbol = "paintbrush.pointed", priceHintAr = "٣٥٠ – ٣٬٠٠٠ ر.س", priceHintEn = "SAR 350 – 3,000"),
-        CatalogCategory("photography", "مصوّرات", "Female photographers", iconSymbol = "camera"),
+        CatalogCategory("photography", "مصورة فوتو", "Photographer", iconSymbol = "camera"),
         CatalogCategory("venues", "قصور وقاعات الأفراح", "Wedding halls & venues", iconSymbol = "building.columns"),
         CatalogCategory("henna", "نقش الحناء", "Henna artist", iconSymbol = "hand.raised"),
         CatalogCategory("kosha_decor", "الكوش والتنسيق", "Kosha & décor", iconSymbol = "sparkles.rectangle.stack"),
         CatalogCategory("dresses", "فساتين الزفاف", "Wedding dresses", iconSymbol = "tshirt"),
-        CatalogCategory("coffee_servers", "القهوجيات", "Coffee servers", iconSymbol = "cup.and.saucer"),
+        CatalogCategory("coffee_servers", "الضيافة", "Hospitality", iconSymbol = "dallah"),
         CatalogCategory("cakes_sweets", "الكيك والحلويات", "Cakes & sweets", iconSymbol = "birthday.cake"),
     )
 
@@ -143,6 +147,50 @@ class MockCatalogRepository : CatalogRepository {
     override suspend fun budget() = mutex.withLock { storedBudget }
 
     override suspend fun setBudget(total: Double, weddingDate: String?) = mutex.withLock {
+        storedBrideDetails = storedBrideDetails?.copy(weddingDate = weddingDate)
         Budget(total, 0.0, total, weddingDate).also { storedBudget = it }
     }
+
+    override suspend fun brideDetails() = mutex.withLock {
+        storedBrideDetails ?: storedBudget?.weddingDate?.let { BrideDetails(weddingDate = it) }
+    }
+
+    override suspend fun setBrideDetails(details: BrideDetails) = mutex.withLock {
+        val names = mapOf("dammam" to ("الدمام" to "Dammam"), "khobar" to ("الخبر" to "Khobar"), "qatif" to ("القطيف" to "Qatif"))
+        val saved = details.copy(cityNameAr = details.cityId?.let { names[it]?.first }, cityNameEn = details.cityId?.let { names[it]?.second })
+        storedBrideDetails = saved
+        // One wedding date, like the server.
+        storedBudget = storedBudget?.copy(weddingDate = details.weddingDate)
+        saved
+    }
+
+    override suspend fun preparations() = mutex.withLock { orderedPreparations() }
+
+    override suspend fun savePreparation(id: String?, title: String, note: String?) = mutex.withLock {
+        val cleanNote = note?.trim()?.ifEmpty { null }
+        val index = storedPreparations.indexOfFirst { it.id == id }
+        if (id != null && index >= 0) {
+            storedPreparations[index] = storedPreparations[index].copy(title = title, note = cleanNote)
+        } else {
+            storedPreparations += Preparation(java.util.UUID.randomUUID().toString(), title, cleanNote)
+        }
+        orderedPreparations()
+    }
+
+    override suspend fun setPreparationDone(id: String, done: Boolean) = mutex.withLock {
+        val index = storedPreparations.indexOfFirst { it.id == id }
+        if (index >= 0) {
+            val item = storedPreparations.removeAt(index).copy(isDone = done)
+            // Like the server: open items keep their order, the latest done one comes first.
+            if (done) storedPreparations.add(0, item) else storedPreparations += item
+        }
+        orderedPreparations()
+    }
+
+    override suspend fun deletePreparation(id: String) = mutex.withLock {
+        storedPreparations.removeAll { it.id == id }
+        orderedPreparations()
+    }
+
+    private fun orderedPreparations() = storedPreparations.filter { !it.isDone } + storedPreparations.filter { it.isDone }
 }

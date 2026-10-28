@@ -47,6 +47,59 @@ struct CatalogTests {
         #expect(detail == nil)
     }
 
+    @Test("a preparation decodes as get_my_preparations returns it")
+    func decodesPreparation() throws {
+        let json = #"[{"id":"a1","title":"قياس الفستان","note":null,"is_done":true,"created_at":"2026-10-28T10:00:00+03:00"}]"#
+        let items = try decoder.decode([Preparation].self, from: Data(json.utf8))
+        #expect(items == [Preparation(id: "a1", title: "قياس الفستان", note: nil, isDone: true)])
+    }
+
+    @Test("preparations: add, tick (done ones move below), edit the note and delete")
+    @MainActor
+    func preparationsFlow() async throws {
+        let store = PreparationsStore(repository: MockCatalogRepository())
+        await store.load(isGuest: false)
+        #expect(store.hasLoaded && store.items.isEmpty)
+        try await store.save(id: nil, title: "الفستان", note: nil)
+        try await store.save(id: nil, title: "الدعوات", note: "  ")
+        #expect(store.items.map(\.title) == ["الفستان", "الدعوات"])
+        #expect(store.items[1].note == nil)
+
+        try await store.toggle(store.items[0])
+        #expect(store.open.map(\.title) == ["الدعوات"])
+        #expect(store.done.map(\.title) == ["الفستان"])
+
+        let invitations = store.open[0]
+        try await store.save(id: invitations.id, title: "الدعوات", note: "٢٠٠ دعوة")
+        #expect(store.open[0].note == "٢٠٠ دعوة")
+
+        try await store.delete(store.done[0])
+        #expect(store.items.count == 1)
+
+        await store.load(isGuest: true)
+        #expect(!store.hasLoaded && store.items.isEmpty)
+    }
+
+    @Test("bride details keep one wedding date with the budget, and empty fields clear")
+    @MainActor
+    func brideDetailsShareTheBudgetDate() async throws {
+        let repo = MockCatalogRepository()
+        _ = try await repo.setBudget(total: 20000, weddingDate: "2027-03-01")
+        let store = BrideDetailsStore(repository: repo)
+        await store.load(isGuest: false)
+        #expect(store.details?.weddingDate == "2027-03-01")
+
+        try await store.save(BrideDetails(weddingDate: "2027-04-10", cityId: "dammam", venue: "قاعة الماسة", guestCount: 300))
+        #expect(store.details?.cityNameAr == "الدمام")
+        #expect(try await repo.budget()?.weddingDate == "2027-04-10")
+        #expect(store.details?.hasEventDetails == true)
+
+        try await store.save(BrideDetails(weddingDate: "2027-04-10"))
+        #expect(store.details?.hasEventDetails == false)
+        #expect(Budget.daysUntil("2027-04-10", now: Date(timeIntervalSince1970: 1_800_000_000)) == 85) // from 15 Jan 2027
+        #expect(Budget.daysUntil("2027-04-10", now: Date(timeIntervalSince1970: 1_900_000_000)) == nil) // after it
+    }
+
     @Test("budget used fraction is clamped to 0…1")
     func budgetFraction() {
         #expect(Budget(total: 1000, reserved: 250, remaining: 750, weddingDate: nil).usedFraction == 0.25)

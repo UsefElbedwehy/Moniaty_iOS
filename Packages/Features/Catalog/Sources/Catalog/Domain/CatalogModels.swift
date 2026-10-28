@@ -214,6 +214,78 @@ public struct MapPin: Identifiable, Hashable, Sendable, Decodable {
     public let logoUrl: URL?
 }
 
+/// The bride's details (تفاصيل العروس): about her, then the wedding. Every field is optional. Filled
+/// once in Profile and shown to the provider of each of her bookings (name and phone only once
+/// the payment is confirmed). `weddingDate` ("yyyy-MM-dd") is the same date the budget stores.
+public struct BrideDetails: Equatable, Sendable, Decodable {
+    public var fullName: String?
+    public var age: Int?
+    public var nationality: String?
+    /// +9665XXXXXXXX.
+    public var phone: String?
+    /// One of `BrideDetails.skinTypes` (and likewise for the other choice fields).
+    public var skinType: String?
+    public var skinTone: String?
+    public var hairType: String?
+    public var hairLength: String?
+    public var allergies: String?
+    public var weddingDate: String?
+    public var cityId: String?
+    public var cityNameAr: String?
+    public var cityNameEn: String?
+    public var venue: String?
+    public var guestCount: Int?
+    public var notes: String?
+
+    /// The values the server accepts for each choice field (labels are localized by the apps).
+    public static let skinTypes = ["normal", "dry", "oily", "combination", "sensitive"]
+    public static let skinTones = ["light", "medium", "tan", "deep"]
+    public static let hairTypes = ["straight", "wavy", "curly"]
+    public static let hairLengths = ["short", "medium", "long"]
+
+    public init(fullName: String? = nil, age: Int? = nil, nationality: String? = nil, phone: String? = nil,
+                skinType: String? = nil, skinTone: String? = nil, hairType: String? = nil, hairLength: String? = nil,
+                allergies: String? = nil, weddingDate: String? = nil, cityId: String? = nil, cityNameAr: String? = nil,
+                cityNameEn: String? = nil, venue: String? = nil, guestCount: Int? = nil, notes: String? = nil) {
+        self.fullName = fullName
+        self.age = age
+        self.nationality = nationality
+        self.phone = phone
+        self.skinType = skinType
+        self.skinTone = skinTone
+        self.hairType = hairType
+        self.hairLength = hairLength
+        self.allergies = allergies
+        self.weddingDate = weddingDate
+        self.cityId = cityId
+        self.cityNameAr = cityNameAr
+        self.cityNameEn = cityNameEn
+        self.venue = venue
+        self.guestCount = guestCount
+        self.notes = notes
+    }
+
+    /// True when she has filled anything besides the date.
+    public var hasEventDetails: Bool {
+        cityId != nil || venue?.isEmpty == false || guestCount != nil || notes?.isEmpty == false
+    }
+}
+
+/// One item on the bride's "My preparations" checklist (تجهيزاتي), with an optional note.
+public struct Preparation: Identifiable, Equatable, Sendable, Decodable {
+    public let id: String
+    public var title: String
+    public var note: String?
+    public var isDone: Bool
+
+    public init(id: String, title: String, note: String? = nil, isDone: Bool = false) {
+        self.id = id
+        self.title = title
+        self.note = note
+        self.isDone = isDone
+    }
+}
+
 /// The bride's wedding budget (requirement 13). `reserved` is the sum of approved bookings.
 public struct Budget: Equatable, Sendable, Decodable {
     public let total: Decimal
@@ -230,6 +302,11 @@ public struct Budget: Equatable, Sendable, Decodable {
 
     /// Whole days from today to the wedding date (0 on the day), nil without a date or after it.
     public func daysUntilWedding(now: Date = .now) -> Int? {
+        Self.daysUntil(weddingDate, now: now)
+    }
+
+    /// Whole days from today to a "yyyy-MM-dd" day (0 on the day), nil without one or after it.
+    public static func daysUntil(_ weddingDate: String?, now: Date = .now) -> Int? {
         guard let weddingDate else { return nil }
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = .current
@@ -281,6 +358,8 @@ public enum CatalogRoute: Hashable, Sendable {
     case provider(id: String)
     case store(id: String)
     case favorites
+    case preparations
+    case brideDetails
 }
 
 extension String {

@@ -23,6 +23,25 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.outlined.WarningAmber
+import androidx.compose.material.icons.outlined.Straighten
+import androidx.compose.material.icons.outlined.ContentCut
+import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.outlined.WaterDrop
+import androidx.compose.material.icons.outlined.Phone
+import androidx.compose.material.icons.outlined.Public
+import androidx.compose.material.icons.outlined.Tag
+import androidx.compose.material.icons.outlined.Person
+import co.munyati.booking.data.Riyadh
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.ui.graphics.vector.ImageVector
+import co.munyati.booking.domain.BookingBrideDetails
+import androidx.compose.material.icons.outlined.Groups
+import androidx.compose.material.icons.outlined.Apartment
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.AddPhotoAlternate
@@ -278,6 +297,11 @@ private fun DetailContent(
                     Text(stringResource(R.string.booking_detail_payBy, bookingDateText(due)), style = DS.type.footnote, color = DS.colors.primary)
                 }
             }
+        }
+
+        val brideDetails = detail.brideDetails
+        if (role == BookingRole.Provider && brideDetails != null && !brideDetails.isEmpty) {
+            BrideDetailsCard(brideDetails, isRevealed = b.status in setOf(BookingStatus.PaymentConfirmed, BookingStatus.Completed, BookingStatus.Disputed))
         }
 
         detail.proposal?.let { proposal ->
@@ -806,5 +830,67 @@ private fun DemoIntroSheet(onStart: () -> Unit) {
             }
             PrimaryButton(stringResource(R.string.booking_demo_intro_start)) { onStart() }
         }
+    }
+}
+
+/** The bride's details on her booking, for the provider: date, city, venue, guests and notes. */
+@Composable
+private fun BrideDetailsCard(details: BookingBrideDetails, isRevealed: Boolean) {
+    val arabic = java.util.Locale.getDefault().language == "ar"
+    // "yyyy-MM-dd" → a long date, in the same calendar and language as every other booking date.
+    val dateText = details.weddingDate?.let { day ->
+        runCatching { LocalDate.parse(day).atTime(12, 0).atZone(Riyadh).toInstant() }.getOrNull()
+            ?.let { DisplayDates.pattern(it, "dMMMMy") } ?: day
+    }
+    DSCard(Modifier.fillMaxWidth()) {
+        Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.sm)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs), verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Outlined.Badge, contentDescription = null, tint = DS.colors.textPrimary)
+                Text(stringResource(R.string.booking_brideDetails_title), style = DS.type.headline, color = DS.colors.textPrimary)
+            }
+            BrideDetailRow(R.string.booking_brideDetails_name, Icons.Outlined.Person, details.fullName)
+            BrideDetailRow(R.string.booking_brideDetails_age, Icons.Outlined.Tag, details.age?.let { java.text.NumberFormat.getIntegerInstance().format(it) })
+            BrideDetailRow(R.string.booking_brideDetails_nationality, Icons.Outlined.Public, details.nationality)
+            BrideDetailRow(R.string.booking_brideDetails_phone, Icons.Outlined.Phone, details.phone?.let { if (it.startsWith("+966")) "0" + it.drop(4) else it })
+            if (!isRevealed) Text(stringResource(R.string.booking_brideDetails_hidden), style = DS.type.caption, color = DS.colors.textSecondary)
+            BrideDetailRow(R.string.booking_brideDetails_skinType, Icons.Outlined.WaterDrop, details.skinType?.let { bookingString("brideDetails.skinType.$it") })
+            BrideDetailRow(R.string.booking_brideDetails_skinTone, Icons.Outlined.Palette, details.skinTone?.let { bookingString("brideDetails.skinTone.$it") })
+            BrideDetailRow(R.string.booking_brideDetails_hairType, Icons.Outlined.ContentCut, details.hairType?.let { bookingString("brideDetails.hairType.$it") })
+            BrideDetailRow(R.string.booking_brideDetails_hairLength, Icons.Outlined.Straighten, details.hairLength?.let { bookingString("brideDetails.hairLength.$it") })
+            if (!details.allergies.isNullOrEmpty()) {
+                Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.xxs)) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Outlined.WarningAmber, contentDescription = null, tint = DS.colors.warning, modifier = Modifier.size(16.dp))
+                        Text(stringResource(R.string.booking_brideDetails_allergies), style = DS.type.caption, color = DS.colors.warning)
+                    }
+                    Text(details.allergies, style = DS.type.body, color = DS.colors.textPrimary)
+                }
+            }
+            if (details.hasWedding) {
+                if (details.hasPersonal || !isRevealed) HorizontalDivider(color = DS.colors.border)
+                Text(stringResource(R.string.booking_brideDetails_section_wedding), style = DS.type.subhead.copy(fontWeight = FontWeight.SemiBold), color = DS.colors.textPrimary)
+            }
+            BrideDetailRow(R.string.booking_brideDetails_date, Icons.Outlined.CalendarMonth, dateText)
+            BrideDetailRow(R.string.booking_brideDetails_city, Icons.Outlined.LocationOn, if (arabic) details.cityNameAr else details.cityNameEn)
+            BrideDetailRow(R.string.booking_brideDetails_venue, Icons.Outlined.Apartment, details.venue)
+            BrideDetailRow(R.string.booking_brideDetails_guests, Icons.Outlined.Groups, details.guestCount?.let { java.text.NumberFormat.getIntegerInstance().format(it) })
+            if (!details.notes.isNullOrEmpty()) {
+                Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.xxs)) {
+                    Text(stringResource(R.string.booking_brideDetails_notes), style = DS.type.caption, color = DS.colors.textSecondary)
+                    Text(details.notes, style = DS.type.body, color = DS.colors.textPrimary)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BrideDetailRow(label: Int, icon: ImageVector, value: String?) {
+    if (value.isNullOrEmpty()) return
+    Row(horizontalArrangement = Arrangement.spacedBy(DSSpacing.sm), verticalAlignment = Alignment.CenterVertically) {
+        Icon(icon, contentDescription = null, tint = DS.colors.primary, modifier = Modifier.size(22.dp))
+        Text(stringResource(label), style = DS.type.subhead, color = DS.colors.textSecondary)
+        Spacer(Modifier.weight(1f))
+        Text(value, style = DS.type.subhead, color = DS.colors.textPrimary)
     }
 }

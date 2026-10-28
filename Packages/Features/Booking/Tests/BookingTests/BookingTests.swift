@@ -40,6 +40,25 @@ struct BookingTests {
         #expect(detail.paymentMethods.first?.kind == "iban")
         #expect(detail.proposal == nil)
         #expect(detail.events.count == 1)
+        #expect(detail.brideDetails == nil)
+    }
+
+    @Test("the provider's booking carries the bride's details; empty ones count as none")
+    func brideDetailsDecoding() throws {
+        let json = """
+        {"id":"b1","reference_code":"MN-7K2Q9","status":"requested","is_demo":false,
+         "service_id":"s1","service_title":"مكياج العروس","price":2800,
+         "starts_at":"2026-11-11T13:00:00Z","ends_at":"2026-11-11T16:00:00Z","status_changed_at":"2026-10-30T10:00:00Z",
+         "provider":{"id":"p1","name":"لمسة جمال","logo_url":null,"is_verified":true},"bride_name":"ن***",
+         "bride_details":{"wedding_date":"2027-04-10","city_id":"dammam","city_name_ar":"الدمام","city_name_en":"Dammam",
+                          "venue":"قاعة الماسة","guest_count":300,"notes":null}}
+        """
+        let detail = try decoder().decode(BookingDetail.self, from: Data(json.utf8))
+        #expect(detail.brideDetails?.guestCount == 300)
+        #expect(detail.brideDetails?.venue == "قاعة الماسة")
+        #expect(detail.brideDetails?.isEmpty == false)
+        let empty = #"{"wedding_date":null,"city_name_ar":null,"venue":null,"guest_count":null,"notes":""}"#
+        #expect(try decoder().decode(BookingBrideDetails.self, from: Data(empty.utf8)).isEmpty)
     }
 
     @Test("payment method drafts need a label, a name and a value")

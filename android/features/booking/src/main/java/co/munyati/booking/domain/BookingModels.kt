@@ -117,7 +117,40 @@ data class BookingDetail(
     val receipts: List<BookingReceipt>,
     val events: List<BookingEvent>,
     val openDispute: BookingDispute?,
+    /** The bride's details, for the booking's provider only (null for the bride and on demos). */
+    val brideDetails: BookingBrideDetails? = null,
 )
+
+/** What the bride filled in "Bride details" (Profile), as her booking's provider sees it. */
+@Serializable
+data class BookingBrideDetails(
+    /** Name and phone are null until the payment is confirmed (privacy, like `brideName`). */
+    val fullName: String? = null,
+    val age: Int? = null,
+    val nationality: String? = null,
+    val phone: String? = null,
+    val skinType: String? = null,
+    val skinTone: String? = null,
+    val hairType: String? = null,
+    val hairLength: String? = null,
+    val allergies: String? = null,
+    val weddingDate: String? = null,
+    val cityNameAr: String? = null,
+    val cityNameEn: String? = null,
+    val venue: String? = null,
+    val guestCount: Int? = null,
+    val notes: String? = null,
+) {
+    val isEmpty: Boolean get() = !hasPersonal && !hasWedding
+
+    /** Anything about her (besides the name and phone, which may be hidden). */
+    val hasPersonal: Boolean
+        get() = fullName != null || age != null || !nationality.isNullOrEmpty() || phone != null || skinType != null ||
+            skinTone != null || hairType != null || hairLength != null || !allergies.isNullOrEmpty()
+
+    val hasWedding: Boolean
+        get() = weddingDate != null || cityNameAr != null || !venue.isNullOrEmpty() || guestCount != null || !notes.isNullOrEmpty()
+}
 
 /** A provider's own payment method (managed in the studio). */
 @Serializable

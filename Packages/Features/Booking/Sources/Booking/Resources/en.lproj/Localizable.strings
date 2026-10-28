@@ -172,3 +172,37 @@
 "error.demo" = "The demo booking can't be reported.";
 "pay.amountFrom" = "Amount due · %@";
 "pay.deadline" = "Pay by %@, or the request is cancelled automatically.";
+
+/* The bride's details on a booking (provider) */
+"brideDetails.title" = "Bride details";
+"brideDetails.date" = "Wedding date";
+"brideDetails.city" = "City";
+"brideDetails.venue" = "Venue";
+"brideDetails.guests" = "Guests";
+"brideDetails.notes" = "Her notes";
+"brideDetails.name" = "Name";
+"brideDetails.age" = "Age";
+"brideDetails.nationality" = "Nationality";
+"brideDetails.phone" = "Contact number";
+"brideDetails.allergies" = "Allergies or health notes";
+"brideDetails.hidden" = "Her name and number show once the payment is confirmed.";
+"brideDetails.section.wedding" = "Wedding";
+"brideDetails.skinType" = "Skin type";
+"brideDetails.skinType.normal" = "Normal";
+"brideDetails.skinType.dry" = "Dry";
+"brideDetails.skinType.oily" = "Oily";
+"brideDetails.skinType.combination" = "Combination";
+"brideDetails.skinType.sensitive" = "Sensitive";
+"brideDetails.skinTone" = "Skin tone";
+"brideDetails.skinTone.light" = "Light";
+"brideDetails.skinTone.medium" = "Medium";
+"brideDetails.skinTone.tan" = "Tan";
+"brideDetails.skinTone.deep" = "Deep";
+"brideDetails.hairType" = "Hair type";
+"brideDetails.hairType.straight" = "Straight";
+"brideDetails.hairType.wavy" = "Wavy";
+"brideDetails.hairType.curly" = "Curly";
+"brideDetails.hairLength" = "Hair length";
+"brideDetails.hairLength.short" = "Short";
+"brideDetails.hairLength.medium" = "Medium";
+"brideDetails.hairLength.long" = "Long";

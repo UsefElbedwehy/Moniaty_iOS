@@ -30,6 +30,7 @@
     <string name="profile_appearance_system">Automatic</string>
     <string name="profile_blocked">Blocked accounts</string>
     <string name="profile_brand">Munyati</string>
+    <string name="profile_brideDetails">Bride details</string>
     <string name="profile_budget">Wedding budget</string>
     <string name="profile_cities">Cities</string>
     <string name="profile_deleteAccount">Delete account</string>
@@ -43,6 +44,7 @@
     <string name="profile_guest_title">Welcome to Munyati</string>
     <string name="profile_language">Language</string>
     <string name="profile_language_current">English</string>
+    <string name="profile_preparations">My preparations</string>
     <string name="profile_privacy">Privacy policy</string>
     <string name="profile_rate">Rate Munyati</string>
     <string name="profile_role_bride">Bride account</string>

@@ -36,7 +36,13 @@ public actor MockBookingRepository: BookingRepository {
                 "service_id": "s1", "service_title": title, "price": price,
                 "starts_at": Self.iso.string(from: starts), "ends_at": Self.iso.string(from: starts.addingTimeInterval(3 * 3600)),
                 "note": "", "status_changed_at": Self.iso.string(from: .now),
-                "provider": ["id": "p-lamsa", "name": "لمسة جمال", "is_verified": true] as [String: Any], "bride_name": "نورة"
+                "provider": ["id": "p-lamsa", "name": "لمسة جمال", "is_verified": true] as [String: Any], "bride_name": "نورة",
+                // Like the server: her name and phone only once the payment is confirmed.
+                "bride_details": (status == .paymentConfirmed ? ["full_name": "نورة محمد", "phone": "+966551234567"] : [:])
+                    .merging(["age": 27, "nationality": "سعودية", "skin_type": "dry", "skin_tone": "medium",
+                                  "hair_type": "wavy", "hair_length": "long", "allergies": "حساسية من الحناء السوداء",
+                                  "wedding_date": DateFormatter.day.string(from: starts), "city_name_ar": "الدمام", "city_name_en": "Dammam",
+                                  "venue": "قاعة الماسة", "guest_count": 300, "notes": "أفضّل المكياج الناعم"] as [String: Any]) { a, _ in a }
             ], status: status, events: [["to_status": status.rawValue, "actor_role": "provider", "created_at": Self.iso.string(from: .now)]])
         }
     }

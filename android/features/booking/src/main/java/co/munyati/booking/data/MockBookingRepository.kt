@@ -2,6 +2,7 @@ package co.munyati.booking.data
 
 import co.munyati.booking.domain.ActionResult
 import co.munyati.booking.domain.Availability
+import co.munyati.booking.domain.BookingBrideDetails
 import co.munyati.booking.domain.BookingDetail
 import co.munyati.booking.domain.BookingEvent
 import co.munyati.booking.domain.BookingProposal
@@ -155,7 +156,17 @@ class MockBookingRepository : BookingRepository {
     override suspend fun booking(id: String): BookingDetail? = mutex.withLock {
         val row = rows[id] ?: return@withLock null
         val hidesMethods = row.summary.status == BookingStatus.Requested || row.summary.status == BookingStatus.RescheduleProposed
-        BookingDetail(row.summary, if (hidesMethods) emptyList() else row.paymentMethods, row.proposal, row.receipts.toList(), row.events.toList(), null)
+        // Sample bride details, as the provider would see them (never on demos).
+        val paid = row.summary.status in setOf(BookingStatus.PaymentConfirmed, BookingStatus.Completed, BookingStatus.Disputed)
+        val details = if (row.summary.isDemo) null else BookingBrideDetails(
+            // Like the server: her name and phone only once the payment is confirmed.
+            fullName = if (paid) "نورة محمد" else null, phone = if (paid) "+966551234567" else null,
+            age = 27, nationality = "سعودية", skinType = "dry", skinTone = "medium", hairType = "wavy", hairLength = "long",
+            allergies = "حساسية من الحناء السوداء",
+            weddingDate = row.summary.startsAt.atZone(Riyadh).toLocalDate().toString(), cityNameAr = "الدمام", cityNameEn = "Dammam",
+            venue = "قاعة الماسة", guestCount = 300, notes = "أفضّل المكياج الناعم",
+        )
+        BookingDetail(row.summary, if (hidesMethods) emptyList() else row.paymentMethods, row.proposal, row.receipts.toList(), row.events.toList(), null, details)
     }
 
     override suspend fun availability() = mutex.withLock { hours }

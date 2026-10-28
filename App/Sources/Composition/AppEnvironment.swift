@@ -193,8 +193,10 @@ final class AppEnvironment {
         context.showsBudgetSlide = remoteConfig.config?.isFeatureEnabled("hideHomeBudgetSlide") != true
         context.showsDiscoverSlide = remoteConfig.config?.isFeatureEnabled("hideHomeDiscoverSlide") != true
         context.displayName = session.user?.displayName
+        context.phone = session.user?.phone
         context.cityIds = cities.queryCityIds
         context.citySummary = cities.summary(allLabel: L10n.string("cities.all"))
+        context.cities = cities.available
         if wasGuest != context.isGuest { catalog.accountChanged() }
     }
 

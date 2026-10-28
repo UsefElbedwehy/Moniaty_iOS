@@ -284,7 +284,35 @@ struct ProfileScreen: View {
                 ProfileRow(symbol: "mappin.and.ellipse", tint: .brand, titleKey: "profile.cities",
                            value: environment.cities.summary(allLabel: L10n.string("cities.all")))
             }
+            ProfileDivider()
+            if session.hasAccount {
+                NavigationLink(value: CatalogRoute.preparations) { preparationsRow }
+            } else {
+                Button { session.isPresentingAuth = true } label: { preparationsRow }
+            }
+            ProfileDivider()
+            if session.hasAccount {
+                NavigationLink(value: CatalogRoute.brideDetails) { brideDetailsRow }
+            } else {
+                Button { session.isPresentingAuth = true } label: { brideDetailsRow }
+            }
         }
+    }
+
+    /// "Bride details" with her wedding city once she has set one.
+    private var brideDetailsRow: some View {
+        let details = environment.catalog.currentBrideDetails
+        let isArabic = Locale.current.language.languageCode?.identifier == "ar"
+        return ProfileRow(symbol: "person.text.rectangle", tint: .pink, titleKey: "profile.brideDetails",
+                          value: isArabic ? details?.cityNameAr : details?.cityNameEn)
+    }
+
+    /// "My preparations" with how many are done, e.g. "٢/٥".
+    private var preparationsRow: some View {
+        ProfileRow(symbol: "checklist", tint: .purple, titleKey: "profile.preparations",
+                   value: environment.catalog.preparationsProgress.flatMap { progress in
+                       progress.total == 0 ? nil : "\(progress.done.formatted())/\(progress.total.formatted())"
+                   })
     }
 
     private var appSection: some View {

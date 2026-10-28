@@ -2,8 +2,10 @@ package co.munyati.catalog.data
 
 import co.munyati.shared.media.VideoAsset
 import co.munyati.catalog.domain.Budget
+import co.munyati.catalog.domain.BrideDetails
 import co.munyati.catalog.domain.HomeContent
 import co.munyati.catalog.domain.MapPin
+import co.munyati.catalog.domain.Preparation
 import co.munyati.catalog.domain.ProviderProfile
 import co.munyati.catalog.domain.ProviderSummary
 import co.munyati.catalog.domain.ServiceCard
@@ -30,6 +32,14 @@ interface CatalogRepository {
     suspend fun favorites(): List<ServiceCard>
     suspend fun budget(): Budget?
     suspend fun setBudget(total: Double, weddingDate: String?): Budget?
+    /** "My preparations": every call returns the whole list, in display order. */
+    suspend fun preparations(): List<Preparation>
+    suspend fun savePreparation(id: String?, title: String, note: String?): List<Preparation>
+    suspend fun setPreparationDone(id: String, done: Boolean): List<Preparation>
+    suspend fun deletePreparation(id: String): List<Preparation>
+    /** "Bride details": null until she has any. */
+    suspend fun brideDetails(): BrideDetails?
+    suspend fun setBrideDetails(details: BrideDetails): BrideDetails?
 }
 
 /** Page size of `search_services`, shared with the list's "load more" rule. */
@@ -87,6 +97,32 @@ class RemoteCatalogRepository(private val client: ApiClient) : CatalogRepository
     override suspend fun setBudget(total: Double, weddingDate: String?): Budget? =
         client.send(ApiEndpoint.rpc("set_my_budget"), BudgetArgs(total, weddingDate))
 
+    // "My preparations": `supabase/migrations/20261028000000_bride_preparations.sql`.
+
+    override suspend fun preparations(): List<Preparation> = client.send(ApiEndpoint.rpc("get_my_preparations"), EmptyBody())
+
+    override suspend fun savePreparation(id: String?, title: String, note: String?): List<Preparation> =
+        client.send(ApiEndpoint.rpc("save_my_preparation"), PreparationArgs(id, title, note))
+
+    override suspend fun setPreparationDone(id: String, done: Boolean): List<Preparation> =
+        client.send(ApiEndpoint.rpc("set_my_preparation_done"), PreparationDoneArgs(id, done))
+
+    override suspend fun deletePreparation(id: String): List<Preparation> =
+        client.send(ApiEndpoint.rpc("delete_my_preparation"), IdArgs(id))
+
+    // "Bride details": `supabase/migrations/20261029000100_bride_details.sql`.
+
+    override suspend fun brideDetails(): BrideDetails? = client.send(ApiEndpoint.rpc("get_my_bride_details"), EmptyBody())
+
+    override suspend fun setBrideDetails(details: BrideDetails): BrideDetails? = client.send(
+        ApiEndpoint.rpc("set_my_bride_details"),
+        BrideDetailsArgs(
+            details.fullName, details.age, details.nationality, details.phone, details.skinType, details.skinTone,
+            details.hairType, details.hairLength, details.allergies,
+            details.weddingDate, details.cityId, details.venue, details.guestCount, details.notes,
+        ),
+    )
+
     /** Detail RPCs answer `null` when missing, or one object holding a summary plus extras. */
     private suspend fun <T> flattened(endpoint: ApiEndpoint, id: String, build: ApiClient.(String) -> T): T? {
         val raw = client.sendRaw(endpoint, client.json.encodeToString(IdArgs.serializer(), IdArgs(id)))
@@ -113,6 +149,16 @@ private data class MapArgs(val pMinLat: Double, val pMinLng: Double, val pMaxLat
 @Serializable private data class FavoriteArgs(val pServiceId: String)
 @Serializable private data class FavoriteResult(val isFavorite: Boolean)
 @Serializable private data class BudgetArgs(val pTotal: Double, val pWeddingDate: String?)
+/** Every field is replaced; one left out is cleared. */
+@Serializable
+private data class BrideDetailsArgs(
+    val pFullName: String?, val pAge: Int?, val pNationality: String?, val pPhone: String?,
+    val pSkinType: String?, val pSkinTone: String?, val pHairType: String?, val pHairLength: String?, val pAllergies: String?,
+    val pWeddingDate: String?, val pCityId: String?, val pVenue: String?, val pGuestCount: Int?, val pNotes: String?,
+)
+/** Without `pId` the RPC adds a new item. */
+@Serializable private data class PreparationArgs(val pId: String?, val pTitle: String, val pNote: String?)
+@Serializable private data class PreparationDoneArgs(val pId: String, val pDone: Boolean)
 
 @Serializable
 private data class ServiceExtras(

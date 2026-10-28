@@ -165,15 +165,58 @@ data class MapPin(
     val logoUrl: String? = null,
 )
 
+/**
+ * The bride's details (تفاصيل العروس): filled once in Profile, shown to the provider of each of her
+ * bookings. [weddingDate] ("yyyy-MM-dd") is the same date the budget stores.
+ */
+@Serializable
+data class BrideDetails(
+    val fullName: String? = null,
+    val age: Int? = null,
+    val nationality: String? = null,
+    /** +9665XXXXXXXX. */
+    val phone: String? = null,
+    val skinType: String? = null,
+    val skinTone: String? = null,
+    val hairType: String? = null,
+    val hairLength: String? = null,
+    val allergies: String? = null,
+    val weddingDate: String? = null,
+    val cityId: String? = null,
+    val cityNameAr: String? = null,
+    val cityNameEn: String? = null,
+    val venue: String? = null,
+    val guestCount: Int? = null,
+    val notes: String? = null,
+) {
+    /** True when she has filled anything besides the date. */
+    val hasEventDetails: Boolean get() = cityId != null || !venue.isNullOrEmpty() || guestCount != null || !notes.isNullOrEmpty()
+
+    companion object {
+        /** The values the server accepts for each choice field (labels are localized by the apps). */
+        val skinTypes = listOf("normal", "dry", "oily", "combination", "sensitive")
+        val skinTones = listOf("light", "medium", "tan", "deep")
+        val hairTypes = listOf("straight", "wavy", "curly")
+        val hairLengths = listOf("short", "medium", "long")
+    }
+}
+
+/** Whole days from today to a "yyyy-MM-dd" day (0 on the day), null without one or after it. */
+fun daysUntil(day: String?, today: java.time.LocalDate = java.time.LocalDate.now()): Int? {
+    val date = day?.let { runCatching { java.time.LocalDate.parse(it) }.getOrNull() } ?: return null
+    val days = java.time.temporal.ChronoUnit.DAYS.between(today, date)
+    return if (days >= 0) days.toInt() else null
+}
+
+/** One item on the bride's "My preparations" checklist (تجهيزاتي), with an optional note. */
+@Serializable
+data class Preparation(val id: String, val title: String, val note: String? = null, val isDone: Boolean = false)
+
 /** The bride's wedding budget (requirement 13). `reserved` is the sum of approved bookings. */
 @Serializable
 data class Budget(val total: Double, val reserved: Double, val remaining: Double, val weddingDate: String? = null) {
     /** Whole days from today to the wedding date (0 on the day), null without a date or after it. */
-    fun daysUntilWedding(today: java.time.LocalDate = java.time.LocalDate.now()): Int? {
-        val day = weddingDate?.let { runCatching { java.time.LocalDate.parse(it) }.getOrNull() } ?: return null
-        val days = java.time.temporal.ChronoUnit.DAYS.between(today, day)
-        return if (days >= 0) days.toInt() else null
-    }
+    fun daysUntilWedding(today: java.time.LocalDate = java.time.LocalDate.now()): Int? = daysUntil(weddingDate, today)
 
     /** 0…1, how much of the budget is reserved. */
     val usedFraction: Float get() = if (total <= 0) 0f else (reserved / total).toFloat().coerceIn(0f, 1f)

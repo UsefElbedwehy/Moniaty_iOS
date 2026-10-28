@@ -51,6 +51,8 @@
 "profile.section.wedding" = "زفافي";
 "profile.favorites" = "المفضلة";
 "profile.budget" = "ميزانية الزفاف";
+"profile.preparations" = "تجهيزاتي";
+"profile.brideDetails" = "تفاصيل العروس";
 "common.retry" = "إعادة المحاولة";
 "profile.signOut.confirmTitle" = "تسجيل الخروج من منيتي؟";
 
