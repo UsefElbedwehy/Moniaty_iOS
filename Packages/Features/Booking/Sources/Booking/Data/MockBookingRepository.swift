@@ -38,7 +38,7 @@ public actor MockBookingRepository: BookingRepository {
                 "note": "", "status_changed_at": Self.iso.string(from: .now),
                 "provider": ["id": "p-lamsa", "name": "لمسة جمال", "is_verified": true] as [String: Any], "bride_name": "نورة",
                 // Like the server: her name and phone only once the payment is confirmed.
-                "bride_details": (status == .paymentConfirmed ? ["full_name": "نورة محمد", "phone": "+966551234567"] : [:])
+                "bride_details": (status == .paymentConfirmed ? ["full_name": "نورة محمد", "phone": "+966551234567", "extra_phone": "+966561112222"] : [:])
                     .merging(["age": 27, "nationality": "سعودية", "skin_type": "dry", "skin_tone": "medium",
                                   "hair_type": "wavy", "hair_length": "long", "allergies": "حساسية من الحناء السوداء",
                                   "wedding_date": DateFormatter.day.string(from: starts), "city_name_ar": "الدمام", "city_name_en": "Dammam",

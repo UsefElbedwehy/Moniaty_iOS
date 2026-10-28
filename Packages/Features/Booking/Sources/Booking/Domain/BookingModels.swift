@@ -135,6 +135,7 @@ public struct BookingBrideDetails: Sendable, Decodable, Equatable {
     public let age: Int?
     public let nationality: String?
     public let phone: String?
+    public let extraPhone: String?
     public let skinType: String?
     public let skinTone: String?
     public let hairType: String?
@@ -151,7 +152,7 @@ public struct BookingBrideDetails: Sendable, Decodable, Equatable {
 
     /// Anything about her (besides the name and phone, which may be hidden).
     public var hasPersonal: Bool {
-        fullName != nil || age != nil || nationality?.isEmpty == false || phone != nil || skinType != nil
+        fullName != nil || age != nil || nationality?.isEmpty == false || phone != nil || extraPhone != nil || skinType != nil
             || skinTone != nil || hairType != nil || hairLength != nil || allergies?.isEmpty == false
     }
 

@@ -160,7 +160,7 @@ class MockBookingRepository : BookingRepository {
         val paid = row.summary.status in setOf(BookingStatus.PaymentConfirmed, BookingStatus.Completed, BookingStatus.Disputed)
         val details = if (row.summary.isDemo) null else BookingBrideDetails(
             // Like the server: her name and phone only once the payment is confirmed.
-            fullName = if (paid) "نورة محمد" else null, phone = if (paid) "+966551234567" else null,
+            fullName = if (paid) "نورة محمد" else null, phone = if (paid) "+966551234567" else null, extraPhone = if (paid) "+966561112222" else null,
             age = 27, nationality = "سعودية", skinType = "dry", skinTone = "medium", hairType = "wavy", hairLength = "long",
             allergies = "حساسية من الحناء السوداء",
             weddingDate = row.summary.startsAt.atZone(Riyadh).toLocalDate().toString(), cityNameAr = "الدمام", cityNameEn = "Dammam",

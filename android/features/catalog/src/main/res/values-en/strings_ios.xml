@@ -13,6 +13,7 @@
     <string name="catalog_brideDetails_allergies">Allergies or health notes</string>
     <string name="catalog_brideDetails_allergies_placeholder">e.g. Allergic to black henna</string>
     <string name="catalog_brideDetails_city">Wedding city</string>
+    <string name="catalog_brideDetails_extraPhone">Extra number (optional)</string>
     <string name="catalog_brideDetails_guests">Approximate number of guests</string>
     <string name="catalog_brideDetails_guests_invalid">Enter a number from 1 to 10,000.</string>
     <string name="catalog_brideDetails_guests_placeholder">e.g. 300</string>
@@ -27,12 +28,14 @@
     <string name="catalog_brideDetails_intro">Providers see these details on every booking request you send, so they know your occasion before accepting.</string>
     <string name="catalog_brideDetails_name">Name</string>
     <string name="catalog_brideDetails_nationality">Nationality</string>
+    <string name="catalog_brideDetails_nationality_default">Saudi</string>
     <string name="catalog_brideDetails_none">Not set</string>
     <string name="catalog_brideDetails_notes">Notes for providers</string>
     <string name="catalog_brideDetails_notes_placeholder">e.g. I prefer soft makeup; the wedding is outdoors</string>
-    <string name="catalog_brideDetails_phone">Contact number (05XXXXXXXX)</string>
+    <string name="catalog_brideDetails_phone">Mobile number</string>
     <string name="catalog_brideDetails_phone_invalid">Enter a Saudi mobile number, e.g. 0551234567.</string>
-    <string name="catalog_brideDetails_privacy">Providers see your name and number only after the payment is confirmed. Every field is optional.</string>
+    <string name="catalog_brideDetails_phone_locked">Your sign-in number; it can\'t be changed.</string>
+    <string name="catalog_brideDetails_privacy">Your mobile is the number you sign in with. Providers see your name and numbers only after the payment is confirmed. Every field is optional.</string>
     <string name="catalog_brideDetails_section_looks">Skin &amp; hair</string>
     <string name="catalog_brideDetails_section_me">About me</string>
     <string name="catalog_brideDetails_section_wedding">Wedding</string>

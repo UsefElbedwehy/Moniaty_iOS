@@ -157,7 +157,8 @@ class MockCatalogRepository : CatalogRepository {
 
     override suspend fun setBrideDetails(details: BrideDetails) = mutex.withLock {
         val names = mapOf("dammam" to ("الدمام" to "Dammam"), "khobar" to ("الخبر" to "Khobar"), "qatif" to ("القطيف" to "Qatif"))
-        val saved = details.copy(cityNameAr = details.cityId?.let { names[it]?.first }, cityNameEn = details.cityId?.let { names[it]?.second })
+        // The phone is the login number, like the server.
+        val saved = details.copy(phone = "+966500000000", cityNameAr = details.cityId?.let { names[it]?.first }, cityNameEn = details.cityId?.let { names[it]?.second })
         storedBrideDetails = saved
         // One wedding date, like the server.
         storedBudget = storedBudget?.copy(weddingDate = details.weddingDate)

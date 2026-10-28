@@ -126,9 +126,9 @@
 "brideDetails.age" = "العمر";
 "brideDetails.age.invalid" = "اكتبي العمر من ١٦ إلى ٧٠.";
 "brideDetails.nationality" = "الجنسية";
-"brideDetails.phone" = "رقم التواصل (05XXXXXXXX)";
+"brideDetails.phone" = "رقم الجوال";
 "brideDetails.phone.invalid" = "اكتبي رقم جوال سعودي، مثل 0551234567.";
-"brideDetails.privacy" = "لا يظهر اسمك ورقمك لمقدّمة الخدمة إلا بعد تأكيد الدفع. كل الخانات اختيارية.";
+"brideDetails.privacy" = "رقم الجوال هو رقم تسجيل دخولك. لا يظهر اسمك ورقماك لمقدّمة الخدمة إلا بعد تأكيد الدفع. كل الخانات اختيارية.";
 "brideDetails.section.looks" = "البشرة والشعر";
 "brideDetails.allergies" = "حساسية أو ملاحظات صحية";
 "brideDetails.allergies.placeholder" = "مثال: حساسية من الحناء السوداء";
@@ -151,3 +151,6 @@
 "brideDetails.hairLength.short" = "قصير";
 "brideDetails.hairLength.medium" = "متوسط";
 "brideDetails.hairLength.long" = "طويل";
+"brideDetails.phone.locked" = "رقم تسجيل الدخول، لا يمكن تغييره.";
+"brideDetails.extraPhone" = "رقم إضافي (اختياري)";
+"brideDetails.nationality.default" = "سعودية";

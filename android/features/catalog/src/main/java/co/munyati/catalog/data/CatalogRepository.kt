@@ -117,7 +117,7 @@ class RemoteCatalogRepository(private val client: ApiClient) : CatalogRepository
     override suspend fun setBrideDetails(details: BrideDetails): BrideDetails? = client.send(
         ApiEndpoint.rpc("set_my_bride_details"),
         BrideDetailsArgs(
-            details.fullName, details.age, details.nationality, details.phone, details.skinType, details.skinTone,
+            details.fullName, details.age, details.nationality, details.extraPhone, details.skinType, details.skinTone,
             details.hairType, details.hairLength, details.allergies,
             details.weddingDate, details.cityId, details.venue, details.guestCount, details.notes,
         ),
@@ -152,7 +152,7 @@ private data class MapArgs(val pMinLat: Double, val pMinLng: Double, val pMaxLat
 /** Every field is replaced; one left out is cleared. */
 @Serializable
 private data class BrideDetailsArgs(
-    val pFullName: String?, val pAge: Int?, val pNationality: String?, val pPhone: String?,
+    val pFullName: String?, val pAge: Int?, val pNationality: String?, val pExtraPhone: String?,
     val pSkinType: String?, val pSkinTone: String?, val pHairType: String?, val pHairLength: String?, val pAllergies: String?,
     val pWeddingDate: String?, val pCityId: String?, val pVenue: String?, val pGuestCount: Int?, val pNotes: String?,
 )

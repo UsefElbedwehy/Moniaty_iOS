@@ -182,6 +182,8 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
     (or rename it in the dashboard). Safe to re-run; shows without an app update.
   - `supabase/migrations/20261029000300_bride_details_personal.sql` (once, after 000100): her own
     details on the same page.
+  - `supabase/migrations/20261029000400_bride_details_phones.sql` (once, after 000300): her mobile
+    is always her sign-in number (not editable), plus one optional extra number.
 - What «تفاصيل العروس» is: in Profile → زفافي, the bride fills, once and all optional, details
   about herself (name, age, nationality, phone, skin type and tone, hair type and length,
   allergies) and about the wedding (date, city, venue, guests, notes). The provider of each of her

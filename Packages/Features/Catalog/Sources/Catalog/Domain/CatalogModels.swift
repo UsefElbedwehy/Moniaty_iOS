@@ -221,8 +221,10 @@ public struct BrideDetails: Equatable, Sendable, Decodable {
     public var fullName: String?
     public var age: Int?
     public var nationality: String?
-    /// +9665XXXXXXXX.
+    /// The number she signed in with (+9665XXXXXXXX), from the server; she can't change it.
     public var phone: String?
+    /// One more number she may add (+9665XXXXXXXX).
+    public var extraPhone: String?
     /// One of `BrideDetails.skinTypes` (and likewise for the other choice fields).
     public var skinType: String?
     public var skinTone: String?
@@ -244,13 +246,14 @@ public struct BrideDetails: Equatable, Sendable, Decodable {
     public static let hairLengths = ["short", "medium", "long"]
 
     public init(fullName: String? = nil, age: Int? = nil, nationality: String? = nil, phone: String? = nil,
-                skinType: String? = nil, skinTone: String? = nil, hairType: String? = nil, hairLength: String? = nil,
+                extraPhone: String? = nil, skinType: String? = nil, skinTone: String? = nil, hairType: String? = nil, hairLength: String? = nil,
                 allergies: String? = nil, weddingDate: String? = nil, cityId: String? = nil, cityNameAr: String? = nil,
                 cityNameEn: String? = nil, venue: String? = nil, guestCount: Int? = nil, notes: String? = nil) {
         self.fullName = fullName
         self.age = age
         self.nationality = nationality
         self.phone = phone
+        self.extraPhone = extraPhone
         self.skinType = skinType
         self.skinTone = skinTone
         self.hairType = hairType

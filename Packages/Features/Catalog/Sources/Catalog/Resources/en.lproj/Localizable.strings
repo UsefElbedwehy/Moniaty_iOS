@@ -126,9 +126,9 @@
 "brideDetails.age" = "Age";
 "brideDetails.age.invalid" = "Enter an age from 16 to 70.";
 "brideDetails.nationality" = "Nationality";
-"brideDetails.phone" = "Contact number (05XXXXXXXX)";
+"brideDetails.phone" = "Mobile number";
 "brideDetails.phone.invalid" = "Enter a Saudi mobile number, e.g. 0551234567.";
-"brideDetails.privacy" = "Providers see your name and number only after the payment is confirmed. Every field is optional.";
+"brideDetails.privacy" = "Your mobile is the number you sign in with. Providers see your name and numbers only after the payment is confirmed. Every field is optional.";
 "brideDetails.section.looks" = "Skin & hair";
 "brideDetails.allergies" = "Allergies or health notes";
 "brideDetails.allergies.placeholder" = "e.g. Allergic to black henna";
@@ -151,3 +151,6 @@
 "brideDetails.hairLength.short" = "Short";
 "brideDetails.hairLength.medium" = "Medium";
 "brideDetails.hairLength.long" = "Long";
+"brideDetails.phone.locked" = "Your sign-in number; it can't be changed.";
+"brideDetails.extraPhone" = "Extra number (optional)";
+"brideDetails.nationality.default" = "Saudi";

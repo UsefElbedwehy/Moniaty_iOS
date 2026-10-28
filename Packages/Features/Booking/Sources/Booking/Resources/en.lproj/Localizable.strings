@@ -183,9 +183,9 @@
 "brideDetails.name" = "Name";
 "brideDetails.age" = "Age";
 "brideDetails.nationality" = "Nationality";
-"brideDetails.phone" = "Contact number";
+"brideDetails.phone" = "Mobile number";
 "brideDetails.allergies" = "Allergies or health notes";
-"brideDetails.hidden" = "Her name and number show once the payment is confirmed.";
+"brideDetails.hidden" = "Her name and numbers show once the payment is confirmed.";
 "brideDetails.section.wedding" = "Wedding";
 "brideDetails.skinType" = "Skin type";
 "brideDetails.skinType.normal" = "Normal";
@@ -206,3 +206,4 @@
 "brideDetails.hairLength.short" = "Short";
 "brideDetails.hairLength.medium" = "Medium";
 "brideDetails.hairLength.long" = "Long";
+"brideDetails.extraPhone" = "Extra number";

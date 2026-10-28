@@ -26,6 +26,7 @@
     <string name="booking_brideDetails_allergies">حساسية أو ملاحظات صحية</string>
     <string name="booking_brideDetails_city">المدينة</string>
     <string name="booking_brideDetails_date">موعد الزفاف</string>
+    <string name="booking_brideDetails_extraPhone">رقم إضافي</string>
     <string name="booking_brideDetails_guests">عدد الضيوف</string>
     <string name="booking_brideDetails_hairLength">طول الشعر</string>
     <string name="booking_brideDetails_hairLength_long">طويل</string>
@@ -35,11 +36,11 @@
     <string name="booking_brideDetails_hairType_curly">مجعّد</string>
     <string name="booking_brideDetails_hairType_straight">ناعم</string>
     <string name="booking_brideDetails_hairType_wavy">مموّج</string>
-    <string name="booking_brideDetails_hidden">يظهر اسمها ورقمها بعد تأكيد الدفع.</string>
+    <string name="booking_brideDetails_hidden">يظهر اسمها ورقماها بعد تأكيد الدفع.</string>
     <string name="booking_brideDetails_name">الاسم</string>
     <string name="booking_brideDetails_nationality">الجنسية</string>
     <string name="booking_brideDetails_notes">ملاحظاتها</string>
-    <string name="booking_brideDetails_phone">رقم التواصل</string>
+    <string name="booking_brideDetails_phone">رقم الجوال</string>
     <string name="booking_brideDetails_section_wedding">الزفاف</string>
     <string name="booking_brideDetails_skinTone">لون البشرة</string>
     <string name="booking_brideDetails_skinTone_deep">سمراء</string>

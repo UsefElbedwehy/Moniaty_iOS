@@ -13,6 +13,7 @@
     <string name="catalog_brideDetails_allergies">حساسية أو ملاحظات صحية</string>
     <string name="catalog_brideDetails_allergies_placeholder">مثال: حساسية من الحناء السوداء</string>
     <string name="catalog_brideDetails_city">مدينة الزفاف</string>
+    <string name="catalog_brideDetails_extraPhone">رقم إضافي (اختياري)</string>
     <string name="catalog_brideDetails_guests">عدد الضيوف تقريباً</string>
     <string name="catalog_brideDetails_guests_invalid">اكتبي رقماً من ١ إلى ١٠٬٠٠٠.</string>
     <string name="catalog_brideDetails_guests_placeholder">مثال: ٣٠٠</string>
@@ -27,12 +28,14 @@
     <string name="catalog_brideDetails_intro">تظهر هذه التفاصيل لمقدّمة الخدمة في كل طلب حجز ترسلينه، لتعرف مناسبتك قبل أن تقبل.</string>
     <string name="catalog_brideDetails_name">الاسم</string>
     <string name="catalog_brideDetails_nationality">الجنسية</string>
+    <string name="catalog_brideDetails_nationality_default">سعودية</string>
     <string name="catalog_brideDetails_none">لم تُحدَّد</string>
     <string name="catalog_brideDetails_notes">ملاحظات لمقدّمات الخدمة</string>
     <string name="catalog_brideDetails_notes_placeholder">مثال: أفضّل المكياج الناعم، والزفاف في الهواء الطلق</string>
-    <string name="catalog_brideDetails_phone">رقم التواصل (05XXXXXXXX)</string>
+    <string name="catalog_brideDetails_phone">رقم الجوال</string>
     <string name="catalog_brideDetails_phone_invalid">اكتبي رقم جوال سعودي، مثل 0551234567.</string>
-    <string name="catalog_brideDetails_privacy">لا يظهر اسمك ورقمك لمقدّمة الخدمة إلا بعد تأكيد الدفع. كل الخانات اختيارية.</string>
+    <string name="catalog_brideDetails_phone_locked">رقم تسجيل الدخول، لا يمكن تغييره.</string>
+    <string name="catalog_brideDetails_privacy">رقم الجوال هو رقم تسجيل دخولك. لا يظهر اسمك ورقماك لمقدّمة الخدمة إلا بعد تأكيد الدفع. كل الخانات اختيارية.</string>
     <string name="catalog_brideDetails_section_looks">البشرة والشعر</string>
     <string name="catalog_brideDetails_section_me">عنّي</string>
     <string name="catalog_brideDetails_section_wedding">الزفاف</string>

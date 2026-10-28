@@ -958,6 +958,7 @@ private struct BrideDetailsCard: View {
                 row("brideDetails.age", "number", details.age.map { $0.formatted() })
                 row("brideDetails.nationality", "globe", details.nationality)
                 row("brideDetails.phone", "phone", details.phone.map(localPhone))
+                row("brideDetails.extraPhone", "phone.badge.plus", details.extraPhone.map(localPhone))
                 if !isRevealed {
                     Text(verbatim: BookingL10n.string("brideDetails.hidden"))
                         .font(.dsCaption).foregroundStyle(Color.dsTextSecondary)

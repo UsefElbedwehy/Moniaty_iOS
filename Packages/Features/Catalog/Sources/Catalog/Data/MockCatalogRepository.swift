@@ -190,6 +190,7 @@ public actor MockCatalogRepository: CatalogRepository {
 
     public func setBrideDetails(_ details: BrideDetails) async throws -> BrideDetails? {
         var saved = details
+        saved.phone = "+966500000000" // the login number, like the server
         let names = ["dammam": ("الدمام", "Dammam"), "khobar": ("الخبر", "Khobar"), "qatif": ("القطيف", "Qatif")]
         saved.cityNameAr = details.cityId.flatMap { names[$0]?.0 }
         saved.cityNameEn = details.cityId.flatMap { names[$0]?.1 }

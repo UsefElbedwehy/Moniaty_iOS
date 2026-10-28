@@ -174,8 +174,10 @@ data class BrideDetails(
     val fullName: String? = null,
     val age: Int? = null,
     val nationality: String? = null,
-    /** +9665XXXXXXXX. */
+    /** The number she signed in with (+9665XXXXXXXX), from the server; she can't change it. */
     val phone: String? = null,
+    /** One more number she may add (+9665XXXXXXXX). */
+    val extraPhone: String? = null,
     val skinType: String? = null,
     val skinTone: String? = null,
     val hairType: String? = null,

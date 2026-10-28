@@ -30,6 +30,7 @@ internal val bookingKeys: Map<String, Int> = mapOf(
     "brideDetails.allergies" to R.string.booking_brideDetails_allergies,
     "brideDetails.city" to R.string.booking_brideDetails_city,
     "brideDetails.date" to R.string.booking_brideDetails_date,
+    "brideDetails.extraPhone" to R.string.booking_brideDetails_extraPhone,
     "brideDetails.guests" to R.string.booking_brideDetails_guests,
     "brideDetails.hairLength" to R.string.booking_brideDetails_hairLength,
     "brideDetails.hairLength.long" to R.string.booking_brideDetails_hairLength_long,

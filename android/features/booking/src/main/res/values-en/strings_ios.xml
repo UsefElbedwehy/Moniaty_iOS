@@ -26,6 +26,7 @@
     <string name="booking_brideDetails_allergies">Allergies or health notes</string>
     <string name="booking_brideDetails_city">City</string>
     <string name="booking_brideDetails_date">Wedding date</string>
+    <string name="booking_brideDetails_extraPhone">Extra number</string>
     <string name="booking_brideDetails_guests">Guests</string>
     <string name="booking_brideDetails_hairLength">Hair length</string>
     <string name="booking_brideDetails_hairLength_long">Long</string>
@@ -35,11 +36,11 @@
     <string name="booking_brideDetails_hairType_curly">Curly</string>
     <string name="booking_brideDetails_hairType_straight">Straight</string>
     <string name="booking_brideDetails_hairType_wavy">Wavy</string>
-    <string name="booking_brideDetails_hidden">Her name and number show once the payment is confirmed.</string>
+    <string name="booking_brideDetails_hidden">Her name and numbers show once the payment is confirmed.</string>
     <string name="booking_brideDetails_name">Name</string>
     <string name="booking_brideDetails_nationality">Nationality</string>
     <string name="booking_brideDetails_notes">Her notes</string>
-    <string name="booking_brideDetails_phone">Contact number</string>
+    <string name="booking_brideDetails_phone">Mobile number</string>
     <string name="booking_brideDetails_section_wedding">Wedding</string>
     <string name="booking_brideDetails_skinTone">Skin tone</string>
     <string name="booking_brideDetails_skinTone_deep">Deep</string>

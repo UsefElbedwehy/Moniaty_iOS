@@ -183,9 +183,9 @@
 "brideDetails.name" = "الاسم";
 "brideDetails.age" = "العمر";
 "brideDetails.nationality" = "الجنسية";
-"brideDetails.phone" = "رقم التواصل";
+"brideDetails.phone" = "رقم الجوال";
 "brideDetails.allergies" = "حساسية أو ملاحظات صحية";
-"brideDetails.hidden" = "يظهر اسمها ورقمها بعد تأكيد الدفع.";
+"brideDetails.hidden" = "يظهر اسمها ورقماها بعد تأكيد الدفع.";
 "brideDetails.section.wedding" = "الزفاف";
 "brideDetails.skinType" = "نوع البشرة";
 "brideDetails.skinType.normal" = "عادية";
@@ -206,3 +206,4 @@
 "brideDetails.hairLength.short" = "قصير";
 "brideDetails.hairLength.medium" = "متوسط";
 "brideDetails.hairLength.long" = "طويل";
+"brideDetails.extraPhone" = "رقم إضافي";

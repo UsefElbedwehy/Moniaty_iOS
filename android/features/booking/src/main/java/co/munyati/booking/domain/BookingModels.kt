@@ -129,6 +129,7 @@ data class BookingBrideDetails(
     val age: Int? = null,
     val nationality: String? = null,
     val phone: String? = null,
+    val extraPhone: String? = null,
     val skinType: String? = null,
     val skinTone: String? = null,
     val hairType: String? = null,
@@ -145,7 +146,7 @@ data class BookingBrideDetails(
 
     /** Anything about her (besides the name and phone, which may be hidden). */
     val hasPersonal: Boolean
-        get() = fullName != null || age != null || !nationality.isNullOrEmpty() || phone != null || skinType != null ||
+        get() = fullName != null || age != null || !nationality.isNullOrEmpty() || phone != null || extraPhone != null || skinType != null ||
             skinTone != null || hairType != null || hairLength != null || !allergies.isNullOrEmpty()
 
     val hasWedding: Boolean

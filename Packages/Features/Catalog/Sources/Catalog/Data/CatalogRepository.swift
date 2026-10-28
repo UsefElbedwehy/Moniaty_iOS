@@ -112,7 +112,7 @@ public struct RemoteCatalogRepository: CatalogRepository {
 
     public func setBrideDetails(_ details: BrideDetails) async throws -> BrideDetails? {
         try await client.send(.rpc("set_my_bride_details"), body: BrideDetailsArgs(
-            pFullName: details.fullName, pAge: details.age, pNationality: details.nationality, pPhone: details.phone,
+            pFullName: details.fullName, pAge: details.age, pNationality: details.nationality, pExtraPhone: details.extraPhone,
             pSkinType: details.skinType, pSkinTone: details.skinTone, pHairType: details.hairType,
             pHairLength: details.hairLength, pAllergies: details.allergies,
             pWeddingDate: details.weddingDate, pCityId: details.cityId, pVenue: details.venue,
@@ -147,7 +147,7 @@ private struct BrideDetailsArgs: Encodable, Sendable {
     let pFullName: String?
     let pAge: Int?
     let pNationality: String?
-    let pPhone: String?
+    let pExtraPhone: String?
     let pSkinType: String?
     let pSkinTone: String?
     let pHairType: String?
