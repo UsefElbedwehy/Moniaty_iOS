@@ -80,6 +80,26 @@ struct CatalogTests {
         #expect(!store.hasLoaded && store.items.isEmpty)
     }
 
+    @Test("bride details keep one wedding date with the budget, and empty fields clear")
+    @MainActor
+    func brideDetailsShareTheBudgetDate() async throws {
+        let repo = MockCatalogRepository()
+        _ = try await repo.setBudget(total: 20000, weddingDate: "2027-03-01")
+        let store = BrideDetailsStore(repository: repo)
+        await store.load(isGuest: false)
+        #expect(store.details?.weddingDate == "2027-03-01")
+
+        try await store.save(BrideDetails(weddingDate: "2027-04-10", cityId: "dammam", venue: "قاعة الماسة", guestCount: 300))
+        #expect(store.details?.cityNameAr == "الدمام")
+        #expect(try await repo.budget()?.weddingDate == "2027-04-10")
+        #expect(store.details?.hasEventDetails == true)
+
+        try await store.save(BrideDetails(weddingDate: "2027-04-10"))
+        #expect(store.details?.hasEventDetails == false)
+        #expect(Budget.daysUntil("2027-04-10", now: Date(timeIntervalSince1970: 1_800_000_000)) == 85) // from 15 Jan 2027
+        #expect(Budget.daysUntil("2027-04-10", now: Date(timeIntervalSince1970: 1_900_000_000)) == nil) // after it
+    }
+
     @Test("budget used fraction is clamped to 0…1")
     func budgetFraction() {
         #expect(Budget(total: 1000, reserved: 250, remaining: 750, weddingDate: nil).usedFraction == 0.25)

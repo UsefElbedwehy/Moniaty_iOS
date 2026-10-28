@@ -276,6 +276,10 @@ struct BookingDetailScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
+            if role == .provider, let details = detail.brideDetails, !details.isEmpty {
+                BrideDetailsCard(details: details)
+            }
+
             if let proposal = detail.proposal {
                 DSCard {
                     VStack(alignment: .leading, spacing: DSSpacing.xs) {
@@ -920,6 +924,59 @@ struct DemoIntroContent: View {
                 .padding(DSSpacing.sm)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .background(RoundedRectangle(cornerRadius: DSRadius.control).fill(Color.dsPrimaryMuted))
+        }
+    }
+}
+
+/// The bride's details on her booking, for the provider: date, city, venue, guests and notes.
+private struct BrideDetailsCard: View {
+    let details: BookingBrideDetails
+
+    private var isArabic: Bool { Locale.current.language.languageCode?.identifier == "ar" }
+
+    /// "yyyy-MM-dd" → a long date in the current language.
+    private var dateText: String? {
+        guard let day = details.weddingDate else { return nil }
+        let parser = DateFormatter()
+        parser.calendar = Calendar(identifier: .gregorian)
+        parser.locale = Locale(identifier: "en_US_POSIX")
+        parser.dateFormat = "yyyy-MM-dd"
+        guard let date = parser.date(from: day) else { return day }
+        // Like every other date in bookings: Gregorian, in the app's language.
+        return date.displayFormatted(.dateTime.day().month(.wide).year().locale(.current))
+    }
+
+    var body: some View {
+        DSCard {
+            VStack(alignment: .leading, spacing: DSSpacing.sm) {
+                Label(BookingL10n.string("brideDetails.title"), systemImage: "person.text.rectangle")
+                    .font(.dsHeadline)
+                    .foregroundStyle(Color.dsTextPrimary)
+                row("brideDetails.date", "calendar", dateText)
+                row("brideDetails.city", "mappin.and.ellipse", isArabic ? details.cityNameAr : details.cityNameEn)
+                row("brideDetails.venue", "building.2", details.venue)
+                row("brideDetails.guests", "person.3", details.guestCount.map { $0.formatted() })
+                if let notes = details.notes, !notes.isEmpty {
+                    VStack(alignment: .leading, spacing: DSSpacing.xxs) {
+                        BookingL10n.text("brideDetails.notes").font(.dsCaption).foregroundStyle(Color.dsTextSecondary)
+                        Text(verbatim: notes).font(.dsBody).foregroundStyle(Color.dsTextPrimary)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    @ViewBuilder
+    private func row(_ key: String, _ symbol: String, _ value: String?) -> some View {
+        if let value, !value.isEmpty {
+            HStack(spacing: DSSpacing.sm) {
+                Image(systemName: symbol).foregroundStyle(Color.dsPrimary).frame(width: 22)
+                BookingL10n.text(key).font(.dsSubhead).foregroundStyle(Color.dsTextSecondary)
+                Spacer(minLength: DSSpacing.sm)
+                Text(verbatim: value).font(.dsSubhead).foregroundStyle(Color.dsTextPrimary).multilineTextAlignment(.trailing)
+            }
+            .accessibilityElement(children: .combine)
         }
     }
 }

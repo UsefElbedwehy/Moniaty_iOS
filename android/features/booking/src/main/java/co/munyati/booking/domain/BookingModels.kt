@@ -117,7 +117,23 @@ data class BookingDetail(
     val receipts: List<BookingReceipt>,
     val events: List<BookingEvent>,
     val openDispute: BookingDispute?,
+    /** The bride's details, for the booking's provider only (null for the bride and on demos). */
+    val brideDetails: BookingBrideDetails? = null,
 )
+
+/** What the bride filled in "Bride details" (Profile), as her booking's provider sees it. */
+@Serializable
+data class BookingBrideDetails(
+    val weddingDate: String? = null,
+    val cityNameAr: String? = null,
+    val cityNameEn: String? = null,
+    val venue: String? = null,
+    val guestCount: Int? = null,
+    val notes: String? = null,
+) {
+    val isEmpty: Boolean
+        get() = weddingDate == null && cityNameAr == null && venue.isNullOrEmpty() && guestCount == null && notes.isNullOrEmpty()
+}
 
 /** A provider's own payment method (managed in the studio). */
 @Serializable

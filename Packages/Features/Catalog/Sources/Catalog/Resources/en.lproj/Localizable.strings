@@ -106,3 +106,17 @@
 "preparations.delete.confirm" = "Delete this preparation?";
 "preparations.empty.title" = "Start your preparations list";
 "preparations.empty.message" = "Write down everything you're preparing for the wedding: the dress, invitations, henna night… add a note to any of them, and tick each one off when it's done.";
+
+/* Bride details */
+"brideDetails.title" = "Bride details";
+"brideDetails.intro" = "Providers see these details on every booking request you send, so they know your occasion before accepting.";
+"brideDetails.section.wedding" = "Wedding";
+"brideDetails.city" = "Wedding city";
+"brideDetails.city.none" = "Not set";
+"brideDetails.venue" = "Venue";
+"brideDetails.venue.placeholder" = "e.g. Al Masa Hall";
+"brideDetails.guests" = "Approximate number of guests";
+"brideDetails.guests.placeholder" = "e.g. 300";
+"brideDetails.guests.invalid" = "Enter a number from 1 to 10,000.";
+"brideDetails.notes" = "Notes for providers";
+"brideDetails.notes.placeholder" = "e.g. I prefer soft makeup; the wedding is outdoors";

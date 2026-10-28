@@ -7,6 +7,7 @@ public actor MockCatalogRepository: CatalogRepository {
     private var favoriteIds: Set<String> = []
     private var storedBudget: Budget?
     private var storedPreparations: [Preparation] = []
+    private var storedBrideDetails: BrideDetails?
 
     public init() {}
 
@@ -18,7 +19,7 @@ public actor MockCatalogRepository: CatalogRepository {
 
     nonisolated(unsafe) private static let categories: [[String: Any]] = [
         ["id": "makeup", "name_ar": "خبيرة مكياج", "name_en": "Makeup artist", "icon_symbol": "paintbrush.pointed", "price_hint_ar": "٣٥٠ – ٣٬٠٠٠ ر.س", "price_hint_en": "SAR 350 – 3,000"],
-        ["id": "photography", "name_ar": "مصوّرات", "name_en": "Female photographers", "icon_symbol": "camera"],
+        ["id": "photography", "name_ar": "مصورة فوتو", "name_en": "Photographer", "icon_symbol": "camera"],
         ["id": "venues", "name_ar": "قصور وقاعات الأفراح", "name_en": "Wedding halls & venues", "icon_symbol": "building.columns"],
         ["id": "henna", "name_ar": "نقش الحناء", "name_en": "Henna artist", "icon_symbol": "hand.raised"],
         ["id": "kosha_decor", "name_ar": "الكوش والتنسيق", "name_en": "Kosha & décor", "icon_symbol": "sparkles.rectangle.stack"],
@@ -151,6 +152,7 @@ public actor MockCatalogRepository: CatalogRepository {
 
     public func setBudget(total: Decimal, weddingDate: String?) async throws -> Budget? {
         storedBudget = Budget(total: total, reserved: 0, remaining: total, weddingDate: weddingDate)
+        storedBrideDetails?.weddingDate = weddingDate
         return storedBudget
     }
 
@@ -180,6 +182,24 @@ public actor MockCatalogRepository: CatalogRepository {
     public func deletePreparation(id: String) async throws -> [Preparation] {
         storedPreparations.removeAll { $0.id == id }
         return orderedPreparations()
+    }
+
+    public func brideDetails() async throws -> BrideDetails? {
+        storedBrideDetails ?? storedBudget?.weddingDate.map { BrideDetails(weddingDate: $0) }
+    }
+
+    public func setBrideDetails(_ details: BrideDetails) async throws -> BrideDetails? {
+        var saved = details
+        let names = ["dammam": ("الدمام", "Dammam"), "khobar": ("الخبر", "Khobar"), "qatif": ("القطيف", "Qatif")]
+        saved.cityNameAr = details.cityId.flatMap { names[$0]?.0 }
+        saved.cityNameEn = details.cityId.flatMap { names[$0]?.1 }
+        storedBrideDetails = saved
+        // One wedding date, like the server.
+        if let budget = storedBudget {
+            storedBudget = Budget(total: budget.total, reserved: budget.reserved, remaining: budget.remaining,
+                                  weddingDate: details.weddingDate)
+        }
+        return saved
     }
 
     private func orderedPreparations() -> [Preparation] {

@@ -22,6 +22,12 @@
     <string name="booking_availability_to">إلى</string>
     <string name="booking_availability_weekly">الأيام والساعات</string>
     <string name="booking_availability_weeklyFooter">لا تظهر للعرائس إلا الأوقات المتاحة ضمن هذه الساعات، دون تداخل مع حجوزاتك.</string>
+    <string name="booking_brideDetails_city">المدينة</string>
+    <string name="booking_brideDetails_date">موعد الزفاف</string>
+    <string name="booking_brideDetails_guests">عدد الضيوف</string>
+    <string name="booking_brideDetails_notes">ملاحظاتها</string>
+    <string name="booking_brideDetails_title">تفاصيل العروس</string>
+    <string name="booking_brideDetails_venue">المكان</string>
     <string name="booking_common_cancel">إلغاء</string>
     <string name="booking_common_copied">تم النسخ</string>
     <string name="booking_common_copy">نسخ</string>

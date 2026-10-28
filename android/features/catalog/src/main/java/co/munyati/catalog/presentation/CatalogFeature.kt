@@ -10,6 +10,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import co.munyati.catalog.data.CatalogRepository
 import co.munyati.catalog.domain.Budget
+import co.munyati.catalog.domain.BrideDetails
+import co.munyati.catalog.domain.City
+import co.munyati.catalog.domain.daysUntil
 import co.munyati.catalog.domain.Preparation
 import co.munyati.catalog.domain.ServiceCard
 import co.munyati.catalog.domain.ServiceFilter
@@ -39,6 +42,8 @@ class CatalogContext(cityIds: List<String>? = null, citySummary: String = "", di
     /** The built-in Home slides (budget, discover); the dashboard can hide them to leave the carousel to paid banners. */
     var showsBudgetSlide by mutableStateOf(true)
     var showsDiscoverSlide by mutableStateOf(true)
+    /** Every city the app serves, for the bride's wedding city in "Bride details". */
+    var cities by mutableStateOf(emptyList<City>())
 }
 
 // Destinations inside the catalog. The App registers `destinations()` on each tab's NavHost and
@@ -57,6 +62,7 @@ data class ServicesRoute(
 @Serializable data class StoreRoute(val id: String)
 @Serializable data object FavoritesRoute
 @Serializable data object PreparationsRoute
+@Serializable data object BrideDetailsRoute
 
 /** Content a catalog screen can report. */
 sealed interface CatalogContentRef {
@@ -88,6 +94,12 @@ class CatalogFeature(
     internal val favorites = FavoritesStore(repository, scope)
     val budget = BudgetStore(repository)
     val preparations = PreparationsStore(repository)
+    val brideDetails = BrideDetailsStore(repository)
+
+    init {
+        // The budget's wedding date is the details' date too.
+        budget.afterSave = { scope.launch { brideDetails.load(context.isGuest) } }
+    }
 
     /** The "Book" action on a service; null shows "coming soon". Set by the App (Booking). */
     internal var onBook: ((ServiceCard) -> Unit)? = null
@@ -110,7 +122,10 @@ class CatalogFeature(
     }
 
     /** Days until the wedding (null without a date or once it has passed), for Home and Profile. */
-    val daysUntilWedding: Int? get() = budget.budget?.daysUntilWedding()
+    val daysUntilWedding: Int? get() = daysUntil(weddingDate)
+
+    /** The wedding date, "yyyy-MM-dd": from Bride details, else the budget (they are kept equal). */
+    val weddingDate: String? get() = brideDetails.details?.weddingDate ?: budget.budget?.weddingDate
 
     /** "My preparations" progress for Profile: done to total (null before it has loaded). */
     val preparationsProgress: Pair<Int, Int>?
@@ -141,6 +156,7 @@ class CatalogFeature(
         favorites.reset()
         refreshBudget()
         scope.launch { preparations.load(context.isGuest) }
+        scope.launch { brideDetails.load(context.isGuest) }
     }
 
     /** Reloads the budget after bookings change what is reserved. */
@@ -169,6 +185,7 @@ class CatalogFeature(
         composable<StoreRoute> { StoreScreen(this@CatalogFeature, it.toRoute<StoreRoute>().id) }
         composable<FavoritesRoute> { FavoritesScreen(this@CatalogFeature) }
         composable<PreparationsRoute> { PreparationsScreen(this@CatalogFeature) }
+        composable<BrideDetailsRoute> { BrideDetailsScreen(this@CatalogFeature) }
     }
 
     internal fun toggleFavorite(card: ServiceCard) {
@@ -214,8 +231,12 @@ class BudgetStore internal constructor(private val repository: CatalogRepository
         runCatching { repository.budget() }.getOrNull()?.let { budget = it }
     }
 
+    /** Runs after a save (the wedding date it holds is shared with Bride details). */
+    internal var afterSave: (() -> Unit)? = null
+
     suspend fun save(total: Double, weddingDate: String?) {
         budget = repository.setBudget(total, weddingDate)
+        afterSave?.invoke()
     }
 }
 
@@ -267,5 +288,23 @@ class PreparationsStore internal constructor(private val repository: CatalogRepo
 
     internal suspend fun delete(item: Preparation) {
         items = repository.deletePreparation(item.id)
+    }
+}
+
+/** The bride's details (تفاصيل العروس), loaded with her account and edited from Profile. */
+class BrideDetailsStore internal constructor(private val repository: CatalogRepository) {
+    var details: BrideDetails? by mutableStateOf(null)
+        private set
+
+    suspend fun load(isGuest: Boolean) {
+        if (isGuest) {
+            details = null
+            return
+        }
+        runCatching { repository.brideDetails() }.getOrNull()?.let { details = it }
+    }
+
+    internal suspend fun save(new: BrideDetails) {
+        details = repository.setBrideDetails(new)
     }
 }

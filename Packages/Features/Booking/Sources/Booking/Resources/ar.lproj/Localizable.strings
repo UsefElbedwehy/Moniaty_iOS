@@ -172,3 +172,11 @@
 "error.demo" = "لا يمكن الإبلاغ عن الحجز التجريبي.";
 "pay.amountFrom" = "المبلغ المطلوب · %@";
 "pay.deadline" = "ادفعي قبل %@، وإلا يُلغى الطلب تلقائياً.";
+
+/* The bride's details on a booking (provider) */
+"brideDetails.title" = "تفاصيل العروس";
+"brideDetails.date" = "موعد الزفاف";
+"brideDetails.city" = "المدينة";
+"brideDetails.venue" = "المكان";
+"brideDetails.guests" = "عدد الضيوف";
+"brideDetails.notes" = "ملاحظاتها";

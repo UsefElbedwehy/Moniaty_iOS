@@ -227,6 +227,7 @@ class AppEnvironment(private val context: Context) {
         ctx.displayName = session.user?.displayName
         ctx.cityIds = cities.queryCityIds
         ctx.citySummary = cities.summary(allCitiesLabel())
+        ctx.cities = cities.available
         if (wasGuest != ctx.isGuest) catalog.accountChanged()
     }
 

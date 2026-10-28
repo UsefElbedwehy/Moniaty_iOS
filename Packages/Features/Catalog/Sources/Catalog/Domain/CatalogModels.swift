@@ -214,6 +214,34 @@ public struct MapPin: Identifiable, Hashable, Sendable, Decodable {
     public let logoUrl: URL?
 }
 
+/// The bride's details (تفاصيل العروس): filled once in Profile, shown to the provider of each of
+/// her bookings. `weddingDate` ("yyyy-MM-dd") is the same date the budget stores.
+public struct BrideDetails: Equatable, Sendable, Decodable {
+    public var weddingDate: String?
+    public var cityId: String?
+    public var cityNameAr: String?
+    public var cityNameEn: String?
+    public var venue: String?
+    public var guestCount: Int?
+    public var notes: String?
+
+    public init(weddingDate: String? = nil, cityId: String? = nil, cityNameAr: String? = nil, cityNameEn: String? = nil,
+                venue: String? = nil, guestCount: Int? = nil, notes: String? = nil) {
+        self.weddingDate = weddingDate
+        self.cityId = cityId
+        self.cityNameAr = cityNameAr
+        self.cityNameEn = cityNameEn
+        self.venue = venue
+        self.guestCount = guestCount
+        self.notes = notes
+    }
+
+    /// True when she has filled anything besides the date.
+    public var hasEventDetails: Bool {
+        cityId != nil || venue?.isEmpty == false || guestCount != nil || notes?.isEmpty == false
+    }
+}
+
 /// One item on the bride's "My preparations" checklist (تجهيزاتي), with an optional note.
 public struct Preparation: Identifiable, Equatable, Sendable, Decodable {
     public let id: String
@@ -245,6 +273,11 @@ public struct Budget: Equatable, Sendable, Decodable {
 
     /// Whole days from today to the wedding date (0 on the day), nil without a date or after it.
     public func daysUntilWedding(now: Date = .now) -> Int? {
+        Self.daysUntil(weddingDate, now: now)
+    }
+
+    /// Whole days from today to a "yyyy-MM-dd" day (0 on the day), nil without one or after it.
+    public static func daysUntil(_ weddingDate: String?, now: Date = .now) -> Int? {
         guard let weddingDate else { return nil }
         var calendar = Calendar(identifier: .gregorian)
         calendar.timeZone = .current
@@ -297,6 +330,7 @@ public enum CatalogRoute: Hashable, Sendable {
     case store(id: String)
     case favorites
     case preparations
+    case brideDetails
 }
 
 extension String {

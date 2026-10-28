@@ -19,6 +19,9 @@ public protocol CatalogRepository: Sendable {
     func savePreparation(id: String?, title: String, note: String?) async throws -> [Preparation]
     func setPreparationDone(id: String, done: Bool) async throws -> [Preparation]
     func deletePreparation(id: String) async throws -> [Preparation]
+    /// "Bride details": nil until she has any.
+    func brideDetails() async throws -> BrideDetails?
+    func setBrideDetails(_ details: BrideDetails) async throws -> BrideDetails?
 }
 
 /// Supabase RPCs from `supabase/migrations/20261011000000_catalog.sql`.
@@ -100,6 +103,18 @@ public struct RemoteCatalogRepository: CatalogRepository {
     public func deletePreparation(id: String) async throws -> [Preparation] {
         try await client.send(.rpc("delete_my_preparation"), body: IdArgs(pId: id))
     }
+
+    // "Bride details": `supabase/migrations/20261029000100_bride_details.sql`.
+
+    public func brideDetails() async throws -> BrideDetails? {
+        try await client.send(.rpc("get_my_bride_details"), body: NoArgs())
+    }
+
+    public func setBrideDetails(_ details: BrideDetails) async throws -> BrideDetails? {
+        try await client.send(.rpc("set_my_bride_details"), body: BrideDetailsArgs(
+            pWeddingDate: details.weddingDate, pCityId: details.cityId, pVenue: details.venue,
+            pGuestCount: details.guestCount, pNotes: details.notes))
+    }
 }
 
 private struct NoArgs: Encodable, Sendable {}
@@ -124,5 +139,13 @@ private struct FavoriteArgs: Encodable, Sendable { let pServiceId: String }
 private struct FavoriteResult: Decodable, Sendable { let isFavorite: Bool }
 private struct BudgetArgs: Encodable, Sendable { let pTotal: Decimal; let pWeddingDate: String? }
 private struct PreparationDoneArgs: Encodable, Sendable { let pId: String; let pDone: Bool }
+/// Every field is replaced; one left out is cleared.
+private struct BrideDetailsArgs: Encodable, Sendable {
+    let pWeddingDate: String?
+    let pCityId: String?
+    let pVenue: String?
+    let pGuestCount: Int?
+    let pNotes: String?
+}
 /// Without `pId` the RPC adds a new item.
 private struct PreparationArgs: Encodable, Sendable { let pId: String?; let pTitle: String; let pNote: String? }

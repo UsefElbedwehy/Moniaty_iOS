@@ -106,3 +106,17 @@
 "preparations.delete.confirm" = "حذف هذا التجهيز؟";
 "preparations.empty.title" = "ابدئي قائمة تجهيزاتك";
 "preparations.empty.message" = "اكتبي كل ما تجهّزينه للزفاف: الفستان، الدعوات، ليلة الحناء… وأضيفي ملاحظة لأي تجهيز، ثم أشّري عليه حين تنتهين منه.";
+
+/* Bride details (تفاصيل العروس) */
+"brideDetails.title" = "تفاصيل العروس";
+"brideDetails.intro" = "تظهر هذه التفاصيل لمقدّمة الخدمة في كل طلب حجز ترسلينه، لتعرف مناسبتك قبل أن تقبل.";
+"brideDetails.section.wedding" = "الزفاف";
+"brideDetails.city" = "مدينة الزفاف";
+"brideDetails.city.none" = "لم تُحدَّد";
+"brideDetails.venue" = "مكان الزفاف";
+"brideDetails.venue.placeholder" = "مثال: قاعة الماسة";
+"brideDetails.guests" = "عدد الضيوف تقريباً";
+"brideDetails.guests.placeholder" = "مثال: ٣٠٠";
+"brideDetails.guests.invalid" = "اكتبي رقماً من ١ إلى ١٠٬٠٠٠.";
+"brideDetails.notes" = "ملاحظات لمقدّمات الخدمة";
+"brideDetails.notes.placeholder" = "مثال: أفضّل المكياج الناعم، والزفاف في الهواء الطلق";

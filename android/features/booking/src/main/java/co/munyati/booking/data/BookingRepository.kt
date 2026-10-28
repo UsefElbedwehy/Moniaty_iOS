@@ -2,6 +2,7 @@ package co.munyati.booking.data
 
 import co.munyati.booking.domain.ActionResult
 import co.munyati.booking.domain.Availability
+import co.munyati.booking.domain.BookingBrideDetails
 import co.munyati.booking.domain.BookingDetail
 import co.munyati.booking.domain.BookingDispute
 import co.munyati.booking.domain.BookingEvent
@@ -94,7 +95,7 @@ class RemoteBookingRepository(private val client: ApiClient) : BookingRepository
         if (raw.isBlank() || raw.trim() == "null") return null
         val summary = client.decode(BookingSummary.serializer(), raw)
         val extras = client.decode(DetailExtras.serializer(), raw)
-        return BookingDetail(summary, extras.paymentMethods, extras.proposal, extras.receipts, extras.events, extras.openDispute)
+        return BookingDetail(summary, extras.paymentMethods, extras.proposal, extras.receipts, extras.events, extras.openDispute, extras.brideDetails)
     }
 
     override suspend fun availability(): Availability = client.send(ApiEndpoint.rpc("get_my_availability"), EmptyBody())
@@ -131,6 +132,7 @@ private data class DetailExtras(
     val receipts: List<BookingReceipt> = emptyList(),
     val events: List<BookingEvent> = emptyList(),
     val openDispute: BookingDispute? = null,
+    val brideDetails: BookingBrideDetails? = null,
 )
 
 @Serializable private data class IdArgs(val pId: String)

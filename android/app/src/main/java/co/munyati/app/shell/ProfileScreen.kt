@@ -46,6 +46,7 @@ import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Forum
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.MusicNote
@@ -91,6 +92,7 @@ import co.munyati.app.composition.AppEnvironment
 import co.munyati.app.composition.l10n
 import co.munyati.authentication.domain.UserRole
 import co.munyati.catalog.presentation.FavoritesRoute
+import co.munyati.catalog.presentation.BrideDetailsRoute
 import co.munyati.catalog.presentation.PreparationsRoute
 import co.munyati.designsystem.brand.DSBrand
 import co.munyati.designsystem.brand.DSBrandHero
@@ -189,6 +191,12 @@ fun ProfileScreen(environment: AppEnvironment) {
                                 "${NumberFormat.getIntegerInstance().format(done)}/${NumberFormat.getIntegerInstance().format(total)}"
                             },
                         ) { if (session.hasAccount) navigator.navigate(PreparationsRoute) else session.isPresentingAuth = true }
+                        RowDivider()
+                        val brideDetails = environment.catalog.brideDetails.details
+                        ProfileRow(
+                            l10n(R.string.profile_brideDetails), Icons.Outlined.Badge, DS.colors.accentRose,
+                            value = if (java.util.Locale.getDefault().language == "ar") brideDetails?.cityNameAr else brideDetails?.cityNameEn,
+                        ) { if (session.hasAccount) navigator.navigate(BrideDetailsRoute) else session.isPresentingAuth = true }
                     }
                 }
                 Section(l10n(R.string.profile_section_app)) {

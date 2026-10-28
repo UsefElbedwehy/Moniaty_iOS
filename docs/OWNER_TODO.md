@@ -173,6 +173,17 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
   off and sees how many are done. Only she can see it (admins don't), and deleting her account
   deletes it.
 
+## 10h. Bride details, the hospitality icon and the photographer name
+- [ ] Run these three in the SQL editor, before releasing a build that has them:
+  - `supabase/migrations/20261029000000_hospitality_icon.sql`: «الضيافة» gets the dallah icon
+    (or type `dallah` in the category's SF Symbol field in the dashboard). Safe to re-run.
+  - `supabase/migrations/20261029000100_bride_details.sql` (once): «تفاصيل العروس».
+  - `supabase/migrations/20261029000200_photographer_name.sql`: «مصوّرات» becomes «مصورة فوتو»
+    (or rename it in the dashboard). Safe to re-run; shows without an app update.
+- What «تفاصيل العروس» is: in Profile → زفافي, the bride fills her wedding date and city, the
+  venue, the number of guests and notes, once. The provider of each of her bookings sees them on
+  the booking (not on demo bookings). The wedding date is the same one the budget asks for.
+
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy
       answers from `docs/STORE_LISTING.md`; upload the screenshots in `design/store/ios/`

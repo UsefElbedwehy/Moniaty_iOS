@@ -5,6 +5,8 @@ import co.munyati.catalog.data.RemoteCatalogRepository
 import co.munyati.catalog.domain.Budget
 import co.munyati.catalog.domain.ServiceFilter
 import co.munyati.catalog.domain.formatAmount
+import co.munyati.catalog.domain.BrideDetails
+import co.munyati.catalog.presentation.BrideDetailsStore
 import co.munyati.catalog.presentation.PreparationsStore
 import co.munyati.networking.ApiClient
 import co.munyati.networking.ApiEndpoint
@@ -57,6 +59,18 @@ class CatalogTest {
 
         store.load(isGuest = true)
         assertTrue(!store.hasLoaded && store.items.isEmpty())
+    }
+
+    @Test fun `bride details keep one wedding date with the budget`() = runTest {
+        val repo = MockCatalogRepository()
+        repo.setBudget(20000.0, "2027-03-01")
+        val store = BrideDetailsStore(repo)
+        store.load(isGuest = false)
+        assertEquals("2027-03-01", store.details?.weddingDate)
+        store.save(BrideDetails(weddingDate = "2027-04-10", cityId = "dammam", venue = "قاعة الماسة", guestCount = 300))
+        assertEquals("الدمام", store.details?.cityNameAr)
+        assertEquals("2027-04-10", repo.budget()?.weddingDate)
+        assertTrue(store.details?.hasEventDetails == true)
     }
 
     @Test fun `budget fraction is clamped`() {

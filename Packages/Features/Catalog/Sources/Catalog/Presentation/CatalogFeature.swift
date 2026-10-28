@@ -22,6 +22,8 @@ public final class CatalogContext {
     /// carousel to paid banners.
     public var showsBudgetSlide = true
     public var showsDiscoverSlide = true
+    /// Every city the app serves, for the bride's wedding city in "Bride details".
+    public var cities: [City] = []
 
     public init(cityIds: [String]? = nil, citySummary: String = "", displayName: String? = nil, isGuest: Bool = true) {
         self.cityIds = cityIds
@@ -41,6 +43,7 @@ public final class CatalogFeature {
     let favorites: FavoritesStore
     let budget: BudgetStore
     let preparations: PreparationsStore
+    let brideDetails: BrideDetailsStore
     let openCityPicker: () -> Void
     let requireSignIn: () -> Void
     /// The "Book" action on a service. Phase 3 wires the booking flow; nil shows "coming soon".
@@ -64,6 +67,10 @@ public final class CatalogFeature {
         self.favorites = FavoritesStore(repository: repository)
         self.budget = BudgetStore(repository: repository)
         self.preparations = PreparationsStore(repository: repository)
+        self.brideDetails = BrideDetailsStore(repository: repository)
+        budget.afterSave = { [brideDetails, context] in
+            Task { await brideDetails.load(isGuest: context.isGuest) }
+        }
     }
 
     /// Reloads per-account state after sign-in / sign-out.
@@ -71,6 +78,7 @@ public final class CatalogFeature {
         favorites.reset()
         Task { await budget.load(isGuest: context.isGuest) }
         Task { await preparations.load(isGuest: context.isGuest) }
+        Task { await brideDetails.load(isGuest: context.isGuest) }
     }
 
     public func homeScreen() -> some View {
@@ -95,6 +103,7 @@ public final class CatalogFeature {
         case .store(let id): StoreScreen(feature: self, storeId: id)
         case .favorites: FavoritesScreen(feature: self)
         case .preparations: PreparationsScreen(feature: self)
+        case .brideDetails: BrideDetailsScreen(feature: self)
         }
     }
 
@@ -126,7 +135,13 @@ public final class CatalogFeature {
     }
 
     /// Days until the wedding (nil without a date or once it has passed), for Home and Profile.
-    public var daysUntilWedding: Int? { budget.budget?.daysUntilWedding() }
+    public var daysUntilWedding: Int? { Budget.daysUntil(weddingDate) }
+
+    /// The wedding date, "yyyy-MM-dd": from Bride details, else the budget (they are kept equal).
+    public var weddingDate: String? { brideDetails.details?.weddingDate ?? budget.budget?.weddingDate }
+
+    /// The bride's details, for Profile.
+    public var currentBrideDetails: BrideDetails? { brideDetails.details }
 
     /// How many services the bride saved, for Profile.
     public func favoritesCount() async -> Int? {
@@ -195,8 +210,33 @@ public final class BudgetStore {
         if let loaded = try? await repository.budget() { budget = loaded }
     }
 
+    /// Runs after a save (the wedding date it holds is shared with Bride details).
+    var afterSave: (() -> Void)?
+
     func save(total: Decimal, weddingDate: String?) async throws {
         budget = try await repository.setBudget(total: total, weddingDate: weddingDate)
+        afterSave?()
+    }
+}
+
+/// The bride's details (تفاصيل العروس), loaded with her account and edited from Profile.
+@MainActor
+@Observable
+public final class BrideDetailsStore {
+    public private(set) var details: BrideDetails?
+    private let repository: CatalogRepository
+
+    init(repository: CatalogRepository) {
+        self.repository = repository
+    }
+
+    func load(isGuest: Bool) async {
+        guard !isGuest else { details = nil; return }
+        if let loaded = try? await repository.brideDetails() { details = loaded }
+    }
+
+    func save(_ new: BrideDetails) async throws {
+        details = try await repository.setBrideDetails(new)
     }
 }
 

@@ -172,3 +172,11 @@
 "error.demo" = "The demo booking can't be reported.";
 "pay.amountFrom" = "Amount due · %@";
 "pay.deadline" = "Pay by %@, or the request is cancelled automatically.";
+
+/* The bride's details on a booking (provider) */
+"brideDetails.title" = "Bride details";
+"brideDetails.date" = "Wedding date";
+"brideDetails.city" = "City";
+"brideDetails.venue" = "Venue";
+"brideDetails.guests" = "Guests";
+"brideDetails.notes" = "Her notes";

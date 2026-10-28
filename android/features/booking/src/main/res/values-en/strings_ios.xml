@@ -22,6 +22,12 @@
     <string name="booking_availability_to">To</string>
     <string name="booking_availability_weekly">Days and hours</string>
     <string name="booking_availability_weeklyFooter">Brides only see free times within these hours, with no overlapping bookings.</string>
+    <string name="booking_brideDetails_city">City</string>
+    <string name="booking_brideDetails_date">Wedding date</string>
+    <string name="booking_brideDetails_guests">Guests</string>
+    <string name="booking_brideDetails_notes">Her notes</string>
+    <string name="booking_brideDetails_title">Bride details</string>
+    <string name="booking_brideDetails_venue">Venue</string>
     <string name="booking_common_cancel">Cancel</string>
     <string name="booking_common_copied">Copied</string>
     <string name="booking_common_copy">Copy</string>

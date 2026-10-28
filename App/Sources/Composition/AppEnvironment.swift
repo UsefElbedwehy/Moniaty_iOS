@@ -195,6 +195,7 @@ final class AppEnvironment {
         context.displayName = session.user?.displayName
         context.cityIds = cities.queryCityIds
         context.citySummary = cities.summary(allLabel: L10n.string("cities.all"))
+        context.cities = cities.available
         if wasGuest != context.isGuest { catalog.accountChanged() }
     }
 
