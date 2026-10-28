@@ -46,6 +46,8 @@ struct BookingsListScreen: View {
                             .listRowSeparator(.hidden)
                         }
                     }
+                    // Ivory cards on the white ground, like every other card in the app.
+                    .listRowBackground(Color.dsSurface)
                 }
             case .offline:
                 ErrorStateView(error: .offline) { Task { await load() } }.listRowBackground(Color.clear)

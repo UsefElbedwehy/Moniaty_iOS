@@ -79,8 +79,7 @@ struct AvailabilityScreen: View {
                 }
             }
         }
-        .scrollContentBackground(.hidden)
-        .dsScreenBackground()
+        .dsFormBackground()
         .navigationTitle(BookingL10n.string("availability.title"))
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
@@ -206,8 +205,7 @@ struct PaymentMethodsScreen: View {
                     .listRowBackground(Color.clear)
             }
         }
-        .scrollContentBackground(.hidden)
-        .dsScreenBackground()
+        .dsFormBackground()
         .navigationTitle(BookingL10n.string("methods.title"))
         .alert(BookingL10n.string("error.generic"), isPresented: $deleteFailed) {
             Button(BookingL10n.string("common.ok"), role: .cancel) {}
