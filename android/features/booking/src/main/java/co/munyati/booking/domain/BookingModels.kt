@@ -173,11 +173,28 @@ data class PaymentMethodDraft(
 
 /** Weekly working hours and days off. */
 @Serializable
-data class Availability(val rules: List<Rule> = emptyList(), val daysOff: List<String> = emptyList()) {
+data class Availability(
+    val rules: List<Rule> = emptyList(),
+    val daysOff: List<String> = emptyList(),
+    /**
+     * How she takes bookings: "weekly" (the rules above), "dates" ([dates] only) or "request" (the
+     * bride picks any date and time; she accepts or declines). Null from older servers.
+     */
+    val mode: String? = null,
+    val dates: List<DateWindow>? = null,
+) {
     /** weekday 0 = Sunday; times "HH:mm". */
     @Serializable
     data class Rule(val weekday: Int, val startTime: String, val endTime: String)
+
+    /** One calendar date she is available ("yyyy-MM-dd"), with its hours ("dates" mode). */
+    @Serializable
+    data class DateWindow(val day: String, val startTime: String, val endTime: String)
 }
+
+/** The days a service can be booked in the coming weeks, and the provider's booking mode. */
+@Serializable
+data class AvailableDays(val mode: String? = null, val days: List<String> = emptyList())
 
 /** The result of an action the server can refuse with a reason code. */
 sealed interface ActionResult {

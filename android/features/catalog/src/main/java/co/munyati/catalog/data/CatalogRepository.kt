@@ -65,6 +65,7 @@ class RemoteCatalogRepository(private val client: ApiClient) : CatalogRepository
                 pSort = filter.sort.rawValue,
                 pLimit = SEARCH_PAGE_SIZE,
                 pOffset = offset,
+                pDate = filter.date,
             ),
         )
 
@@ -150,6 +151,7 @@ private data class SearchArgs(
     val pSort: String,
     val pLimit: Int,
     val pOffset: Int,
+    val pDate: String? = null,
 )
 @Serializable
 private data class MapArgs(val pMinLat: Double, val pMinLng: Double, val pMaxLat: Double, val pMaxLng: Double, val pCityIds: List<String>?, val pCategoryId: String?)

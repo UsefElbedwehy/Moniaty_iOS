@@ -132,7 +132,7 @@
 "dispute.refund" = "طلب استرداد";
 "dispute.other" = "أخرى";
 
-"availability.title" = "أوقات العمل";
+"availability.title" = "مواعيد الحجز";
 "availability.weekly" = "الأيام والساعات";
 "availability.weeklyFooter" = "لا تظهر للعرائس إلا الأوقات المتاحة ضمن هذه الساعات، دون تداخل مع حجوزاتك.";
 "availability.from" = "من";
@@ -207,3 +207,17 @@
 "brideDetails.hairLength.medium" = "متوسط";
 "brideDetails.hairLength.long" = "طويل";
 "brideDetails.extraPhone" = "رقم إضافي";
+"availability.mode" = "طريقة استقبال الحجوزات";
+"availability.mode.weekly" = "أوقات أسبوعية ثابتة";
+"availability.mode.dates" = "تواريخ محددة أختارها";
+"availability.mode.request" = "العروس تختار الموعد وأنا أقبل أو أرفض";
+"availability.mode.footer.weekly" = "تختار العروس من الأوقات المتاحة ضمن ساعاتك الأسبوعية، دون تداخل مع حجوزاتك.";
+"availability.mode.footer.dates" = "لا تظهر للعرائس إلا التواريخ التي تضيفينها هنا، بالساعات التي تحددينها لكل تاريخ.";
+"availability.mode.footer.request" = "تختار العروس أي تاريخ ووقت (من ٨ صباحاً حتى منتصف الليل)، ويصلك الطلب لتقبليه أو ترفضيه أو تقترحي موعداً آخر.";
+"availability.dates" = "التواريخ المتاحة";
+"availability.dates.empty" = "لم تضيفي تواريخ بعد.";
+"availability.dates.footer" = "اسحبي التاريخ لليسار لحذفه.";
+"availability.date" = "التاريخ";
+"availability.addDate" = "إضافة تاريخ";
+"request.onRequest" = "اختاري التاريخ والوقت المناسبين لكِ، وستقبل مقدّمة الخدمة الطلب أو ترفضه أو تقترح موعداً آخر.";
+"request.noDays" = "لا توجد تواريخ متاحة حالياً.";

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Payments
@@ -97,7 +98,14 @@ private fun hhmm(time: LocalTime) = "%02d:%02d".format(time.hour, time.minute)
 private fun weekdayName(weekday: Int): String =
     DayOfWeek.of(if (weekday == 0) 7 else weekday).getDisplayName(TextStyle.FULL, Locale.getDefault())
 
-/** Weekly working hours (one range per weekday) and upcoming days off. */
+/** One available date and its hours ("dates" mode). */
+private data class DateSlot(val day: LocalDate, val start: LocalTime, val end: LocalTime)
+
+/**
+ * How the provider takes bookings, and when: weekly hours (one range per weekday) with days off; or
+ * specific dates, each with its hours; or on request (the bride picks any date and time and the
+ * provider accepts or declines). Mirrors iOS `AvailabilityScreen`.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun AvailabilityScreen(feature: BookingFeature) {
@@ -112,7 +120,11 @@ internal fun AvailabilityScreen(feature: BookingFeature) {
     var message by remember { mutableStateOf<String?>(null) }
     var picking by remember { mutableStateOf<Pair<Int, Boolean>?>(null) } // (weekday, isStart)
     var addingDayOff by remember { mutableStateOf(false) }
-    val isValid = days.all { !it.isOpen || it.start < it.end }
+    var mode by remember { mutableStateOf("weekly") }
+    val dates = remember { mutableStateListOf<DateSlot>() }
+    var addingDate by remember { mutableStateOf(false) }
+    var pickingDateTime by remember { mutableStateOf<Pair<Int, Boolean>?>(null) } // (index in dates, isStart)
+    val isValid = days.all { !it.isOpen || it.start < it.end } && dates.all { it.start < it.end }
 
     suspend fun load() {
         try {
@@ -125,6 +137,11 @@ internal fun AvailabilityScreen(feature: BookingFeature) {
             })
             daysOff.clear()
             daysOff.addAll(availability.daysOff.mapNotNull { runCatching { LocalDate.parse(it) }.getOrNull() }.sorted())
+            mode = availability.mode ?: "weekly"
+            dates.clear()
+            dates.addAll(availability.dates.orEmpty().mapNotNull { w ->
+                runCatching { LocalDate.parse(w.day) }.getOrNull()?.let { DateSlot(it, parseTime(w.startTime), parseTime(w.endTime)) }
+            })
             state = ViewState.Loaded(true)
         } catch (e: CancellationException) {
             throw e
@@ -146,6 +163,8 @@ internal fun AvailabilityScreen(feature: BookingFeature) {
                         feature.repository.saveAvailability(Availability(
                             rules = days.filter { it.isOpen }.map { Availability.Rule(it.weekday, hhmm(it.start), hhmm(it.end)) },
                             daysOff = daysOff.map { it.toString() },
+                            mode = mode,
+                            dates = dates.map { Availability.DateWindow(it.day.toString(), hhmm(it.start), hhmm(it.end)) },
                         ))
                         navigator.back()
                     } catch (e: CancellationException) {
@@ -162,6 +181,94 @@ internal fun AvailabilityScreen(feature: BookingFeature) {
             ViewState.Loading -> Spinner(Modifier.padding(top = 120.dp))
             is ViewState.Error -> ErrorStateView(s.error) { scope.launch { load() } }
             else -> Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(DSSpacing.lg), verticalArrangement = Arrangement.spacedBy(DSSpacing.lg)) {
+                val modes = listOf(
+                    "weekly" to R.string.booking_availability_mode_weekly,
+                    "dates" to R.string.booking_availability_mode_dates,
+                    "request" to R.string.booking_availability_mode_request,
+                )
+                val footer = mapOf(
+                    "weekly" to R.string.booking_availability_mode_footer_weekly,
+                    "dates" to R.string.booking_availability_mode_footer_dates,
+                    "request" to R.string.booking_availability_mode_footer_request,
+                )
+                DSFormSection(stringResource(R.string.booking_availability_mode), footer = stringResource(footer.getValue(mode))) {
+                    modes.forEachIndexed { index, (value, label) ->
+                        if (index > 0) DSFormDivider()
+                        Row(
+                            Modifier.fillMaxWidth().heightIn(min = 52.dp).clickable(role = Role.RadioButton) { mode = value }.padding(horizontal = DSSpacing.md),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(stringResource(label), style = DS.type.body, color = DS.colors.textPrimary, modifier = Modifier.weight(1f))
+                            if (mode == value) Icon(Icons.Filled.Check, contentDescription = null, tint = DS.colors.primary)
+                        }
+                    }
+                }
+                if (mode == "dates") {
+                    DSFormSection(stringResource(R.string.booking_availability_dates)) {
+                        if (dates.isEmpty()) {
+                            Text(stringResource(R.string.booking_availability_dates_empty), style = DS.type.body, color = DS.colors.textSecondary,
+                                modifier = Modifier.padding(DSSpacing.md))
+                        }
+                        dates.forEachIndexed { index, slot ->
+                            if (index > 0) DSFormDivider()
+                            Column(Modifier.padding(horizontal = DSSpacing.md, vertical = DSSpacing.xs)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    val instant = slot.day.atStartOfDay(ZoneId.systemDefault()).plusHours(12).toInstant()
+                                    Text(DisplayDates.pattern(instant, "EEEEdMMMM"), style = DS.type.headline, color = DS.colors.textPrimary, modifier = Modifier.weight(1f))
+                                    Icon(Icons.Outlined.Delete, contentDescription = stringResource(R.string.booking_delete), tint = DS.colors.error,
+                                        modifier = Modifier.clickable(role = Role.Button) { dates.removeAt(index) }.padding(DSSpacing.xs))
+                                }
+                                Row(horizontalArrangement = Arrangement.spacedBy(DSSpacing.md)) {
+                                    TimeChip(stringResource(R.string.booking_availability_from), slot.start) { pickingDateTime = index to true }
+                                    TimeChip(stringResource(R.string.booking_availability_to), slot.end) { pickingDateTime = index to false }
+                                }
+                            }
+                        }
+                        DSFormDivider()
+                        Row(
+                            Modifier.fillMaxWidth().heightIn(min = 52.dp).clickable(role = Role.Button) { addingDate = true }.padding(horizontal = DSSpacing.md),
+                            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs),
+                        ) {
+                            Icon(Icons.Filled.Add, contentDescription = null, tint = DS.colors.primary)
+                            Text(stringResource(R.string.booking_availability_addDate), style = DS.type.body, color = DS.colors.primary)
+                        }
+                    }
+                }
+                if (mode == "weekly") WeeklySections(days, daysOff, onPick = { picking = it }, onAddDayOff = { addingDayOff = true })
+            }
+        }
+    }
+
+    pickingDateTime?.let { (index, isStart) ->
+        val slot = dates[index]
+        TimeDialog(if (isStart) slot.start else slot.end, onDismiss = { pickingDateTime = null }) { time ->
+            dates[index] = if (isStart) slot.copy(start = time) else slot.copy(end = time)
+        }
+    }
+    if (addingDate) {
+        val today = LocalDate.now().atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
+        val pickerState = rememberDatePickerState(
+            initialSelectedDateMillis = today,
+            selectableDates = object : SelectableDates { override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis >= today },
+        )
+        DatePickerDialog(onDismissRequest = { addingDate = false }, confirmButton = {
+            TextButton(onClick = {
+                pickerState.selectedDateMillis?.let {
+                    val day = Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()
+                    dates.add(DateSlot(day, LocalTime.of(16, 0), LocalTime.of(22, 0)))
+                    dates.sortBy { slot -> slot.day }
+                }
+                addingDate = false
+            }) { Text(stringResource(R.string.booking_common_ok)) }
+        }) { DatePicker(pickerState) }
+    }
+    WeeklyDialogs(days, daysOff, picking, addingDayOff, onPickDone = { picking = null }, onAddDayOffDone = { addingDayOff = false })
+    MessageDialog(message) { message = null }
+}
+
+/** "weekly" mode: the hours for each weekday and the days off. */
+@Composable
+private fun WeeklySections(days: MutableList<Day>, daysOff: MutableList<LocalDate>, onPick: (Pair<Int, Boolean>) -> Unit, onAddDayOff: () -> Unit) {
                 DSFormSection(stringResource(R.string.booking_availability_weekly), footer = stringResource(R.string.booking_availability_weeklyFooter)) {
                     days.forEachIndexed { index, day ->
                         if (index > 0) DSFormDivider()
@@ -172,8 +279,8 @@ internal fun AvailabilityScreen(feature: BookingFeature) {
                             }
                             if (day.isOpen) {
                                 Row(horizontalArrangement = Arrangement.spacedBy(DSSpacing.md)) {
-                                    TimeChip(stringResource(R.string.booking_availability_from), day.start) { picking = day.weekday to true }
-                                    TimeChip(stringResource(R.string.booking_availability_to), day.end) { picking = day.weekday to false }
+                                    TimeChip(stringResource(R.string.booking_availability_from), day.start) { onPick(day.weekday to true) }
+                                    TimeChip(stringResource(R.string.booking_availability_to), day.end) { onPick(day.weekday to false) }
                                 }
                             }
                         }
@@ -190,21 +297,26 @@ internal fun AvailabilityScreen(feature: BookingFeature) {
                         DSFormDivider()
                     }
                     Row(
-                        Modifier.fillMaxWidth().heightIn(min = 52.dp).clickable(role = Role.Button) { addingDayOff = true }.padding(horizontal = DSSpacing.md),
+                        Modifier.fillMaxWidth().heightIn(min = 52.dp).clickable(role = Role.Button, onClick = onAddDayOff).padding(horizontal = DSSpacing.md),
                         verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs),
                     ) {
                         Icon(Icons.Filled.Add, contentDescription = null, tint = DS.colors.primary)
                         Text(stringResource(R.string.booking_availability_addDayOff), style = DS.type.body, color = DS.colors.primary)
                     }
                 }
-            }
-        }
-    }
+}
 
+/** The weekly mode's time and day-off pickers. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun WeeklyDialogs(
+    days: MutableList<Day>, daysOff: MutableList<LocalDate>, picking: Pair<Int, Boolean>?, addingDayOff: Boolean,
+    onPickDone: () -> Unit, onAddDayOffDone: () -> Unit,
+) {
     picking?.let { (weekday, isStart) ->
         val index = days.indexOfFirst { it.weekday == weekday }
         val day = days[index]
-        TimeDialog(if (isStart) day.start else day.end, onDismiss = { picking = null }) { time ->
+        TimeDialog(if (isStart) day.start else day.end, onDismiss = onPickDone) { time ->
             days[index] = if (isStart) day.copy(start = time) else day.copy(end = time)
         }
     }
@@ -214,17 +326,16 @@ internal fun AvailabilityScreen(feature: BookingFeature) {
             initialSelectedDateMillis = today,
             selectableDates = object : SelectableDates { override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis >= today },
         )
-        DatePickerDialog(onDismissRequest = { addingDayOff = false }, confirmButton = {
+        DatePickerDialog(onDismissRequest = onAddDayOffDone, confirmButton = {
             TextButton(onClick = {
                 pickerState.selectedDateMillis?.let {
                     val day = Instant.ofEpochMilli(it).atZone(ZoneOffset.UTC).toLocalDate()
                     if (day !in daysOff) { daysOff.add(day); daysOff.sort() }
                 }
-                addingDayOff = false
+                onAddDayOffDone()
             }) { Text(stringResource(R.string.booking_common_ok)) }
         }) { DatePicker(pickerState) }
     }
-    MessageDialog(message) { message = null }
 }
 
 @Composable

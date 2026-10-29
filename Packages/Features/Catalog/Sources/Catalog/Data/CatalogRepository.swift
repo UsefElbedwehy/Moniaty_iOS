@@ -34,6 +34,15 @@ public struct RemoteCatalogRepository: CatalogRepository {
         self.client = client
     }
 
+    /// "yyyy-MM-dd" (Gregorian), the day format the RPCs take.
+    static func dayString(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.calendar = Calendar(identifier: .gregorian)
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy-MM-dd"
+        return f.string(from: date)
+    }
+
     public func home(cityIds: [String]?, maxPrice: Decimal?) async throws -> HomeContent {
         try await client.send(.rpc("get_home"), body: HomeArgs(pCityIds: cityIds, pMaxPrice: maxPrice))
     }
@@ -47,7 +56,8 @@ public struct RemoteCatalogRepository: CatalogRepository {
             pFemaleOnly: filter.femaleOnly,
             pSort: filter.sort.rawValue,
             pLimit: 30,
-            pOffset: offset
+            pOffset: offset,
+            pDate: filter.date.map(Self.dayString)
         ))
     }
 
@@ -140,6 +150,7 @@ private struct SearchArgs: Encodable, Sendable {
     let pSort: String
     let pLimit: Int
     let pOffset: Int
+    let pDate: String?
 }
 private struct MapArgs: Encodable, Sendable {
     let pMinLat: Double, pMinLng: Double, pMaxLat: Double, pMaxLng: Double

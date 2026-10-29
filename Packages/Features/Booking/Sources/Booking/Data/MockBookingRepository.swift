@@ -79,9 +79,24 @@ public actor MockBookingRepository: BookingRepository {
     public func availableSlots(serviceId: String, day: String) async throws -> [Date] {
         guard let date = DateFormatter.day.date(from: day) else { return [] }
         let calendar = Calendar(identifier: .gregorian)
-        return stride(from: 10, through: 20, by: 2).compactMap {
+        // Like the server's modes: "request" opens the day, "dates" only the listed days.
+        let hours: [Int]
+        switch self.hours.mode {
+        case "request": hours = Array(8...23)
+        case "dates": hours = (self.hours.dates ?? []).contains { $0.day == day } ? Array(stride(from: 14, through: 20, by: 2)) : []
+        default: hours = Array(stride(from: 10, through: 20, by: 2))
+        }
+        return hours.compactMap {
             calendar.date(bySettingHour: $0, minute: 0, second: 0, of: date)
         }.filter { $0 > .now }
+    }
+
+    public func availableDays(serviceId: String) async throws -> AvailableDays {
+        let today = Calendar.current.startOfDay(for: .now)
+        let days = (0..<60).compactMap { Calendar.current.date(byAdding: .day, value: $0, to: today) }
+            .map { DateFormatter.day.string(from: $0) }
+        let open = hours.mode == "dates" ? days.filter { day in (hours.dates ?? []).contains { $0.day == day } } : days
+        return AvailableDays(mode: hours.mode ?? "weekly", days: open)
     }
 
     public func createBooking(serviceId: String, startsAt: Date, note: String?) async throws -> ActionResult {

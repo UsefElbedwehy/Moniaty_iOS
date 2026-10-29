@@ -107,8 +107,8 @@
     <string name="studio_stores_edit">Edit store</string>
     <string name="studio_stores_empty_message">Link your store so it appears on the map with its products.</string>
     <string name="studio_stores_empty_title">No stores</string>
-    <string name="studio_studio_availability">Working hours</string>
-    <string name="studio_studio_availability_subtitle">Days, hours and days off</string>
+    <string name="studio_studio_availability">Booking times</string>
+    <string name="studio_studio_availability_subtitle">Weekly hours, specific dates, or on the bride\'s request</string>
     <string name="studio_studio_business">Business profile</string>
     <string name="studio_studio_business_empty">Add your business name</string>
     <string name="studio_studio_greeting">Welcome</string>

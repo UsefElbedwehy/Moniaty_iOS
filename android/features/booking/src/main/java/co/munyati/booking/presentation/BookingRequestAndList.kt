@@ -24,11 +24,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.ui.draw.alpha
+import androidx.compose.material.icons.outlined.PanTool
+import co.munyati.booking.domain.AvailableDays
 import androidx.compose.material.icons.outlined.CalendarMonth
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.CreditCard
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SegmentedButton
@@ -120,7 +124,12 @@ internal fun BookingRequestScreen(feature: BookingFeature, service: BookableServ
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val today = remember { LocalDate.now(ZoneId.systemDefault()) }
-    val days = remember { (0L until 21L).map { today.plusDays(it) } }
+    /** The provider's mode and her days with a free time (null until loaded, or if that fails). */
+    var available by remember { mutableStateOf<AvailableDays?>(null) }
+    // The day chips: her listed dates in "dates" mode, otherwise the next three weeks.
+    val days = available?.takeIf { it.mode == "dates" }?.days?.mapNotNull { runCatching { LocalDate.parse(it) }.getOrNull() }
+        ?: (0L until 21L).map { today.plusDays(it) }
+    fun isOpen(d: LocalDate) = available?.days?.contains(d.toString()) ?: true
     var day by remember { mutableStateOf(today) }
     var slots: ViewState<List<Instant>> by remember { mutableStateOf(ViewState.Loading) }
     var selected by remember { mutableStateOf<Instant?>(null) }
@@ -132,7 +141,14 @@ internal fun BookingRequestScreen(feature: BookingFeature, service: BookableServ
         slots = ViewState.Loading
         slots = loadState({ it.isEmpty() }) { feature.repository.availableSlots(service.id, dayString(day)) }
     }
-    LaunchedEffect(Unit) { analytics.screen("booking_request") }
+    LaunchedEffect(Unit) {
+        analytics.screen("booking_request")
+        // The provider's mode and free days; starts on the first free day.
+        runCatching { feature.repository.availableDays(service.id) }.getOrNull()?.let { loaded ->
+            available = loaded
+            if (!isOpen(day)) days.firstOrNull { isOpen(it) }?.let { day = it; selected = null }
+        }
+    }
     LaunchedEffect(day) { loadSlots() }
 
     Column(Modifier.fillMaxSize().background(DS.colors.background)) {
@@ -150,14 +166,22 @@ internal fun BookingRequestScreen(feature: BookingFeature, service: BookableServ
                 }
             }
 
+            if (available?.mode == "request") {
+                Row(horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Outlined.PanTool, contentDescription = null, tint = DS.colors.textSecondary, modifier = Modifier.size(18.dp))
+                    Text(stringResource(R.string.booking_request_onRequest), style = DS.type.footnote, color = DS.colors.textSecondary)
+                }
+            }
             Text(stringResource(R.string.booking_request_day), style = DS.type.headline, color = DS.colors.textPrimary)
+            if (days.isEmpty()) Text(stringResource(R.string.booking_request_noDays), style = DS.type.footnote, color = DS.colors.textSecondary)
+            val datesMode = available?.mode == "dates"
             Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
                 days.forEach { d ->
                     val isOn = d == day
                     val instant = d.atTime(12, 0).atZone(ZoneId.systemDefault()).toInstant()
                     val shape = RoundedCornerShape(16.dp)
                     Column(
-                        Modifier.width(56.dp).height(64.dp).clip(shape)
+                        Modifier.width(56.dp).height(if (datesMode) 78.dp else 64.dp).alpha(if (isOn || isOpen(d)) 1f else 0.4f).clip(shape)
                             .background(if (isOn) DS.colors.primary else DS.colors.surface)
                             .border(1.dp, if (isOn) androidx.compose.ui.graphics.Color.Transparent else DS.colors.border, shape)
                             .clickable(role = Role.RadioButton) { day = d; selected = null },
@@ -167,6 +191,7 @@ internal fun BookingRequestScreen(feature: BookingFeature, service: BookableServ
                         val fg = if (isOn) DS.colors.background else DS.colors.textPrimary
                         Text(DisplayDates.pattern(instant, "EEE"), style = DS.type.caption, color = fg)
                         Text(DisplayDates.pattern(instant, "d"), style = DS.type.title2, color = fg)
+                        if (datesMode) Text(DisplayDates.pattern(instant, "MMM"), style = DS.type.caption, color = fg)
                     }
                 }
             }

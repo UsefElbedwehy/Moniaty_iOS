@@ -169,3 +169,10 @@
 "dresses.call" = "Call";
 "dresses.notice.title" = "List your dress for rent for %@ a month";
 "dresses.notice.body" = "Contact us and we'll add your dress with its photo, price and your number so brides can reach you.";
+
+/* Search by available date */
+"filter.date" = "Available date";
+"filter.date.hint" = "Pick your occasion's day and we'll show the services free that day. “On request” providers show too: they accept or decline the date you ask for.";
+"filter.date.any" = "Any date";
+"filter.date.apply" = "Apply";
+"badge.onRequest" = "On request";

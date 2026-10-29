@@ -56,6 +56,17 @@ struct ServiceCardView: View {
                             .padding(6)
                     }
                 }
+                .overlay(alignment: .bottomTrailing) {
+                    // The bride picks any date and time; the provider accepts or declines.
+                    if card.isOnRequest {
+                        Text(verbatim: CatalogL10n.string("badge.onRequest"))
+                            .font(.dsCaption)
+                            .padding(.horizontal, 8).padding(.vertical, 3)
+                            .background(Capsule().fill(Color.dsSurface.opacity(0.95)))
+                            .foregroundStyle(Color.dsPrimary)
+                            .padding(6)
+                    }
+                }
                 Text(verbatim: card.title)
                     .font(.dsHeadline)
                     .foregroundStyle(Color.dsTextPrimary)

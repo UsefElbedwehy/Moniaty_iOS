@@ -200,6 +200,14 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
   dashboard). Brides contact the owner by WhatsApp or phone. Providers can no longer pick this
   category, and their old dress services stop showing.
 
+## 10j. Booking modes and search by date
+- [ ] Run `supabase/migrations/20261030000000_booking_modes.sql` once in the SQL editor.
+- What it is: in Studio → «مواعيد الحجز» each provider chooses how she takes bookings: fixed
+  weekly hours (as before, the default), specific dates she adds (each with its hours), or «العروس
+  تختار الموعد» (the bride picks any date and time from 8 am to midnight, and she accepts, declines
+  or proposes another time). Brides get «التاريخ المتاح» in search: only services free that day;
+  on-request providers show with a «حسب الطلب» tag.
+
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy
       answers from `docs/STORE_LISTING.md`; upload the screenshots in `design/store/ios/`

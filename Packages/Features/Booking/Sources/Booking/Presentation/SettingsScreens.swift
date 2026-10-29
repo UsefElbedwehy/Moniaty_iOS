@@ -5,7 +5,9 @@ import Shared
 
 // MARK: - Availability (provider studio)
 
-/// Weekly working hours (one range per weekday) and upcoming days off.
+/// How the provider takes bookings, and when: weekly hours (one range per weekday) with days off;
+/// or specific dates, each with its hours; or on request (the bride picks any date and time and
+/// the provider accepts or declines).
 struct AvailabilityScreen: View {
     let feature: BookingFeature
 
@@ -17,6 +19,18 @@ struct AvailabilityScreen: View {
         var id: Int { weekday }
     }
 
+    private struct DateSlot: Identifiable, Hashable {
+        let id = UUID()
+        var day: Date
+        var start: Date
+        var end: Date
+    }
+
+    @State private var mode = "weekly"
+    @State private var dates: [DateSlot] = []
+    @State private var newDate = Calendar.current.startOfDay(for: .now)
+    @State private var newStart = AvailabilityScreen.date("16:00")
+    @State private var newEnd = AvailabilityScreen.date("22:00")
     @State private var days: [Day] = []
     @State private var daysOff: [Date] = []
     @State private var newDayOff = Calendar.current.startOfDay(for: .now)
@@ -34,49 +48,21 @@ struct AvailabilityScreen: View {
                 ErrorStateView(error: error) { Task { await load() } }
             default:
                 Section {
-                    ForEach($days) { $day in
-                        VStack(alignment: .leading, spacing: DSSpacing.xs) {
-                            Toggle(isOn: $day.isOpen) {
-                                Text(verbatim: Self.weekdayName(day.weekday)).font(.dsHeadline)
-                            }
-                            .tint(Color.dsPrimary)
-                            if day.isOpen {
-                                HStack {
-                                    DatePicker(BookingL10n.string("availability.from"), selection: $day.start,
-                                               displayedComponents: .hourAndMinute)
-                                    DatePicker(BookingL10n.string("availability.to"), selection: $day.end,
-                                               displayedComponents: .hourAndMinute)
-                                }
-                                .font(.dsFootnote)
-                            }
+                    Picker(BookingL10n.string("availability.mode"), selection: $mode) {
+                        ForEach(["weekly", "dates", "request"], id: \.self) { m in
+                            Text(verbatim: BookingL10n.string("availability.mode.\(m)")).tag(m)
                         }
                     }
+                    .pickerStyle(.inline)
+                    .labelsHidden()
                 } header: {
-                    BookingL10n.text("availability.weekly")
+                    BookingL10n.text("availability.mode")
                 } footer: {
-                    BookingL10n.text("availability.weeklyFooter")
+                    BookingL10n.text("availability.mode.footer.\(mode)")
                 }
 
-                Section {
-                    ForEach(daysOff, id: \.self) { day in
-                        Text(verbatim: day.displayFormatted(.dateTime.weekday(.wide).day().month(.wide)))
-                    }
-                    .onDelete { daysOff.remove(atOffsets: $0) }
-                    HStack {
-                        DatePicker(BookingL10n.string("availability.addDayOff"), selection: $newDayOff,
-                                   in: Calendar.current.startOfDay(for: .now)..., displayedComponents: .date)
-                        Button {
-                            let day = Calendar.current.startOfDay(for: newDayOff)
-                            if !daysOff.contains(day) { daysOff = (daysOff + [day]).sorted() }
-                        } label: {
-                            Image(systemName: "plus.circle.fill").foregroundStyle(Color.dsPrimary)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(BookingL10n.string("availability.addDayOff"))
-                    }
-                } header: {
-                    BookingL10n.text("availability.daysOff")
-                }
+                if mode == "dates" { datesSections }
+                if mode == "weekly" { weeklySections }
             }
         }
         .dsFormBackground()
@@ -94,8 +80,101 @@ struct AvailabilityScreen: View {
         .trackScreen("studio_availability")
     }
 
+    /// "dates" mode: her upcoming dates with their hours, and a row to add one.
+    @ViewBuilder
+    private var datesSections: some View {
+        Section {
+            if dates.isEmpty {
+                BookingL10n.text("availability.dates.empty").foregroundStyle(Color.dsTextSecondary)
+            }
+            ForEach($dates) { $slot in
+                VStack(alignment: .leading, spacing: DSSpacing.xs) {
+                    Text(verbatim: slot.day.displayFormatted(.dateTime.weekday(.wide).day().month(.wide))).font(.dsHeadline)
+                    HStack {
+                        DatePicker(BookingL10n.string("availability.from"), selection: $slot.start, displayedComponents: .hourAndMinute)
+                        DatePicker(BookingL10n.string("availability.to"), selection: $slot.end, displayedComponents: .hourAndMinute)
+                    }
+                    .font(.dsFootnote)
+                }
+            }
+            .onDelete { dates.remove(atOffsets: $0) }
+        } header: {
+            BookingL10n.text("availability.dates")
+        } footer: {
+            BookingL10n.text("availability.dates.footer")
+        }
+        Section {
+            DatePicker(BookingL10n.string("availability.date"), selection: $newDate,
+                       in: Calendar.current.startOfDay(for: .now)..., displayedComponents: .date)
+            HStack {
+                DatePicker(BookingL10n.string("availability.from"), selection: $newStart, displayedComponents: .hourAndMinute)
+                DatePicker(BookingL10n.string("availability.to"), selection: $newEnd, displayedComponents: .hourAndMinute)
+            }
+            .font(.dsFootnote)
+            Button {
+                let day = Calendar.current.startOfDay(for: newDate)
+                dates = (dates + [DateSlot(day: day, start: newStart, end: newEnd)]).sorted { $0.day < $1.day }
+            } label: {
+                Label(BookingL10n.string("availability.addDate"), systemImage: "plus.circle.fill")
+            }
+            .disabled(Self.time(newStart) >= Self.time(newEnd))
+        } header: {
+            BookingL10n.text("availability.addDate")
+        }
+    }
+
+    /// "weekly" mode: the hours for each weekday and the days off.
+    @ViewBuilder
+    private var weeklySections: some View {
+        Section {
+            ForEach($days) { $day in
+                VStack(alignment: .leading, spacing: DSSpacing.xs) {
+                    Toggle(isOn: $day.isOpen) {
+                        Text(verbatim: Self.weekdayName(day.weekday)).font(.dsHeadline)
+                    }
+                    .tint(Color.dsPrimary)
+                    if day.isOpen {
+                        HStack {
+                            DatePicker(BookingL10n.string("availability.from"), selection: $day.start,
+                                       displayedComponents: .hourAndMinute)
+                            DatePicker(BookingL10n.string("availability.to"), selection: $day.end,
+                                       displayedComponents: .hourAndMinute)
+                        }
+                        .font(.dsFootnote)
+                    }
+                }
+            }
+        } header: {
+            BookingL10n.text("availability.weekly")
+        } footer: {
+            BookingL10n.text("availability.weeklyFooter")
+        }
+
+        Section {
+            ForEach(daysOff, id: \.self) { day in
+                Text(verbatim: day.displayFormatted(.dateTime.weekday(.wide).day().month(.wide)))
+            }
+            .onDelete { daysOff.remove(atOffsets: $0) }
+            HStack {
+                DatePicker(BookingL10n.string("availability.addDayOff"), selection: $newDayOff,
+                           in: Calendar.current.startOfDay(for: .now)..., displayedComponents: .date)
+                Button {
+                    let day = Calendar.current.startOfDay(for: newDayOff)
+                    if !daysOff.contains(day) { daysOff = (daysOff + [day]).sorted() }
+                } label: {
+                    Image(systemName: "plus.circle.fill").foregroundStyle(Color.dsPrimary)
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(BookingL10n.string("availability.addDayOff"))
+            }
+        } header: {
+            BookingL10n.text("availability.daysOff")
+        }
+    }
+
     private var isValid: Bool {
         days.allSatisfy { !$0.isOpen || Self.time($0.start) < Self.time($0.end) }
+            && dates.allSatisfy { Self.time($0.start) < Self.time($0.end) }
     }
 
     private func load() async {
@@ -109,6 +188,12 @@ struct AvailabilityScreen: View {
             }
             daysOff = availability.daysOff.compactMap { DateFormatter.day.date(from: $0) }
                 .map { Calendar.current.startOfDay(for: $0) }
+            mode = availability.mode ?? "weekly"
+            dates = (availability.dates ?? []).compactMap { window in
+                DateFormatter.day.date(from: window.day).map {
+                    DateSlot(day: Calendar.current.startOfDay(for: $0), start: Self.date(window.startTime), end: Self.date(window.endTime))
+                }
+            }
             state = .loaded(true)
         } catch {
             state = .error(appError(error))
@@ -124,7 +209,10 @@ struct AvailabilityScreen: View {
         Task {
             defer { isSaving = false }
             do {
-                try await feature.repository.saveAvailability(Availability(rules: rules, daysOff: off))
+                let windows = dates.map {
+                    Availability.DateWindow(day: DateFormatter.day.string(from: $0.day), startTime: Self.time($0.start), endTime: Self.time($0.end))
+                }
+                try await feature.repository.saveAvailability(Availability(rules: rules, daysOff: off, mode: mode, dates: windows))
                 dismiss()
             } catch {
                 message = BookingL10n.string("error.generic")
@@ -137,7 +225,7 @@ struct AvailabilityScreen: View {
         Calendar.current.weekdaySymbols[weekday]
     }
 
-    private static func date(_ hhmm: String) -> Date {
+    fileprivate static func date(_ hhmm: String) -> Date {
         let parts = hhmm.split(separator: ":").compactMap { Int($0) }
         return Calendar.current.date(bySettingHour: parts.first ?? 0, minute: parts.count > 1 ? parts[1] : 0,
                                      second: 0, of: .now) ?? .now

@@ -65,6 +65,11 @@ public struct ServiceCard: Identifiable, Hashable, Sendable, Decodable {
     public let ratingCount: Int?
     public let femaleStaffOnly: Bool
     public let isFavorite: Bool
+    /// "weekly", "dates" or "request" (the bride picks any time; the provider accepts or declines).
+    public let bookingMode: String?
+
+    /// The provider takes requests for any date and time («حسب الطلب»).
+    public var isOnRequest: Bool { bookingMode == "request" }
 }
 
 public struct ProviderSummary: Identifiable, Hashable, Sendable, Decodable {
@@ -373,19 +378,22 @@ public struct ServiceFilter: Hashable, Sendable {
     public var withinBudget: Bool
     public var femaleOnly: Bool
     public var sort: Sort
+    /// Only services with a free time that day.
+    public var date: Date?
 
     public enum Sort: String, Hashable, Sendable, CaseIterable {
         case recommended, priceAsc = "price_asc", priceDesc = "price_desc", newest
     }
 
     public init(categoryId: String? = nil, title: String? = nil, query: String = "",
-                withinBudget: Bool = false, femaleOnly: Bool = false, sort: Sort = .recommended) {
+                withinBudget: Bool = false, femaleOnly: Bool = false, sort: Sort = .recommended, date: Date? = nil) {
         self.categoryId = categoryId
         self.title = title
         self.query = query
         self.withinBudget = withinBudget
         self.femaleOnly = femaleOnly
         self.sort = sort
+        self.date = date
     }
 }
 

@@ -205,8 +205,25 @@ public struct Availability: Sendable, Decodable, Equatable {
         public var endTime: String
     }
 
+    /// One calendar date she is available, with its hours ("dates" mode).
+    public struct DateWindow: Sendable, Codable, Equatable, Hashable {
+        public var day: String           // "yyyy-MM-dd"
+        public var startTime: String     // "HH:mm"
+        public var endTime: String
+    }
+
     public var rules: [Rule]
     public var daysOff: [String]         // "yyyy-MM-dd"
+    /// How she takes bookings: "weekly" (the hours above), "dates" (`dates` only) or "request"
+    /// (the bride picks any date and time; she accepts or declines). nil from older servers.
+    public var mode: String?
+    public var dates: [DateWindow]?
+}
+
+/// The days a service can be booked in the coming weeks, and the provider's booking mode.
+public struct AvailableDays: Sendable, Decodable, Equatable {
+    public let mode: String?
+    public let days: [String]            // "yyyy-MM-dd"
 }
 
 /// The result of an action that the server can refuse with a reason code.

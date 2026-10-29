@@ -56,7 +56,12 @@ data class ServiceCard(
     val ratingCount: Int? = null,
     val femaleStaffOnly: Boolean = false,
     val isFavorite: Boolean = false,
-)
+    /** "weekly", "dates" or "request" (the bride picks any time; the provider accepts or declines). */
+    val bookingMode: String? = null,
+) {
+    /** The provider takes requests for any date and time («حسب الطلب»). */
+    val isOnRequest: Boolean get() = bookingMode == "request"
+}
 
 @Serializable
 data class ProviderSummary(
@@ -260,6 +265,8 @@ data class ServiceFilter(
     val withinBudget: Boolean = false,
     val femaleOnly: Boolean = false,
     val sort: Sort = Sort.Recommended,
+    /** Only services with a free time that day, "yyyy-MM-dd". */
+    val date: String? = null,
 ) {
     enum class Sort(val rawValue: String) {
         Recommended("recommended"), PriceAsc("price_asc"), PriceDesc("price_desc"), Newest("newest");

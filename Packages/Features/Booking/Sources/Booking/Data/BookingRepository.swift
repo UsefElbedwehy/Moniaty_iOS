@@ -5,6 +5,8 @@ import Networking
 public protocol BookingRepository: Sendable {
     // Bride
     func availableSlots(serviceId: String, day: String) async throws -> [Date]
+    /// The days with a free time in the next weeks, and the provider's booking mode.
+    func availableDays(serviceId: String) async throws -> AvailableDays
     func createBooking(serviceId: String, startsAt: Date, note: String?) async throws -> ActionResult
     func respondToProposal(bookingId: String, accept: Bool) async throws -> ActionResult
     func submitReceipt(bookingId: String, storagePath: String, amount: Decimal, transferredAt: Date,
@@ -112,8 +114,19 @@ public struct RemoteBookingRepository: BookingRepository {
     }
 
     public func saveAvailability(_ availability: Availability) async throws {
+        // The weekly hours are kept whatever the mode, so switching back finds them.
         let _: Availability = try await client.send(.rpc("set_my_availability"),
                                                     body: AvailabilityArgs(pRules: availability.rules, pDaysOff: availability.daysOff))
+        if let dates = availability.dates {
+            let _: Availability = try await client.send(.rpc("set_my_available_dates"), body: DatesArgs(pDates: dates))
+        }
+        if let mode = availability.mode {
+            let _: Availability = try await client.send(.rpc("set_my_booking_mode"), body: ModeArgs(pMode: mode))
+        }
+    }
+
+    public func availableDays(serviceId: String) async throws -> AvailableDays {
+        try await client.send(.rpc("get_available_days"), body: DaysArgs(pServiceId: serviceId, pDays: 90))
     }
 
     public func paymentMethods() async throws -> [PaymentMethod] {
@@ -155,6 +168,9 @@ private struct ReceiptArgs: Encodable, Sendable {
     let pSha256: String
 }
 private struct AvailabilityArgs: Encodable, Sendable { let pRules: [Availability.Rule]; let pDaysOff: [String] }
+private struct DatesArgs: Encodable, Sendable { let pDates: [Availability.DateWindow] }
+private struct ModeArgs: Encodable, Sendable { let pMode: String }
+private struct DaysArgs: Encodable, Sendable { let pServiceId: String; let pDays: Int }
 private struct PaymentMethodArgs: Encodable, Sendable {
     let pId: String?
     let pKind: String

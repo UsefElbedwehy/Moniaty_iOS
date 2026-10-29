@@ -107,8 +107,8 @@
     <string name="studio_stores_edit">تعديل المتجر</string>
     <string name="studio_stores_empty_message">اربطي متجرك ليظهر على الخريطة مع منتجاته.</string>
     <string name="studio_stores_empty_title">لا توجد متاجر</string>
-    <string name="studio_studio_availability">أوقات العمل</string>
-    <string name="studio_studio_availability_subtitle">الأيام والساعات وأيام الإجازة</string>
+    <string name="studio_studio_availability">مواعيد الحجز</string>
+    <string name="studio_studio_availability_subtitle">أوقات أسبوعية، أو تواريخ محددة، أو حسب طلب العروس</string>
     <string name="studio_studio_business">ملف النشاط</string>
     <string name="studio_studio_business_empty">أضيفي اسم نشاطك</string>
     <string name="studio_studio_greeting">أهلاً بكِ</string>
