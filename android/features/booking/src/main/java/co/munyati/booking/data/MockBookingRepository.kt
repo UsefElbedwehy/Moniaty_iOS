@@ -2,6 +2,7 @@ package co.munyati.booking.data
 
 import co.munyati.booking.domain.ActionResult
 import co.munyati.booking.domain.Availability
+import co.munyati.booking.domain.AvailableDays
 import co.munyati.booking.domain.BookingBrideDetails
 import co.munyati.booking.domain.BookingDetail
 import co.munyati.booking.domain.BookingEvent
@@ -57,7 +58,19 @@ class MockBookingRepository : BookingRepository {
 
     override suspend fun availableSlots(serviceId: String, day: String): List<Instant> {
         val date = runCatching { LocalDate.parse(day) }.getOrNull() ?: return emptyList()
-        return (10..20 step 2).map { date.atTime(it, 0).atZone(Riyadh).toInstant() }.filter { it.isAfter(Instant.now()) }
+        // Like the server's modes: "request" opens the day, "dates" only the listed days.
+        val hoursOfDay = when (hours.mode) {
+            "request" -> (8..23).toList()
+            "dates" -> if (hours.dates.orEmpty().any { it.day == day }) (14..20 step 2).toList() else emptyList()
+            else -> (10..20 step 2).toList()
+        }
+        return hoursOfDay.map { date.atTime(it, 0).atZone(Riyadh).toInstant() }.filter { it.isAfter(Instant.now()) }
+    }
+
+    override suspend fun availableDays(serviceId: String): AvailableDays {
+        val days = (0L until 60L).map { LocalDate.now(Riyadh).plusDays(it).toString() }
+        val open = if (hours.mode == "dates") days.filter { d -> hours.dates.orEmpty().any { it.day == d } } else days
+        return AvailableDays(hours.mode ?: "weekly", open)
     }
 
     override suspend fun createBooking(serviceId: String, startsAt: Instant, note: String?): ActionResult = mutex.withLock {
@@ -160,7 +173,7 @@ class MockBookingRepository : BookingRepository {
         val paid = row.summary.status in setOf(BookingStatus.PaymentConfirmed, BookingStatus.Completed, BookingStatus.Disputed)
         val details = if (row.summary.isDemo) null else BookingBrideDetails(
             // Like the server: her name and phone only once the payment is confirmed.
-            fullName = if (paid) "نورة محمد" else null, phone = if (paid) "+966551234567" else null,
+            fullName = if (paid) "نورة محمد" else null, phone = if (paid) "+966551234567" else null, extraPhone = if (paid) "+966561112222" else null,
             age = 27, nationality = "سعودية", skinType = "dry", skinTone = "medium", hairType = "wavy", hairLength = "long",
             allergies = "حساسية من الحناء السوداء",
             weddingDate = row.summary.startsAt.atZone(Riyadh).toLocalDate().toString(), cityNameAr = "الدمام", cityNameEn = "Dammam",

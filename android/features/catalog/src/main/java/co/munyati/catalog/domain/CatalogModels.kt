@@ -30,6 +30,8 @@ data class CatalogCategory(
     val priceHintAr: String? = null,
     val priceHintEn: String? = null,
     val serviceCount: Int? = null,
+    /** Listed by the admin (the dresses for rent), not by providers: opens the dresses lists. */
+    val adminListings: Boolean = false,
 ) {
     val name: String get() = localized(nameAr, nameEn)
     val priceHint: String? get() = localized(priceHintAr.orEmpty(), priceHintEn.orEmpty()).ifEmpty { null }
@@ -54,7 +56,12 @@ data class ServiceCard(
     val ratingCount: Int? = null,
     val femaleStaffOnly: Boolean = false,
     val isFavorite: Boolean = false,
-)
+    /** "weekly", "dates" or "request" (the bride picks any time; the provider accepts or declines). */
+    val bookingMode: String? = null,
+) {
+    /** The provider takes requests for any date and time («حسب الطلب»). */
+    val isOnRequest: Boolean get() = bookingMode == "request"
+}
 
 @Serializable
 data class ProviderSummary(
@@ -165,6 +172,32 @@ data class MapPin(
     val logoUrl: String? = null,
 )
 
+/** A dress for rent in «فساتين», listed by the admin: a photo, the price and the owner's number. */
+@Serializable
+data class DressListing(
+    val id: String,
+    val kind: String,
+    val imageUrl: String,
+    val price: Double,
+    /** +9665XXXXXXXX. */
+    val contactPhone: String,
+    /** The last day it is listed, "yyyy-MM-dd". */
+    val endsOn: String? = null,
+) {
+    companion object {
+        /** The three lists, in order. */
+        val kinds = listOf("wedding", "jalwa", "evening")
+    }
+}
+
+/** The notice for dress owners: list a dress for [price] riyals by contacting [phone]. */
+@Serializable
+data class DressNotice(val price: Double? = null, val days: Int? = null, val phone: String? = null)
+
+/** One of the three dress lists, with the notice. */
+@Serializable
+data class DressListingsPage(val listings: List<DressListing> = emptyList(), val notice: DressNotice? = null)
+
 /**
  * The bride's details (تفاصيل العروس): filled once in Profile, shown to the provider of each of her
  * bookings. [weddingDate] ("yyyy-MM-dd") is the same date the budget stores.
@@ -174,8 +207,10 @@ data class BrideDetails(
     val fullName: String? = null,
     val age: Int? = null,
     val nationality: String? = null,
-    /** +9665XXXXXXXX. */
+    /** The number she signed in with (+9665XXXXXXXX), from the server; she can't change it. */
     val phone: String? = null,
+    /** One more number she may add (+9665XXXXXXXX). */
+    val extraPhone: String? = null,
     val skinType: String? = null,
     val skinTone: String? = null,
     val hairType: String? = null,
@@ -230,6 +265,8 @@ data class ServiceFilter(
     val withinBudget: Boolean = false,
     val femaleOnly: Boolean = false,
     val sort: Sort = Sort.Recommended,
+    /** Only services with a free time that day, "yyyy-MM-dd". */
+    val date: String? = null,
 ) {
     enum class Sort(val rawValue: String) {
         Recommended("recommended"), PriceAsc("price_asc"), PriceDesc("price_desc"), Newest("newest");

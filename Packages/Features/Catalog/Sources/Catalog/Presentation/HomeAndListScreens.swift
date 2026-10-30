@@ -10,6 +10,7 @@ struct ServiceListScreen: View {
     @State private var filter: ServiceFilter
     @State private var state: ViewState<[ServiceCard]> = .loading
     @State private var canLoadMore = true
+    @State private var pickingDate = false
     @Environment(\.analytics) private var analytics
 
     init(feature: CatalogFeature, initialFilter: ServiceFilter) {
@@ -49,6 +50,9 @@ struct ServiceListScreen: View {
             await load(reset: true)
         }
         .trackScreen(isSearch ? "search" : "category")
+        .sheet(isPresented: $pickingDate) {
+            DateFilterSheet(date: filter.date) { filter.date = $0 }
+        }
     }
 
     private struct TaskKey: Equatable { let filter: ServiceFilter; let cities: [String]? }
@@ -63,6 +67,12 @@ struct ServiceListScreen: View {
                 }
                 Chip(CatalogL10n.key("filter.femaleOnly"), isSelected: filter.femaleOnly) {
                     filter.femaleOnly.toggle()
+                }
+                // «التاريخ المتاح»: only services with a free time that day.
+                Chip(filter.date.map { LocalizedStringKey($0.displayFormatted(.dateTime.day().month(.abbreviated))) }
+                         ?? CatalogL10n.key("filter.date"),
+                     isSelected: filter.date != nil) {
+                    pickingDate = true
                 }
                 Menu {
                     Picker(CatalogL10n.string("sort.title"), selection: $filter.sort) {
@@ -219,5 +229,43 @@ struct BudgetSheet: View {
                 failed = true
             }
         }
+    }
+}
+
+/// Picks the day for «التاريخ المتاح» (or clears it).
+private struct DateFilterSheet: View {
+    let onDone: (Date?) -> Void
+    @State private var day: Date
+    @Environment(\.dismiss) private var dismiss
+
+    init(date: Date?, onDone: @escaping (Date?) -> Void) {
+        self.onDone = onDone
+        _day = State(initialValue: date ?? Calendar.current.startOfDay(for: .now))
+    }
+
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: DSSpacing.md) {
+                CatalogL10n.text("filter.date.hint").font(.dsFootnote).foregroundStyle(Color.dsTextSecondary)
+                DatePicker(CatalogL10n.string("filter.date"), selection: $day, in: Calendar.current.startOfDay(for: .now)...,
+                           displayedComponents: .date)
+                    .datePickerStyle(.graphical)
+                    .tint(Color.dsPrimary)
+                Spacer(minLength: 0)
+            }
+            .padding(DSSpacing.lg)
+            .dsScreenBackground()
+            .navigationTitle(CatalogL10n.string("filter.date"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(CatalogL10n.string("filter.date.any")) { onDone(nil); dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(CatalogL10n.string("filter.date.apply")) { onDone(Calendar.current.startOfDay(for: day)); dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.large])
     }
 }

@@ -23,7 +23,7 @@ public actor MockCatalogRepository: CatalogRepository {
         ["id": "venues", "name_ar": "قصور وقاعات الأفراح", "name_en": "Wedding halls & venues", "icon_symbol": "building.columns"],
         ["id": "henna", "name_ar": "نقش الحناء", "name_en": "Henna artist", "icon_symbol": "hand.raised"],
         ["id": "kosha_decor", "name_ar": "الكوش والتنسيق", "name_en": "Kosha & décor", "icon_symbol": "sparkles.rectangle.stack"],
-        ["id": "dresses", "name_ar": "فساتين الزفاف", "name_en": "Wedding dresses", "icon_symbol": "tshirt"],
+        ["id": "dresses", "name_ar": "فساتين", "name_en": "Dresses", "icon_symbol": "tshirt", "admin_listings": true],
         ["id": "coffee_servers", "name_ar": "الضيافة", "name_en": "Hospitality", "icon_symbol": "dallah"],
         ["id": "cakes_sweets", "name_ar": "الكيك والحلويات", "name_en": "Cakes & sweets", "icon_symbol": "birthday.cake"]
     ]
@@ -190,6 +190,7 @@ public actor MockCatalogRepository: CatalogRepository {
 
     public func setBrideDetails(_ details: BrideDetails) async throws -> BrideDetails? {
         var saved = details
+        saved.phone = "+966500000000" // the login number, like the server
         let names = ["dammam": ("الدمام", "Dammam"), "khobar": ("الخبر", "Khobar"), "qatif": ("القطيف", "Qatif")]
         saved.cityNameAr = details.cityId.flatMap { names[$0]?.0 }
         saved.cityNameEn = details.cityId.flatMap { names[$0]?.1 }
@@ -200,6 +201,16 @@ public actor MockCatalogRepository: CatalogRepository {
                                   weddingDate: details.weddingDate)
         }
         return saved
+    }
+
+    public func dresses(kind: DressListing.Kind) async throws -> DressListingsPage {
+        let prices: [DressListing.Kind: [Int]] = [.wedding: [1500, 2200, 900, 3000], .jalwa: [800, 650, 1200], .evening: [400, 350]]
+        let listings: [[String: Any]] = (prices[kind] ?? []).enumerated().map { index, price in
+            ["id": "\(kind.rawValue)-\(index)", "kind": kind.rawValue,
+             "image_url": "https://picsum.photos/seed/dress-\(kind.rawValue)-\(index)/600/800",
+             "price": price, "contact_phone": "+96655111222\(index)", "ends_on": "2026-11-28"]
+        }
+        return try decode(["listings": listings, "notice": ["price": 20, "days": 30, "phone": "+966500000099"]])
     }
 
     private func orderedPreparations() -> [Preparation] {

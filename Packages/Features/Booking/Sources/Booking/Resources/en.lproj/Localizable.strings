@@ -132,7 +132,7 @@
 "dispute.refund" = "Refund request";
 "dispute.other" = "Other";
 
-"availability.title" = "Working hours";
+"availability.title" = "Booking times";
 "availability.weekly" = "Days and hours";
 "availability.weeklyFooter" = "Brides only see free times within these hours, with no overlapping bookings.";
 "availability.from" = "From";
@@ -183,9 +183,9 @@
 "brideDetails.name" = "Name";
 "brideDetails.age" = "Age";
 "brideDetails.nationality" = "Nationality";
-"brideDetails.phone" = "Contact number";
+"brideDetails.phone" = "Mobile number";
 "brideDetails.allergies" = "Allergies or health notes";
-"brideDetails.hidden" = "Her name and number show once the payment is confirmed.";
+"brideDetails.hidden" = "Her name and numbers show once the payment is confirmed.";
 "brideDetails.section.wedding" = "Wedding";
 "brideDetails.skinType" = "Skin type";
 "brideDetails.skinType.normal" = "Normal";
@@ -206,3 +206,18 @@
 "brideDetails.hairLength.short" = "Short";
 "brideDetails.hairLength.medium" = "Medium";
 "brideDetails.hairLength.long" = "Long";
+"brideDetails.extraPhone" = "Extra number";
+"availability.mode" = "How you take bookings";
+"availability.mode.weekly" = "Fixed weekly hours";
+"availability.mode.dates" = "Specific dates I choose";
+"availability.mode.request" = "The bride picks a time; I accept or decline";
+"availability.mode.footer.weekly" = "Brides pick from the free times within your weekly hours, never overlapping your bookings.";
+"availability.mode.footer.dates" = "Brides see only the dates you add here, at the hours you set for each.";
+"availability.mode.footer.request" = "Brides pick any date and time (8 am to midnight), and you accept, decline or propose another time.";
+"availability.dates" = "Available dates";
+"availability.dates.empty" = "No dates added yet.";
+"availability.dates.footer" = "Swipe a date to delete it.";
+"availability.date" = "Date";
+"availability.addDate" = "Add a date";
+"request.onRequest" = "Pick the date and time that suit you; the provider will accept, decline or propose another time.";
+"request.noDays" = "No dates available right now.";

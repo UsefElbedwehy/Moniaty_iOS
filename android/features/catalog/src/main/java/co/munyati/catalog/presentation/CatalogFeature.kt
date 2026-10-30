@@ -65,6 +65,7 @@ data class ServicesRoute(
 @Serializable data object FavoritesRoute
 @Serializable data object PreparationsRoute
 @Serializable data object BrideDetailsRoute
+@Serializable data object DressesRoute
 
 /** Content a catalog screen can report. */
 sealed interface CatalogContentRef {
@@ -188,6 +189,7 @@ class CatalogFeature(
         composable<FavoritesRoute> { FavoritesScreen(this@CatalogFeature) }
         composable<PreparationsRoute> { PreparationsScreen(this@CatalogFeature) }
         composable<BrideDetailsRoute> { BrideDetailsScreen(this@CatalogFeature) }
+        composable<DressesRoute> { DressesScreen(this@CatalogFeature) }
     }
 
     internal fun toggleFavorite(card: ServiceCard) {

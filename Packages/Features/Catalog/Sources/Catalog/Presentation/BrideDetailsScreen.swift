@@ -2,7 +2,8 @@ import SwiftUI
 import DesignSystem
 import Shared
 
-/// "Bride details" (تفاصيل العروس): about her (name, age, nationality, phone; skin and hair;
+/// "Bride details" (تفاصيل العروس): about her (name, age, nationality, her login number and one
+/// extra number; skin and hair;
 /// allergies), then the wedding (date, city, venue, guests, notes). Every field is optional. The
 /// provider of each of her bookings sees them (name and phone once the payment is confirmed), so
 /// the screen says so at the top. The date is the budget's date too.
@@ -12,7 +13,7 @@ struct BrideDetailsScreen: View {
     @State private var fullName = ""
     @State private var ageText = ""
     @State private var nationality = ""
-    @State private var phone = ""
+    @State private var extraPhone = ""
     @State private var skinType = ""
     @State private var skinTone = ""
     @State private var hairType = ""
@@ -56,7 +57,10 @@ struct BrideDetailsScreen: View {
         return "+966" + digits
     }
 
-    private var phoneValid: Bool { phone.trimmingCharacters(in: .whitespaces).isEmpty || Self.saudiMobile(phone) != nil }
+    private var phoneValid: Bool { extraPhone.trimmingCharacters(in: .whitespaces).isEmpty || Self.saudiMobile(extraPhone) != nil }
+
+    /// The number she signed in with: shown, not editable.
+    private var loginPhone: String? { feature.brideDetails.details?.phone ?? feature.context.phone }
     private var canSave: Bool { ageValid && guestsValid && phoneValid && !isSaving }
 
     private var isArabic: Bool { Locale.current.language.languageCode?.identifier == "ar" }
@@ -76,7 +80,19 @@ struct BrideDetailsScreen: View {
                 TextField(CatalogL10n.string("brideDetails.age"), text: $ageText)
                     .keyboardType(.numberPad)
                 TextField(CatalogL10n.string("brideDetails.nationality"), text: $nationality)
-                TextField(CatalogL10n.string("brideDetails.phone"), text: $phone)
+                if let loginPhone {
+                    LabeledContent {
+                        HStack(spacing: DSSpacing.xxs) {
+                            Text(verbatim: Self.localPhone(loginPhone)).environment(\.layoutDirection, .leftToRight)
+                            Image(systemName: "lock.fill").font(.caption)
+                        }
+                        .foregroundStyle(Color.dsTextSecondary)
+                    } label: {
+                        CatalogL10n.text("brideDetails.phone")
+                    }
+                    .accessibilityHint(CatalogL10n.string("brideDetails.phone.locked"))
+                }
+                TextField(CatalogL10n.string("brideDetails.extraPhone"), text: $extraPhone)
                     .keyboardType(.phonePad)
                     .textContentType(.telephoneNumber)
             } header: {
@@ -175,8 +191,9 @@ struct BrideDetailsScreen: View {
         let saved = feature.brideDetails.details
         fullName = saved?.fullName ?? feature.context.displayName ?? ""
         ageText = saved?.age.map { "\($0)" } ?? ""
-        nationality = saved?.nationality ?? ""
-        phone = (saved?.phone ?? feature.context.phone).map(Self.localPhone) ?? ""
+        // Saudi by default; she can change it.
+        nationality = saved?.nationality ?? CatalogL10n.string("brideDetails.nationality.default")
+        extraPhone = saved?.extraPhone.map(Self.localPhone) ?? ""
         skinType = saved?.skinType ?? ""
         skinTone = saved?.skinTone ?? ""
         hairType = saved?.hairType ?? ""
@@ -206,7 +223,7 @@ struct BrideDetailsScreen: View {
             fullName: trimmed(fullName, 80),
             age: age,
             nationality: trimmed(nationality, 40),
-            phone: Self.saudiMobile(phone),
+            extraPhone: Self.saudiMobile(extraPhone),
             skinType: skinType.isEmpty ? nil : skinType,
             skinTone: skinTone.isEmpty ? nil : skinTone,
             hairType: hairType.isEmpty ? nil : hairType,

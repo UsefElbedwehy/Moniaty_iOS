@@ -38,6 +38,8 @@ public struct CatalogCategory: Identifiable, Hashable, Sendable, Decodable {
     public let priceHintAr: String?
     public let priceHintEn: String?
     public let serviceCount: Int?
+    /// Listed by the admin (the dresses for rent), not by providers: opens `CatalogRoute.dresses`.
+    public let adminListings: Bool?
 
     public var name: String { localized(ar: nameAr, en: nameEn) }
     public var priceHint: String? {
@@ -63,6 +65,11 @@ public struct ServiceCard: Identifiable, Hashable, Sendable, Decodable {
     public let ratingCount: Int?
     public let femaleStaffOnly: Bool
     public let isFavorite: Bool
+    /// "weekly", "dates" or "request" (the bride picks any time; the provider accepts or declines).
+    public let bookingMode: String?
+
+    /// The provider takes requests for any date and time («حسب الطلب»).
+    public var isOnRequest: Bool { bookingMode == "request" }
 }
 
 public struct ProviderSummary: Identifiable, Hashable, Sendable, Decodable {
@@ -214,6 +221,40 @@ public struct MapPin: Identifiable, Hashable, Sendable, Decodable {
     public let logoUrl: URL?
 }
 
+/// A dress for rent in «فساتين», listed by the admin: a photo, the price and the owner's number.
+public struct DressListing: Identifiable, Hashable, Sendable, Decodable {
+    public enum Kind: String, CaseIterable, Sendable, Decodable { case wedding, jalwa, evening }
+
+    public let id: String
+    public let kind: Kind
+    public let imageUrl: URL
+    public let price: Decimal
+    /// +9665XXXXXXXX.
+    public let contactPhone: String
+    /// The last day it is listed, "yyyy-MM-dd".
+    public let endsOn: String?
+
+    /// wa.me wants the number without "+".
+    public var whatsAppURL: URL? { URL(string: "https://wa.me/\(contactPhone.filter(\.isNumber))") }
+    public var callURL: URL? { URL(string: "tel:\(contactPhone)") }
+}
+
+/// The notice for dress owners: list a dress for `price` riyals for `days` days by contacting `phone`.
+public struct DressNotice: Hashable, Sendable, Decodable {
+    public let price: Decimal?
+    public let days: Int?
+    public let phone: String?
+
+    public var whatsAppURL: URL? { phone.flatMap { URL(string: "https://wa.me/\($0.filter(\.isNumber))") } }
+    public var callURL: URL? { phone.flatMap { URL(string: "tel:\($0)") } }
+}
+
+/// One of the three dress lists, with the notice.
+public struct DressListingsPage: Sendable, Decodable {
+    public let listings: [DressListing]
+    public let notice: DressNotice?
+}
+
 /// The bride's details (تفاصيل العروس): about her, then the wedding. Every field is optional. Filled
 /// once in Profile and shown to the provider of each of her bookings (name and phone only once
 /// the payment is confirmed). `weddingDate` ("yyyy-MM-dd") is the same date the budget stores.
@@ -221,8 +262,10 @@ public struct BrideDetails: Equatable, Sendable, Decodable {
     public var fullName: String?
     public var age: Int?
     public var nationality: String?
-    /// +9665XXXXXXXX.
+    /// The number she signed in with (+9665XXXXXXXX), from the server; she can't change it.
     public var phone: String?
+    /// One more number she may add (+9665XXXXXXXX).
+    public var extraPhone: String?
     /// One of `BrideDetails.skinTypes` (and likewise for the other choice fields).
     public var skinType: String?
     public var skinTone: String?
@@ -244,13 +287,14 @@ public struct BrideDetails: Equatable, Sendable, Decodable {
     public static let hairLengths = ["short", "medium", "long"]
 
     public init(fullName: String? = nil, age: Int? = nil, nationality: String? = nil, phone: String? = nil,
-                skinType: String? = nil, skinTone: String? = nil, hairType: String? = nil, hairLength: String? = nil,
+                extraPhone: String? = nil, skinType: String? = nil, skinTone: String? = nil, hairType: String? = nil, hairLength: String? = nil,
                 allergies: String? = nil, weddingDate: String? = nil, cityId: String? = nil, cityNameAr: String? = nil,
                 cityNameEn: String? = nil, venue: String? = nil, guestCount: Int? = nil, notes: String? = nil) {
         self.fullName = fullName
         self.age = age
         self.nationality = nationality
         self.phone = phone
+        self.extraPhone = extraPhone
         self.skinType = skinType
         self.skinTone = skinTone
         self.hairType = hairType
@@ -334,19 +378,22 @@ public struct ServiceFilter: Hashable, Sendable {
     public var withinBudget: Bool
     public var femaleOnly: Bool
     public var sort: Sort
+    /// Only services with a free time that day.
+    public var date: Date?
 
     public enum Sort: String, Hashable, Sendable, CaseIterable {
         case recommended, priceAsc = "price_asc", priceDesc = "price_desc", newest
     }
 
     public init(categoryId: String? = nil, title: String? = nil, query: String = "",
-                withinBudget: Bool = false, femaleOnly: Bool = false, sort: Sort = .recommended) {
+                withinBudget: Bool = false, femaleOnly: Bool = false, sort: Sort = .recommended, date: Date? = nil) {
         self.categoryId = categoryId
         self.title = title
         self.query = query
         self.withinBudget = withinBudget
         self.femaleOnly = femaleOnly
         self.sort = sort
+        self.date = date
     }
 }
 
@@ -360,6 +407,7 @@ public enum CatalogRoute: Hashable, Sendable {
     case favorites
     case preparations
     case brideDetails
+    case dresses
 }
 
 extension String {

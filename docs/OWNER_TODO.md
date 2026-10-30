@@ -182,11 +182,31 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
     (or rename it in the dashboard). Safe to re-run; shows without an app update.
   - `supabase/migrations/20261029000300_bride_details_personal.sql` (once, after 000100): her own
     details on the same page.
+  - `supabase/migrations/20261029000400_bride_details_phones.sql` (once, after 000300): her mobile
+    is always her sign-in number (not editable), plus one optional extra number.
 - What «تفاصيل العروس» is: in Profile → زفافي, the bride fills, once and all optional, details
   about herself (name, age, nationality, phone, skin type and tone, hair type and length,
   allergies) and about the wedding (date, city, venue, guests, notes). The provider of each of her
   bookings sees them on the booking (not on demo bookings); her name and phone only once the
   payment is confirmed. The wedding date is the same one the budget asks for.
+
+## 10i. Dresses for rent («فساتين»)
+- [ ] Run `supabase/migrations/20261029000500_dress_listings.sql` once in the SQL editor.
+- [ ] Dashboard → الفساتين: type Munyati's number in «إعلان عرض الفساتين» (the notice is hidden
+      until a number is set), then add dresses: list (زفاف / جلوات / سهرة), photo, price, the
+      owner's number, start date.
+- What it is: the dresses category is renamed «فساتين» and lists only the dresses the admin adds,
+  in three tabs. Each shows for 30 days from its start date, then hides itself (renew it from the
+  dashboard). Brides contact the owner by WhatsApp or phone. Providers can no longer pick this
+  category, and their old dress services stop showing.
+
+## 10j. Booking modes and search by date
+- [ ] Run `supabase/migrations/20261030000000_booking_modes.sql` once in the SQL editor.
+- What it is: in Studio → «مواعيد الحجز» each provider chooses how she takes bookings: fixed
+  weekly hours (as before, the default), specific dates she adds (each with its hours), or «العروس
+  تختار الموعد» (the bride picks any date and time from 8 am to midnight, and she accepts, declines
+  or proposes another time). Brides get «التاريخ المتاح» in search: only services free that day;
+  on-request providers show with a «حسب الطلب» tag.
 
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy

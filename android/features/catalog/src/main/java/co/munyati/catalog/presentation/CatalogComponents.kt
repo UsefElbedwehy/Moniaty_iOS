@@ -138,6 +138,14 @@ internal fun ServiceCardView(card: ServiceCard, feature: CatalogFeature, modifie
             if (card.isFeatured == true) {
                 StatusBadge(StatusBadgeKind.Featured, stringResource(R.string.catalog_badge_featured), Modifier.align(Alignment.BottomStart).padding(6.dp))
             }
+            // The bride picks any date and time; the provider accepts or declines.
+            if (card.isOnRequest) {
+                Text(
+                    stringResource(R.string.catalog_badge_onRequest), style = DS.type.caption, color = DS.colors.primary,
+                    modifier = Modifier.align(Alignment.BottomEnd).padding(6.dp).clip(RoundedCornerShape(DSRadius.pill))
+                        .background(DS.colors.surface.copy(alpha = 0.95f)).padding(horizontal = 8.dp, vertical = 3.dp),
+                )
+            }
         }
         Text(card.title, style = DS.type.headline, color = DS.colors.textPrimary, maxLines = 1, overflow = TextOverflow.Ellipsis)
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -202,7 +210,9 @@ internal fun CategoryTile(category: CatalogCategory, modifier: Modifier = Modifi
     Column(
         modifier = modifier.clickable {
             onOpen()
-            navigator.navigate(ServicesRoute(categoryId = category.id, title = category.name))
+            // The dresses for rent open their own lists; every other category, its providers' services.
+            if (category.adminListings) navigator.navigate(DressesRoute)
+            else navigator.navigate(ServicesRoute(categoryId = category.id, title = category.name))
         },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(6.dp),

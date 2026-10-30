@@ -100,6 +100,17 @@ struct CatalogTests {
         #expect(Budget.daysUntil("2027-04-10", now: Date(timeIntervalSince1970: 1_900_000_000)) == nil) // after it
     }
 
+    @Test("dress listings decode as get_dress_listings returns them, with WhatsApp and call links")
+    func decodesDressListings() throws {
+        let json = #"{"listings":[{"id":"d1","kind":"jalwa","image_url":"https://x.co/d1.jpg","price":800,"contact_phone":"+966551113333","ends_on":"2026-11-28"}],"notice":{"price":20,"days":30,"phone":"+966500000099"}}"#
+        let page = try decoder.decode(DressListingsPage.self, from: Data(json.utf8))
+        #expect(page.listings.first?.kind == .jalwa)
+        #expect(page.listings.first?.whatsAppURL?.absoluteString == "https://wa.me/966551113333")
+        #expect(page.notice?.callURL?.absoluteString == "tel:+966500000099")
+        let empty = try decoder.decode(DressListingsPage.self, from: Data(#"{"listings":[],"notice":null}"#.utf8))
+        #expect(empty.listings.isEmpty && empty.notice == nil)
+    }
+
     @Test("budget used fraction is clamped to 0…1")
     func budgetFraction() {
         #expect(Budget(total: 1000, reserved: 250, remaining: 750, weddingDate: nil).usedFraction == 0.25)

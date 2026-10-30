@@ -3,6 +3,9 @@ package co.munyati.catalog.data
 import co.munyati.shared.media.VideoAsset
 import co.munyati.catalog.domain.Budget
 import co.munyati.catalog.domain.BrideDetails
+import co.munyati.catalog.domain.DressListing
+import co.munyati.catalog.domain.DressListingsPage
+import co.munyati.catalog.domain.DressNotice
 import co.munyati.catalog.domain.Preparation
 import co.munyati.catalog.domain.CatalogCategory
 import co.munyati.catalog.domain.HomeBanner
@@ -37,7 +40,7 @@ class MockCatalogRepository : CatalogRepository {
         CatalogCategory("venues", "قصور وقاعات الأفراح", "Wedding halls & venues", iconSymbol = "building.columns"),
         CatalogCategory("henna", "نقش الحناء", "Henna artist", iconSymbol = "hand.raised"),
         CatalogCategory("kosha_decor", "الكوش والتنسيق", "Kosha & décor", iconSymbol = "sparkles.rectangle.stack"),
-        CatalogCategory("dresses", "فساتين الزفاف", "Wedding dresses", iconSymbol = "tshirt"),
+        CatalogCategory("dresses", "فساتين", "Dresses", iconSymbol = "tshirt", adminListings = true),
         CatalogCategory("coffee_servers", "الضيافة", "Hospitality", iconSymbol = "dallah"),
         CatalogCategory("cakes_sweets", "الكيك والحلويات", "Cakes & sweets", iconSymbol = "birthday.cake"),
     )
@@ -157,7 +160,8 @@ class MockCatalogRepository : CatalogRepository {
 
     override suspend fun setBrideDetails(details: BrideDetails) = mutex.withLock {
         val names = mapOf("dammam" to ("الدمام" to "Dammam"), "khobar" to ("الخبر" to "Khobar"), "qatif" to ("القطيف" to "Qatif"))
-        val saved = details.copy(cityNameAr = details.cityId?.let { names[it]?.first }, cityNameEn = details.cityId?.let { names[it]?.second })
+        // The phone is the login number, like the server.
+        val saved = details.copy(phone = "+966500000000", cityNameAr = details.cityId?.let { names[it]?.first }, cityNameEn = details.cityId?.let { names[it]?.second })
         storedBrideDetails = saved
         // One wedding date, like the server.
         storedBudget = storedBudget?.copy(weddingDate = details.weddingDate)
@@ -190,6 +194,14 @@ class MockCatalogRepository : CatalogRepository {
     override suspend fun deletePreparation(id: String) = mutex.withLock {
         storedPreparations.removeAll { it.id == id }
         orderedPreparations()
+    }
+
+    override suspend fun dresses(kind: String): DressListingsPage {
+        val prices = mapOf("wedding" to listOf(1500.0, 2200.0, 900.0, 3000.0), "jalwa" to listOf(800.0, 650.0, 1200.0), "evening" to listOf(400.0, 350.0))
+        val listings = prices[kind].orEmpty().mapIndexed { index, price ->
+            DressListing("$kind-$index", kind, "https://picsum.photos/seed/dress-$kind-$index/600/800", price, "+96655111222$index", "2026-11-28")
+        }
+        return DressListingsPage(listings, DressNotice(20.0, 30, "+966500000099"))
     }
 
     private fun orderedPreparations() = storedPreparations.filter { !it.isDone } + storedPreparations.filter { it.isDone }

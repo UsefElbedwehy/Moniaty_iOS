@@ -22,6 +22,8 @@ public protocol CatalogRepository: Sendable {
     /// "Bride details": nil until she has any.
     func brideDetails() async throws -> BrideDetails?
     func setBrideDetails(_ details: BrideDetails) async throws -> BrideDetails?
+    /// «فساتين»: one list of dresses for rent, with the notice for dress owners.
+    func dresses(kind: DressListing.Kind) async throws -> DressListingsPage
 }
 
 /// Supabase RPCs from `supabase/migrations/20261011000000_catalog.sql`.
@@ -30,6 +32,15 @@ public struct RemoteCatalogRepository: CatalogRepository {
 
     public init(client: APIClient) {
         self.client = client
+    }
+
+    /// "yyyy-MM-dd" (Gregorian), the day format the RPCs take.
+    static func dayString(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.calendar = Calendar(identifier: .gregorian)
+        f.locale = Locale(identifier: "en_US_POSIX")
+        f.dateFormat = "yyyy-MM-dd"
+        return f.string(from: date)
     }
 
     public func home(cityIds: [String]?, maxPrice: Decimal?) async throws -> HomeContent {
@@ -45,7 +56,8 @@ public struct RemoteCatalogRepository: CatalogRepository {
             pFemaleOnly: filter.femaleOnly,
             pSort: filter.sort.rawValue,
             pLimit: 30,
-            pOffset: offset
+            pOffset: offset,
+            pDate: filter.date.map(Self.dayString)
         ))
     }
 
@@ -104,6 +116,12 @@ public struct RemoteCatalogRepository: CatalogRepository {
         try await client.send(.rpc("delete_my_preparation"), body: IdArgs(pId: id))
     }
 
+    // «فساتين»: `supabase/migrations/20261029000500_dress_listings.sql`.
+
+    public func dresses(kind: DressListing.Kind) async throws -> DressListingsPage {
+        try await client.send(.rpc("get_dress_listings"), body: DressArgs(pKind: kind.rawValue))
+    }
+
     // "Bride details": `supabase/migrations/20261029000100_bride_details.sql`.
 
     public func brideDetails() async throws -> BrideDetails? {
@@ -112,7 +130,7 @@ public struct RemoteCatalogRepository: CatalogRepository {
 
     public func setBrideDetails(_ details: BrideDetails) async throws -> BrideDetails? {
         try await client.send(.rpc("set_my_bride_details"), body: BrideDetailsArgs(
-            pFullName: details.fullName, pAge: details.age, pNationality: details.nationality, pPhone: details.phone,
+            pFullName: details.fullName, pAge: details.age, pNationality: details.nationality, pExtraPhone: details.extraPhone,
             pSkinType: details.skinType, pSkinTone: details.skinTone, pHairType: details.hairType,
             pHairLength: details.hairLength, pAllergies: details.allergies,
             pWeddingDate: details.weddingDate, pCityId: details.cityId, pVenue: details.venue,
@@ -132,6 +150,7 @@ private struct SearchArgs: Encodable, Sendable {
     let pSort: String
     let pLimit: Int
     let pOffset: Int
+    let pDate: String?
 }
 private struct MapArgs: Encodable, Sendable {
     let pMinLat: Double, pMinLng: Double, pMaxLat: Double, pMaxLng: Double
@@ -142,12 +161,13 @@ private struct FavoriteArgs: Encodable, Sendable { let pServiceId: String }
 private struct FavoriteResult: Decodable, Sendable { let isFavorite: Bool }
 private struct BudgetArgs: Encodable, Sendable { let pTotal: Decimal; let pWeddingDate: String? }
 private struct PreparationDoneArgs: Encodable, Sendable { let pId: String; let pDone: Bool }
+private struct DressArgs: Encodable, Sendable { let pKind: String }
 /// Every field is replaced; one left out is cleared.
 private struct BrideDetailsArgs: Encodable, Sendable {
     let pFullName: String?
     let pAge: Int?
     let pNationality: String?
-    let pPhone: String?
+    let pExtraPhone: String?
     let pSkinType: String?
     let pSkinTone: String?
     let pHairType: String?

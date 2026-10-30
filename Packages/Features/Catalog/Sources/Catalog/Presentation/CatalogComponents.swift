@@ -56,6 +56,17 @@ struct ServiceCardView: View {
                             .padding(6)
                     }
                 }
+                .overlay(alignment: .bottomTrailing) {
+                    // The bride picks any date and time; the provider accepts or declines.
+                    if card.isOnRequest {
+                        Text(verbatim: CatalogL10n.string("badge.onRequest"))
+                            .font(.dsCaption)
+                            .padding(.horizontal, 8).padding(.vertical, 3)
+                            .background(Capsule().fill(Color.dsSurface.opacity(0.95)))
+                            .foregroundStyle(Color.dsPrimary)
+                            .padding(6)
+                    }
+                }
                 Text(verbatim: card.title)
                     .font(.dsHeadline)
                     .foregroundStyle(Color.dsTextPrimary)
@@ -116,7 +127,10 @@ struct CategoryTile: View {
     let category: CatalogCategory
 
     var body: some View {
-        NavigationLink(value: CatalogRoute.services(ServiceFilter(categoryId: category.id, title: category.name))) {
+        // The dresses for rent open their own lists; every other category, its providers' services.
+        NavigationLink(value: category.adminListings == true
+                       ? CatalogRoute.dresses
+                       : CatalogRoute.services(ServiceFilter(categoryId: category.id, title: category.name))) {
             VStack(spacing: 6) {
                 Group {
                     if let url = category.iconUrl {

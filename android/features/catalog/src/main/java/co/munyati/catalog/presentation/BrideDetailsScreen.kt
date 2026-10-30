@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.DatePicker
@@ -88,6 +89,9 @@ private fun saudiMobile(text: String): String? {
     return if (digits.length == 9 && digits.startsWith("5")) "+966$digits" else null
 }
 
+/** +9665XXXXXXXX → 05XXXXXXXX, how people write it. */
+private fun localPhone(phone: String): String = if (phone.startsWith("+966")) "0" + phone.drop(4) else phone
+
 /** The number in a field, counting Arabic-Indic digits typed on an Arabic keyboard. */
 private fun number(text: String): Int? = text.map { if (it in '٠'..'٩') '0' + (it - '٠') else it }.filter { it.isDigit() }.joinToString("").toIntOrNull()
 
@@ -105,12 +109,13 @@ internal fun BrideDetailsScreen(feature: CatalogFeature) {
     val scope = rememberCoroutineScope()
     val store = feature.brideDetails
     val arabic = Locale.getDefault().language == "ar"
+    val defaultNationality = stringResource(R.string.catalog_brideDetails_nationality_default)
 
     var filled by remember { mutableStateOf(false) }
     var fullName by remember { mutableStateOf("") }
     var ageText by remember { mutableStateOf("") }
     var nationality by remember { mutableStateOf("") }
-    var phone by remember { mutableStateOf("") }
+    var extraPhone by remember { mutableStateOf("") }
     var skinType by remember { mutableStateOf("") }
     var skinTone by remember { mutableStateOf("") }
     var hairType by remember { mutableStateOf("") }
@@ -136,7 +141,9 @@ internal fun BrideDetailsScreen(feature: CatalogFeature) {
     val guestCount = number(guestsText)
     val ageValid = ageText.isEmpty() || (age != null && age in 16..70)
     val guestsValid = guestsText.isEmpty() || (guestCount != null && guestCount in 1..10_000)
-    val phoneValid = phone.isBlank() || saudiMobile(phone) != null
+    val phoneValid = extraPhone.isBlank() || saudiMobile(extraPhone) != null
+    // The number she signed in with: shown, not editable.
+    val loginPhone = store.details?.phone ?: feature.context.phone
     val canSave = ageValid && guestsValid && phoneValid && !isSaving
 
     // Fills the form once from what she saved; her account's name and phone pre-fill empty fields.
@@ -148,8 +155,9 @@ internal fun BrideDetailsScreen(feature: CatalogFeature) {
             val saved = store.details
             fullName = saved?.fullName ?: feature.context.displayName.orEmpty()
             ageText = saved?.age?.toString().orEmpty()
-            nationality = saved?.nationality.orEmpty()
-            phone = (saved?.phone ?: feature.context.phone)?.let { if (it.startsWith("+966")) "0" + it.drop(4) else it }.orEmpty()
+            // Saudi by default; she can change it.
+            nationality = saved?.nationality ?: defaultNationality
+            extraPhone = saved?.extraPhone?.let(::localPhone).orEmpty()
             skinType = saved?.skinType.orEmpty()
             skinTone = saved?.skinTone.orEmpty()
             hairType = saved?.hairType.orEmpty()
@@ -174,7 +182,7 @@ internal fun BrideDetailsScreen(feature: CatalogFeature) {
             fullName = fullName.trim().ifEmpty { null }?.take(80),
             age = age,
             nationality = nationality.trim().ifEmpty { null }?.take(40),
-            phone = saudiMobile(phone),
+            extraPhone = saudiMobile(extraPhone),
             skinType = skinType.ifEmpty { null },
             skinTone = skinTone.ifEmpty { null },
             hairType = hairType.ifEmpty { null },
@@ -235,8 +243,20 @@ internal fun BrideDetailsScreen(feature: CatalogFeature) {
                 DSTextFieldRow(ageText, { ageText = it }, stringResource(R.string.catalog_brideDetails_age), keyboardType = KeyboardType.Number)
                 DSFormDivider()
                 DSTextFieldRow(nationality, { nationality = it }, stringResource(R.string.catalog_brideDetails_nationality))
+                if (loginPhone != null) {
+                    DSFormDivider()
+                    Row(
+                        Modifier.fillMaxWidth().heightIn(min = 52.dp).padding(horizontal = DSSpacing.md),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs),
+                    ) {
+                        Text(stringResource(R.string.catalog_brideDetails_phone), style = DS.type.body, color = DS.colors.textPrimary, modifier = Modifier.weight(1f))
+                        Text(localPhone(loginPhone), style = DS.type.body, color = DS.colors.textSecondary)
+                        Icon(Icons.Filled.Lock, contentDescription = stringResource(R.string.catalog_brideDetails_phone_locked), tint = DS.colors.textSecondary, modifier = Modifier.size(16.dp))
+                    }
+                }
                 DSFormDivider()
-                DSTextFieldRow(phone, { phone = it }, stringResource(R.string.catalog_brideDetails_phone), keyboardType = KeyboardType.Phone)
+                DSTextFieldRow(extraPhone, { extraPhone = it }, stringResource(R.string.catalog_brideDetails_extraPhone), keyboardType = KeyboardType.Phone)
             }
             DSFormSection(stringResource(R.string.catalog_brideDetails_section_looks)) {
                 ChoiceRow(stringResource(R.string.catalog_brideDetails_skinType), skinTypeLabels, skinType, noneLabel) { skinType = it }

@@ -3,6 +3,7 @@ package co.munyati.catalog.data
 import co.munyati.shared.media.VideoAsset
 import co.munyati.catalog.domain.Budget
 import co.munyati.catalog.domain.BrideDetails
+import co.munyati.catalog.domain.DressListingsPage
 import co.munyati.catalog.domain.HomeContent
 import co.munyati.catalog.domain.MapPin
 import co.munyati.catalog.domain.Preparation
@@ -40,6 +41,8 @@ interface CatalogRepository {
     /** "Bride details": null until she has any. */
     suspend fun brideDetails(): BrideDetails?
     suspend fun setBrideDetails(details: BrideDetails): BrideDetails?
+    /** «فساتين»: one list of dresses for rent ("wedding", "jalwa", "evening"), with the notice. */
+    suspend fun dresses(kind: String): DressListingsPage
 }
 
 /** Page size of `search_services`, shared with the list's "load more" rule. */
@@ -62,6 +65,7 @@ class RemoteCatalogRepository(private val client: ApiClient) : CatalogRepository
                 pSort = filter.sort.rawValue,
                 pLimit = SEARCH_PAGE_SIZE,
                 pOffset = offset,
+                pDate = filter.date,
             ),
         )
 
@@ -110,6 +114,10 @@ class RemoteCatalogRepository(private val client: ApiClient) : CatalogRepository
     override suspend fun deletePreparation(id: String): List<Preparation> =
         client.send(ApiEndpoint.rpc("delete_my_preparation"), IdArgs(id))
 
+    // «فساتين»: `supabase/migrations/20261029000500_dress_listings.sql`.
+
+    override suspend fun dresses(kind: String): DressListingsPage = client.send(ApiEndpoint.rpc("get_dress_listings"), DressArgs(kind))
+
     // "Bride details": `supabase/migrations/20261029000100_bride_details.sql`.
 
     override suspend fun brideDetails(): BrideDetails? = client.send(ApiEndpoint.rpc("get_my_bride_details"), EmptyBody())
@@ -117,7 +125,7 @@ class RemoteCatalogRepository(private val client: ApiClient) : CatalogRepository
     override suspend fun setBrideDetails(details: BrideDetails): BrideDetails? = client.send(
         ApiEndpoint.rpc("set_my_bride_details"),
         BrideDetailsArgs(
-            details.fullName, details.age, details.nationality, details.phone, details.skinType, details.skinTone,
+            details.fullName, details.age, details.nationality, details.extraPhone, details.skinType, details.skinTone,
             details.hairType, details.hairLength, details.allergies,
             details.weddingDate, details.cityId, details.venue, details.guestCount, details.notes,
         ),
@@ -143,16 +151,18 @@ private data class SearchArgs(
     val pSort: String,
     val pLimit: Int,
     val pOffset: Int,
+    val pDate: String? = null,
 )
 @Serializable
 private data class MapArgs(val pMinLat: Double, val pMinLng: Double, val pMaxLat: Double, val pMaxLng: Double, val pCityIds: List<String>?, val pCategoryId: String?)
 @Serializable private data class FavoriteArgs(val pServiceId: String)
 @Serializable private data class FavoriteResult(val isFavorite: Boolean)
 @Serializable private data class BudgetArgs(val pTotal: Double, val pWeddingDate: String?)
+@Serializable private data class DressArgs(val pKind: String)
 /** Every field is replaced; one left out is cleared. */
 @Serializable
 private data class BrideDetailsArgs(
-    val pFullName: String?, val pAge: Int?, val pNationality: String?, val pPhone: String?,
+    val pFullName: String?, val pAge: Int?, val pNationality: String?, val pExtraPhone: String?,
     val pSkinType: String?, val pSkinTone: String?, val pHairType: String?, val pHairLength: String?, val pAllergies: String?,
     val pWeddingDate: String?, val pCityId: String?, val pVenue: String?, val pGuestCount: Int?, val pNotes: String?,
 )

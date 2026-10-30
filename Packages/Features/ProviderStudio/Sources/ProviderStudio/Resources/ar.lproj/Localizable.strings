@@ -73,8 +73,8 @@
 "store.description" = "وصف المتجر";
 "store.visible" = "ظاهر للعرائس";
 
-"studio.availability" = "أوقات العمل";
-"studio.availability.subtitle" = "الأيام والساعات وأيام الإجازة";
+"studio.availability" = "مواعيد الحجز";
+"studio.availability.subtitle" = "أوقات أسبوعية، أو تواريخ محددة، أو حسب طلب العروس";
 "studio.paymentMethods" = "طرق استلام المبالغ";
 "studio.paymentMethods.subtitle" = "الحسابات التي تحوّل إليها العرائس";
 

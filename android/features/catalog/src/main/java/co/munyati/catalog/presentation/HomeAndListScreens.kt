@@ -186,11 +186,14 @@ private fun SearchField(query: String, onChange: (String) -> Unit, onSubmit: () 
 @Composable
 private fun FilterBar(feature: CatalogFeature, filter: ServiceFilter, onChange: (ServiceFilter) -> Unit) {
     var sortOpen by remember { mutableStateOf(false) }
+    var pickingDate by remember { mutableStateOf(false) }
     Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(DSSpacing.xs), verticalAlignment = Alignment.CenterVertically) {
         if (feature.budget.budget != null) {
             Chip(stringResource(R.string.catalog_filter_withinBudget), filter.withinBudget) { onChange(filter.copy(withinBudget = !filter.withinBudget)) }
         }
         Chip(stringResource(R.string.catalog_filter_femaleOnly), filter.femaleOnly) { onChange(filter.copy(femaleOnly = !filter.femaleOnly)) }
+        // «التاريخ المتاح»: only services with a free time that day.
+        Chip(filter.date?.let { dayChipLabel(it) } ?: stringResource(R.string.catalog_filter_date), filter.date != null) { pickingDate = true }
         Box {
             val shape = RoundedCornerShape(DSRadius.pill)
             Row(
@@ -213,6 +216,7 @@ private fun FilterBar(feature: CatalogFeature, filter: ServiceFilter, onChange: 
             }
         }
     }
+    if (pickingDate) DateFilterDialog(filter.date, onDone = { onChange(filter.copy(date = it)); pickingDate = false }, onDismiss = { pickingDate = false })
 }
 
 @Composable
@@ -369,3 +373,30 @@ private fun formatPlain(amount: Double): String = if (amount % 1.0 == 0.0) amoun
 
 private fun displayDate(millis: Long): String =
     SimpleDateFormat("d MMMM yyyy", Locale.getDefault()).apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }.format(millis)
+
+/** "yyyy-MM-dd" → "29 أكتوبر" for the date chip. */
+private fun dayChipLabel(day: String): String =
+    runCatching { LocalDate.parse(day).format(java.time.format.DateTimeFormatter.ofPattern("d MMM", Locale.getDefault())) }.getOrDefault(day)
+
+/** Picks the day for «التاريخ المتاح» (or clears it with «أي تاريخ»). */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun DateFilterDialog(current: String?, onDone: (String?) -> Unit, onDismiss: () -> Unit) {
+    val today = remember { LocalDate.now(ZoneOffset.UTC).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli() }
+    val state = rememberDatePickerState(
+        initialSelectedDateMillis = current?.let(::dayMillis) ?: today,
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long) = utcTimeMillis >= today
+        },
+    )
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = { onDone(state.selectedDateMillis?.let(::dayString)) }) { Text(stringResource(R.string.catalog_filter_date_apply)) }
+        },
+        dismissButton = { TextButton(onClick = { onDone(null) }) { Text(stringResource(R.string.catalog_filter_date_any)) } },
+    ) {
+        Text(stringResource(R.string.catalog_filter_date_hint), style = DS.type.footnote, color = DS.colors.textSecondary, modifier = Modifier.padding(horizontal = DSSpacing.lg, vertical = DSSpacing.sm))
+        DatePicker(state)
+    }
+}

@@ -135,6 +135,7 @@ public struct BookingBrideDetails: Sendable, Decodable, Equatable {
     public let age: Int?
     public let nationality: String?
     public let phone: String?
+    public let extraPhone: String?
     public let skinType: String?
     public let skinTone: String?
     public let hairType: String?
@@ -151,7 +152,7 @@ public struct BookingBrideDetails: Sendable, Decodable, Equatable {
 
     /// Anything about her (besides the name and phone, which may be hidden).
     public var hasPersonal: Bool {
-        fullName != nil || age != nil || nationality?.isEmpty == false || phone != nil || skinType != nil
+        fullName != nil || age != nil || nationality?.isEmpty == false || phone != nil || extraPhone != nil || skinType != nil
             || skinTone != nil || hairType != nil || hairLength != nil || allergies?.isEmpty == false
     }
 
@@ -204,8 +205,25 @@ public struct Availability: Sendable, Decodable, Equatable {
         public var endTime: String
     }
 
+    /// One calendar date she is available, with its hours ("dates" mode).
+    public struct DateWindow: Sendable, Codable, Equatable, Hashable {
+        public var day: String           // "yyyy-MM-dd"
+        public var startTime: String     // "HH:mm"
+        public var endTime: String
+    }
+
     public var rules: [Rule]
     public var daysOff: [String]         // "yyyy-MM-dd"
+    /// How she takes bookings: "weekly" (the hours above), "dates" (`dates` only) or "request"
+    /// (the bride picks any date and time; she accepts or declines). nil from older servers.
+    public var mode: String?
+    public var dates: [DateWindow]?
+}
+
+/// The days a service can be booked in the coming weeks, and the provider's booking mode.
+public struct AvailableDays: Sendable, Decodable, Equatable {
+    public let mode: String?
+    public let days: [String]            // "yyyy-MM-dd"
 }
 
 /// The result of an action that the server can refuse with a reason code.

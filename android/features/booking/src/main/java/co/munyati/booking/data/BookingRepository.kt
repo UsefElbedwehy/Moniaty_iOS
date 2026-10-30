@@ -2,6 +2,7 @@ package co.munyati.booking.data
 
 import co.munyati.booking.domain.ActionResult
 import co.munyati.booking.domain.Availability
+import co.munyati.booking.domain.AvailableDays
 import co.munyati.booking.domain.BookingBrideDetails
 import co.munyati.booking.domain.BookingDetail
 import co.munyati.booking.domain.BookingDispute
@@ -28,6 +29,8 @@ import java.time.Instant
 interface BookingRepository {
     // Bride
     suspend fun availableSlots(serviceId: String, day: String): List<Instant>
+    /** The days with a free time in the next weeks, and the provider's booking mode. */
+    suspend fun availableDays(serviceId: String): AvailableDays
     suspend fun createBooking(serviceId: String, startsAt: Instant, note: String?): ActionResult
     suspend fun respondToProposal(bookingId: String, accept: Boolean): ActionResult
     suspend fun submitReceipt(bookingId: String, storagePath: String, amount: Double, transferredAt: Instant, senderBank: String?, sha256: String): ActionResult
@@ -100,8 +103,14 @@ class RemoteBookingRepository(private val client: ApiClient) : BookingRepository
 
     override suspend fun availability(): Availability = client.send(ApiEndpoint.rpc("get_my_availability"), EmptyBody())
 
+    override suspend fun availableDays(serviceId: String): AvailableDays =
+        client.send(ApiEndpoint.rpc("get_available_days"), DaysArgs(serviceId, 90))
+
     override suspend fun saveAvailability(availability: Availability) {
+        // The weekly hours are kept whatever the mode, so switching back finds them.
         client.send<AvailabilityArgs, Availability>(ApiEndpoint.rpc("set_my_availability"), AvailabilityArgs(availability.rules, availability.daysOff))
+        availability.dates?.let { client.send<DatesArgs, Availability>(ApiEndpoint.rpc("set_my_available_dates"), DatesArgs(it)) }
+        availability.mode?.let { client.send<ModeArgs, Availability>(ApiEndpoint.rpc("set_my_booking_mode"), ModeArgs(it)) }
     }
 
     override suspend fun paymentMethods(): List<PaymentMethod> = client.send(ApiEndpoint.rpc("get_my_payment_methods"), EmptyBody())
@@ -147,6 +156,9 @@ private data class DetailExtras(
 @Serializable
 private data class ReceiptArgs(val pBooking: String, val pStoragePath: String, val pAmount: Double, val pTransferredAt: String, val pSenderBank: String?, val pSha256: String)
 @Serializable private data class AvailabilityArgs(val pRules: List<Availability.Rule>, val pDaysOff: List<String>)
+@Serializable private data class DatesArgs(val pDates: List<Availability.DateWindow>)
+@Serializable private data class ModeArgs(val pMode: String)
+@Serializable private data class DaysArgs(val pServiceId: String, val pDays: Int)
 @Serializable
 private data class PaymentMethodArgs(val pId: String?, val pKind: String, val pLabel: String, val pAccountName: String, val pValue: String, val pIsActive: Boolean)
 
