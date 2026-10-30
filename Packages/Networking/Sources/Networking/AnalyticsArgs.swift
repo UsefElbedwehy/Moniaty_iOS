@@ -8,7 +8,12 @@ public struct RecordAnalyticsEventArgs: Encodable, Sendable {
     public let pContextId: String?
     public let pProps: [String: String]?
 
-    public init(pEventType: String, pEntityId: String?, pContextId: String? = nil, pProps: [String: String]? = nil) {
+    public init(
+        pEventType: String,
+        pEntityId: String?,
+        pContextId: String? = nil,
+        pProps: [String: String]? = nil
+    ) {
         self.pEventType = pEventType
         self.pEntityId = pEntityId
         self.pContextId = pContextId
@@ -24,7 +29,13 @@ public struct LogClientErrorArgs: Encodable, Sendable {
     public let pAppVersion: String?
     public let pOsVersion: String?
 
-    public init(pCode: String, pMessage: String, pScreen: String?, pAppVersion: String?, pOsVersion: String?) {
+    public init(
+        pCode: String,
+        pMessage: String,
+        pScreen: String?,
+        pAppVersion: String?,
+        pOsVersion: String?
+    ) {
         self.pCode = pCode
         self.pMessage = pMessage
         self.pScreen = pScreen
