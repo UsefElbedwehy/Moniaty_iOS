@@ -49,21 +49,21 @@ public struct VerifyOTP: VerifyOTPUseCase {
 // MARK: - Register with name (new user)
 
 public protocol RegisterWithNameUseCase: Sendable {
-    func callAsFunction(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole) async throws -> User
+    func callAsFunction(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole, audience: Audience) async throws -> User
 }
 
 public struct RegisterWithName: RegisterWithNameUseCase {
     private let repository: AuthRepository
     public init(repository: AuthRepository) { self.repository = repository }
 
-    public func callAsFunction(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole) async throws -> User {
+    public func callAsFunction(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole, audience: Audience) async throws -> User {
         try OTPCodeValidator.validate(code)
         let first = firstName.trimmingCharacters(in: .whitespacesAndNewlines)
         let last = lastName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !first.isEmpty, !last.isEmpty else {
             throw AppError.validation(field: "name", message: "auth.error.nameRequired")
         }
-        return try await repository.registerWithName(challengeId: challengeId, code: code, firstName: first, lastName: last, role: role)
+        return try await repository.registerWithName(challengeId: challengeId, code: code, firstName: first, lastName: last, role: role, audience: audience)
     }
 }
 

@@ -208,6 +208,16 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
   or proposes another time). Brides get «التاريخ المتاح» in search: only services free that day;
   on-request providers show with a «حسب الطلب» tag.
 
+## 10k. Brides and wedding guests (المعازيم)
+- [x] Run `supabase/migrations/20261031000000_audience.sql` once in the SQL editor (done 2026-10-31).
+- [x] Redeploy `verify-otp` (done 2026-10-31).
+- What it is: the first screen offers «أنا عروس», «أنا من المعازيم» and «أنا مقدّمة خدمة». Brides
+  and guests are both customer accounts; each can switch in Profile → «أتصفّح خدمات» (العروس،
+  المعازيم، أو الاثنين). In Studio → «ملف النشاط» each provider picks «أقدّم خدماتي لـ»: the bride,
+  the guests, or both. Home, search and the map show a customer only providers that serve her
+  choice. Existing providers start as «العروس والمعازيم», so ask the bride-only and guest-only ones
+  to set it. The provider page in the dashboard shows it.
+
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy
       answers from `docs/STORE_LISTING.md`; upload the screenshots in `design/store/ios/`

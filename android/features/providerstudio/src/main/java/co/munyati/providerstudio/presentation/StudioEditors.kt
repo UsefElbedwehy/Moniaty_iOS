@@ -1,8 +1,5 @@
 package co.munyati.providerstudio.presentation
 
-import co.munyati.shared.media.VideoLimits
-import co.munyati.shared.media.GalleryTile
-import co.munyati.shared.media.GalleryItem
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -47,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import co.munyati.catalog.domain.formatAmount
+import co.munyati.core.configuration.Audience
 import co.munyati.designsystem.components.DSFormDivider
 import co.munyati.designsystem.components.DSFormSection
 import co.munyati.designsystem.components.DSNavRow
@@ -68,6 +66,9 @@ import co.munyati.providerstudio.domain.ServiceDraft
 import co.munyati.providerstudio.domain.StoreDraft
 import co.munyati.shared.analytics.LocalAnalytics
 import co.munyati.shared.images.RemoteImage
+import co.munyati.shared.media.GalleryItem
+import co.munyati.shared.media.GalleryTile
+import co.munyati.shared.media.VideoLimits
 import co.munyati.shared.navigation.LocalNavigator
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -152,6 +153,16 @@ internal fun BusinessEditScreen(feature: StudioFeature) {
             }
             DSFormDivider()
             DSToggleRow(stringResource(R.string.studio_business_femaleOnly), draft.femaleStaffOnly) { draft = draft.copy(femaleStaffOnly = it) }
+        }
+
+        DSFormSection(null, footer = stringResource(R.string.studio_business_audience_footer)) {
+            val audienceLabels = mapOf(
+                Audience.Bride to stringResource(R.string.studio_business_audience_bride),
+                Audience.Guests to stringResource(R.string.studio_business_audience_guests),
+                Audience.Both to stringResource(R.string.studio_business_audience_both),
+            )
+            DSPickerRow(stringResource(R.string.studio_business_audience), Audience.entries, draft.audience,
+                label = { audienceLabels.getValue(it) }) { draft = draft.copy(audience = it) }
         }
 
         DSFormSection(stringResource(R.string.studio_business_section_coverage)) {

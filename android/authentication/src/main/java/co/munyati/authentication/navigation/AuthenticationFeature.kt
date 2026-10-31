@@ -24,6 +24,7 @@ import co.munyati.authentication.presentation.OtpScreen
 import co.munyati.authentication.presentation.OtpViewModel
 import co.munyati.authentication.presentation.PhoneEntryScreen
 import co.munyati.authentication.presentation.PhoneEntryViewModel
+import co.munyati.core.configuration.Audience
 import kotlinx.serialization.Serializable
 
 /** Destinations inside the auth flow. */
@@ -59,7 +60,12 @@ class AuthenticationFeature(repository: AuthRepository, private val onFinished: 
             composable<NameRoute> { entry ->
                 val route = entry.toRoute<NameRoute>()
                 NameEntryScreen(
-                    viewModel { NameEntryViewModel(route.challengeId, route.code, coordinator.selectedRole, useCases.registerWithName) },
+                    viewModel {
+                        NameEntryViewModel(
+                            route.challengeId, route.code, coordinator.selectedRole, coordinator.selectedAudience,
+                            useCases.registerWithName,
+                        )
+                    },
                     coordinator,
                 )
             }
@@ -80,11 +86,14 @@ private class NavAuthCoordinator(
         private set
     override var selectedRole: UserRole = UserRole.Bride
         private set
+    override var selectedAudience: Audience = Audience.Bride
+        private set
     override var otherAccountRole: UserRole? = null
         private set
 
-    override fun startPhoneSignIn(role: UserRole) {
+    override fun startPhoneSignIn(role: UserRole, audience: Audience) {
         selectedRole = role
+        selectedAudience = audience
         navController.navigate(PhoneEntryRoute)
     }
 

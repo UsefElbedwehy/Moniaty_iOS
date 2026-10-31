@@ -24,8 +24,13 @@
 "bookings.guest.message" = "تحتاجين حساباً لطلب الحجز ومتابعته.";
 "auth.signIn" = "تسجيل الدخول";
 "profile.role.bride" = "حساب عروس";
+"profile.role.guests" = "حساب معازيم";
 "profile.role.provider" = "حساب مقدّمة خدمة";
 "profile.section.preferences" = "التفضيلات";
+"profile.audience" = "أتصفّح خدمات";
+"profile.audience.bride" = "العروس";
+"profile.audience.guests" = "المعازيم";
+"profile.audience.both" = "العروس والمعازيم";
 "profile.cities" = "المدن";
 "profile.section.app" = "التطبيق";
 "profile.language" = "اللغة";

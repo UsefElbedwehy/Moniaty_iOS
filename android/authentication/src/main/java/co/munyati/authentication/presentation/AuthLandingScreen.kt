@@ -22,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Storefront
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -38,6 +39,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import co.munyati.authentication.R
+import co.munyati.core.configuration.Audience
 import co.munyati.designsystem.brand.DSBrand
 import co.munyati.designsystem.brand.DSSparkle
 import co.munyati.designsystem.theme.DS
@@ -72,7 +74,14 @@ internal fun AuthLandingScreen(viewModel: OnboardingViewModel, coordinator: Auth
                 icon = Icons.Outlined.AutoAwesome,
                 isProminent = true,
                 enabled = !viewModel.isBusy,
-            ) { coordinator.startPhoneSignIn(co.munyati.authentication.domain.UserRole.Bride) }
+            ) { coordinator.startPhoneSignIn(co.munyati.authentication.domain.UserRole.Bride, Audience.Bride) }
+            RoleCard(
+                title = stringResource(R.string.auth_role_guests_title),
+                subtitle = stringResource(R.string.auth_role_guests_subtitle),
+                icon = Icons.Outlined.Groups,
+                isProminent = false,
+                enabled = !viewModel.isBusy,
+            ) { coordinator.startPhoneSignIn(co.munyati.authentication.domain.UserRole.Bride, Audience.Guests) }
             RoleCard(
                 title = stringResource(R.string.auth_role_provider_title),
                 subtitle = stringResource(R.string.auth_role_provider_subtitle),

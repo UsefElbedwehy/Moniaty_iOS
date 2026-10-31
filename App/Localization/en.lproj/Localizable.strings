@@ -24,8 +24,13 @@
 "bookings.guest.message" = "You need an account to request and follow bookings.";
 "auth.signIn" = "Sign in";
 "profile.role.bride" = "Bride account";
+"profile.role.guests" = "Wedding guest account";
 "profile.role.provider" = "Service provider account";
 "profile.section.preferences" = "Preferences";
+"profile.audience" = "Browsing services for";
+"profile.audience.bride" = "The bride";
+"profile.audience.guests" = "Wedding guests";
+"profile.audience.both" = "Bride and guests";
 "profile.cities" = "Cities";
 "profile.section.app" = "App";
 "profile.language" = "Language";

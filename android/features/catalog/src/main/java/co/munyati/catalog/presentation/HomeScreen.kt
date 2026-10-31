@@ -126,7 +126,7 @@ internal fun HomeScreen(feature: CatalogFeature) {
         }
     }
 
-    LaunchedEffect(context.cityIds, feature.budget.maxPrice, context.isGuest) { load() }
+    LaunchedEffect(context.cityIds, feature.budget.maxPrice, context.isGuest, context.audience) { load() }
     LaunchedEffect(context.isGuest) { feature.budget.load(context.isGuest) }
     LaunchedEffect(Unit) { analytics.screen("bride_home") }
     LightStatusBarIcons()

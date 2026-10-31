@@ -38,6 +38,7 @@ public actor MockStudioRepository: StudioRepository {
             "cr_number": draft.crNumber,
             "is_verified": false,
             "female_staff_only": draft.femaleStaffOnly,
+            "audience": draft.audience.rawValue,
             "category_ids": Array(draft.categoryIds),
             "city_ids": Array(draft.cityIds),
             "limits": ["max_services": maxServices, "max_stores": maxStores,

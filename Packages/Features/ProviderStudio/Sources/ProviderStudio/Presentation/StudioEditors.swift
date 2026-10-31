@@ -38,6 +38,16 @@ struct BusinessEditScreen: View {
                 Toggle(StudioL10n.string("business.femaleOnly"), isOn: $draft.femaleStaffOnly)
             }
 
+            Section {
+                Picker(StudioL10n.string("business.audience"), selection: $draft.audience) {
+                    ForEach(Audience.allCases, id: \.self) { option in
+                        Text(verbatim: StudioL10n.string("business.audience.\(option.rawValue)")).tag(option)
+                    }
+                }
+            } footer: {
+                StudioL10n.text("business.audience.footer")
+            }
+
             Section(StudioL10n.string("business.section.coverage")) {
                 NavigationLink {
                     MultiSelectScreen(title: StudioL10n.string("business.categories"),

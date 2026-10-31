@@ -44,7 +44,7 @@ public actor MockAuthRepository: AuthRepository {
         return user
     }
 
-    public func registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole) async throws -> User {
+    public func registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole, audience: Audience) async throws -> User {
         // The mock has no server-side "is this a new number" state, so it just verifies.
         try await verifyOTP(challengeId: challengeId, code: code, role: role)
     }

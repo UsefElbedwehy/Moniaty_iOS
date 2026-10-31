@@ -7,6 +7,7 @@ import co.munyati.authentication.domain.OtpChallenge
 import co.munyati.authentication.domain.RequiresRegistration
 import co.munyati.authentication.domain.User
 import co.munyati.authentication.domain.UserRole
+import co.munyati.core.configuration.Audience
 import co.munyati.core.error.AppError
 import co.munyati.networking.ApiClient
 import co.munyati.networking.ApiEndpoint
@@ -94,15 +95,28 @@ class SupabaseAuthRepository(
     }
 
     override suspend fun verifyOtp(challengeId: String, code: String, role: UserRole?): User =
-        verifyOrRegister(challengeId, code, null, null, role)
+        verifyOrRegister(challengeId, code, null, null, role, null)
 
-    override suspend fun registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole): User =
-        verifyOrRegister(challengeId, code, firstName, lastName, role)
+    override suspend fun registerWithName(
+        challengeId: String,
+        code: String,
+        firstName: String,
+        lastName: String,
+        role: UserRole,
+        audience: Audience,
+    ): User = verifyOrRegister(challengeId, code, firstName, lastName, role, audience)
 
-    private suspend fun verifyOrRegister(phone: String, code: String, firstName: String?, lastName: String?, role: UserRole?): User {
+    private suspend fun verifyOrRegister(
+        phone: String,
+        code: String,
+        firstName: String?,
+        lastName: String?,
+        role: UserRole?,
+        audience: Audience?,
+    ): User {
         val dto: VerifyOtpResponse = client.send(
             ApiEndpoint.Authentication.verifyOtp,
-            VerifyOtpBody(phone, code, firstName, lastName, role?.rawValue),
+            VerifyOtpBody(phone, code, firstName, lastName, role?.rawValue, audience?.rawValue),
         )
         if (dto.requiresRegistration == true) throw RequiresRegistration(UserRole.from(dto.otherRole))
         val accessToken = dto.accessToken ?: throw AppError.Unknown("Unexpected verify-otp response")
@@ -195,6 +209,8 @@ private data class VerifyOtpBody(
      * of each kind; the server signs in to (or creates) the one for this side.
      */
     val role: String?,
+    /** Registration of a bride account only: "bride" | "guests", from «عروس» / «معازيم». */
+    val audience: String? = null,
 )
 
 @Serializable

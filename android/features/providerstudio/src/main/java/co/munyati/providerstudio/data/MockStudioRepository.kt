@@ -59,7 +59,7 @@ class MockStudioRepository : StudioRepository {
             id = "mock-provider",
             status = if (trialEndsAt == null) MyBusiness.Status.Pending else MyBusiness.Status.Approved,
             businessName = draft.businessName, bio = draft.bio, address = draft.address, instagram = draft.instagram,
-            crNumber = draft.crNumber, femaleStaffOnly = draft.femaleStaffOnly, logoUrl = draft.logoUrl, cityId = draft.cityId,
+            crNumber = draft.crNumber, femaleStaffOnly = draft.femaleStaffOnly, audience = draft.audience.rawValue, logoUrl = draft.logoUrl, cityId = draft.cityId,
             lat = draft.lat, lng = draft.lng,
             categoryIds = draft.categoryIds.toList(), cityIds = draft.cityIds.toList(),
             limits = MyBusiness.Limits(currentPlan.maxServices, currentPlan.maxStores, currentPlan.maxPhotos),

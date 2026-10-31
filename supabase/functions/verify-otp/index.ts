@@ -6,7 +6,8 @@
 //   the number's oldest account.)
 // - It has none yet, without a name: returns { requires_registration: true, other_role } (the
 //   code stays valid; other_role tells the app the number already has the other kind).
-// - It has none yet, with first/last name: creates the account for that side. A provider gets a
+// - It has none yet, with first/last name: creates the account for that side (a customer account
+//   keeps `audience`, «عروس» or «معازيم», from the sign-in screen). A provider gets a
 //   `providers` row in status "pending" (admin approval) via a DB trigger. A number whose other
 //   account is banned can't open a second one.
 //
@@ -25,6 +26,7 @@ interface RequestBody {
   first_name?: string;
   last_name?: string;
   role?: string;
+  audience?: string;
 }
 
 const CHECK_MESSAGES: Record<string, [number, string]> = {
@@ -86,6 +88,8 @@ Deno.serve(async (req) => {
       if (!first || !last) return json(200, { requires_registration: true, other_role: other?.role ?? null });
       if (other?.is_banned) return json(403, { error: "لا يمكن إنشاء حساب جديد بهذا الرقم. تواصلي مع الدعم" });
       const displayName = `${first} ${last}`;
+      const audience = role === "bride" && (body.audience === "guests" || body.audience === "both")
+        ? body.audience : "bride";
 
       // The first free address: an auth user that already has a live profile belongs to the
       // other account and must never be reused; one without a profile is an orphan from a failed
@@ -114,7 +118,7 @@ Deno.serve(async (req) => {
         userId = created.user!.id;
       }
       const { error: profileError } = await admin.from("profiles").insert(
-        { id: userId, phone, first_name: first, last_name: last, display_name: displayName, role },
+        { id: userId, phone, first_name: first, last_name: last, display_name: displayName, role, audience },
       );
       if (profileError) throw profileError;
     }

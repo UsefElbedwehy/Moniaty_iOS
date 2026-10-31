@@ -37,23 +37,24 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.AlternateEmail
+import androidx.compose.material.icons.outlined.Badge
 import androidx.compose.material.icons.outlined.Block
 import androidx.compose.material.icons.outlined.CameraAlt
+import androidx.compose.material.icons.outlined.CenterFocusWeak
 import androidx.compose.material.icons.outlined.Chat
+import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Forum
+import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Language
 import androidx.compose.material.icons.outlined.Link
-import androidx.compose.material.icons.outlined.Badge
-import androidx.compose.material.icons.outlined.Checklist
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.outlined.Payments
 import androidx.compose.material.icons.outlined.PlayCircle
 import androidx.compose.material.icons.outlined.Shield
-import androidx.compose.material.icons.outlined.CenterFocusWeak
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
@@ -87,13 +88,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.munyati.app.R
-import co.munyati.app.composition.Appearance
 import co.munyati.app.composition.AppEnvironment
+import co.munyati.app.composition.Appearance
 import co.munyati.app.composition.l10n
 import co.munyati.authentication.domain.UserRole
-import co.munyati.catalog.presentation.FavoritesRoute
 import co.munyati.catalog.presentation.BrideDetailsRoute
+import co.munyati.catalog.presentation.FavoritesRoute
 import co.munyati.catalog.presentation.PreparationsRoute
+import co.munyati.core.configuration.Audience
 import co.munyati.designsystem.brand.DSBrand
 import co.munyati.designsystem.brand.DSBrandHero
 import co.munyati.designsystem.brand.DSSparkle
@@ -106,8 +108,8 @@ import co.munyati.designsystem.theme.DSSpacing
 import co.munyati.shared.navigation.LocalNavigator
 import co.munyati.trust.presentation.BlockedUsersRoute
 import co.munyati.trust.presentation.SupportRoute
-import kotlinx.coroutines.launch
 import java.text.NumberFormat
+import kotlinx.coroutines.launch
 
 /**
  * Profile & settings, shared by both roles (Profile v2, modeled on Kolna Al-Khafji and Lamha): a
@@ -127,6 +129,7 @@ fun ProfileScreen(environment: AppEnvironment) {
     var isDeleting by remember { mutableStateOf(false) }
     var deleteFailed by remember { mutableStateOf(false) }
     var showAppearance by remember { mutableStateOf(false) }
+    var showAudience by remember { mutableStateOf(false) }
     var bookingsCount by remember { mutableStateOf<Int?>(null) }
     var favoritesCount by remember { mutableStateOf<Int?>(null) }
     val navigator = LocalNavigator.current
@@ -179,6 +182,26 @@ fun ProfileScreen(environment: AppEnvironment) {
                             value = remaining?.let { NumberFormat.getIntegerInstance().format(it) },
                         ) { if (session.hasAccount) showBudget = true else session.isPresentingAuth = true }
                         RowDivider()
+                        if (session.hasAccount) {
+                            // «أتصفّح خدمات»: the bride, the guests «المعازيم», or both. Home, search
+                            // and the map show only providers that serve her choice.
+                            val audience = session.user?.audience ?: Audience.Bride
+                            Box {
+                                ProfileRow(
+                                    l10n(R.string.profile_audience), Icons.Outlined.Groups, DS.colors.accentPurple,
+                                    value = audienceTitle(audience),
+                                ) { showAudience = true }
+                                DropdownMenu(showAudience, onDismissRequest = { showAudience = false }) {
+                                    Audience.entries.forEach { option ->
+                                        DropdownMenuItem(
+                                            text = { Text(audienceTitle(option)) },
+                                            onClick = { environment.saveAudience(option); showAudience = false },
+                                        )
+                                    }
+                                }
+                            }
+                            RowDivider()
+                        }
                         ProfileRow(
                             l10n(R.string.profile_cities), Icons.Outlined.LocationOn, DS.colors.primary,
                             value = environment.cities.summary(l10n(R.string.cities_all)),
@@ -326,6 +349,15 @@ private fun OverlapBelow(overlap: androidx.compose.ui.unit.Dp, content: @Composa
 }
 
 @Composable
+private fun audienceTitle(audience: Audience): String = l10n(
+    when (audience) {
+        Audience.Bride -> R.string.profile_audience_bride
+        Audience.Guests -> R.string.profile_audience_guests
+        Audience.Both -> R.string.profile_audience_both
+    },
+)
+
+@Composable
 private fun appearanceTitle(appearance: Appearance): String = l10n(
     when (appearance) {
         Appearance.System -> R.string.profile_appearance_system
@@ -381,7 +413,13 @@ private fun ProfileHero(environment: AppEnvironment, modifier: Modifier) {
                 ) {
                     DSSparkle(10.dp)
                     Text(
-                        l10n(if (user.role == UserRole.Provider) R.string.profile_role_provider else R.string.profile_role_bride),
+                        l10n(
+                            when {
+                                user.role == UserRole.Provider -> R.string.profile_role_provider
+                                user.audience == Audience.Guests -> R.string.profile_role_guests
+                                else -> R.string.profile_role_bride
+                            },
+                        ),
                         style = DS.type.caption, color = DS.colors.premiumGold,
                     )
                 }

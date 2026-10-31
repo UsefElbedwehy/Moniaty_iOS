@@ -9,13 +9,14 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import co.munyati.catalog.data.CatalogRepository
-import co.munyati.catalog.domain.Budget
 import co.munyati.catalog.domain.BrideDetails
+import co.munyati.catalog.domain.Budget
 import co.munyati.catalog.domain.City
-import co.munyati.catalog.domain.daysUntil
 import co.munyati.catalog.domain.Preparation
 import co.munyati.catalog.domain.ServiceCard
 import co.munyati.catalog.domain.ServiceFilter
+import co.munyati.catalog.domain.daysUntil
+import co.munyati.core.configuration.Audience
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -29,6 +30,12 @@ import kotlinx.serialization.Serializable
 class CatalogContext(cityIds: List<String>? = null, citySummary: String = "", displayName: String? = null, isGuest: Boolean = true) {
     /** null = all cities. */
     var cityIds by mutableStateOf(cityIds)
+
+    /**
+     * Whom a customer browses for. The server filters Home, search and the map by the saved value;
+     * it is mirrored here only so those screens reload when she changes it.
+     */
+    var audience by mutableStateOf<Audience?>(null)
     /** Short label for the city button, e.g. "الدمام، الخبر". */
     var citySummary by mutableStateOf(citySummary)
     var displayName by mutableStateOf(displayName)

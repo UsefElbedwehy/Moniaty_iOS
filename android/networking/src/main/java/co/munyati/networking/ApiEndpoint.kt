@@ -57,6 +57,7 @@ data class ApiEndpoint(
         val get = rpc("get_my_profile")
         val update = rpc("update_my_profile")
         val setCities = rpc("set_my_cities")
+        val setAudience = rpc("set_my_audience")
     }
 
     object Notifications {

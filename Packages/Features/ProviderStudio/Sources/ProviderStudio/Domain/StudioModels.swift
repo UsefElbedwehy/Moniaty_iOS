@@ -1,4 +1,5 @@
 import Foundation
+import Core
 import Shared
 
 /// The provider's own business as returned by `get_my_business` (all statuses, incl. paused).
@@ -29,6 +30,8 @@ public struct MyBusiness: Sendable, Decodable {
     public let freelanceDocNumber: String?
     public let isVerified: Bool
     public let femaleStaffOnly: Bool
+    /// Whom she serves: brides, guests «المعازيم» or both. Missing from older backends.
+    public let audience: Audience?
     public let trialEndsAt: String?
     public let reviewNote: String?
     public let categoryIds: [String]
@@ -102,6 +105,7 @@ public struct BusinessDraft: Sendable, Equatable {
     public var crNumber = ""
     public var freelanceDocNumber = ""
     public var femaleStaffOnly = false
+    public var audience: Audience = .both
 
     public init() {}
 
@@ -120,6 +124,7 @@ public struct BusinessDraft: Sendable, Equatable {
         crNumber = business.crNumber ?? ""
         freelanceDocNumber = business.freelanceDocNumber ?? ""
         femaleStaffOnly = business.femaleStaffOnly
+        audience = business.audience ?? .both
     }
 
     var isValid: Bool { businessName.trimmingCharacters(in: .whitespaces).count >= 2 }

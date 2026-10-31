@@ -16,6 +16,7 @@ import co.munyati.authentication.domain.SendOtp
 import co.munyati.authentication.domain.User
 import co.munyati.authentication.domain.UserRole
 import co.munyati.authentication.domain.VerifyOtp
+import co.munyati.core.configuration.Audience
 import co.munyati.core.error.AppError
 import co.munyati.core.state.ViewState
 import kotlinx.coroutines.CancellationException
@@ -176,6 +177,7 @@ class NameEntryViewModel(
     private val challengeId: String,
     private val code: String,
     private val role: UserRole,
+    private val audience: Audience,
     private val registerWithName: RegisterWithName,
 ) : ViewModel() {
     var firstName by mutableStateOf("")
@@ -190,7 +192,7 @@ class NameEntryViewModel(
     fun submit(onUser: (User) -> Unit) {
         state = ViewState.Loading
         viewModelScope.launch {
-            state = attempt { registerWithName(challengeId, code, firstName, lastName, role) }
+            state = attempt { registerWithName(challengeId, code, firstName, lastName, role, audience) }
             state.value?.let(onUser)
         }
     }

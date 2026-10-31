@@ -94,6 +94,7 @@ extension APIEndpoint {
         public static let get = APIEndpoint.rpc("get_my_profile")
         public static let update = APIEndpoint.rpc("update_my_profile")
         public static let setCities = APIEndpoint.rpc("set_my_cities")
+        public static let setAudience = APIEndpoint.rpc("set_my_audience")
     }
 
     public enum notifications {

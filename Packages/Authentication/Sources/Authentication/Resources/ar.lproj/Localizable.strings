@@ -41,6 +41,8 @@
 "auth.landing.prompt" = "كيف تحبين أن تبدئي؟";
 "auth.role.bride.title" = "أنا عروس";
 "auth.role.bride.subtitle" = "اكتشفي واحجزي خدمات زفافك ضمن ميزانيتك";
+"auth.role.guests.title" = "أنا من المعازيم";
+"auth.role.guests.subtitle" = "خدمات المعازيم: مكياج وتجهيز وضيافة";
 "auth.role.provider.title" = "أنا مقدّمة خدمة";
 "auth.role.provider.subtitle" = "انضمي واستقبلي الحجوزات · أول شهرين مجاناً";
 

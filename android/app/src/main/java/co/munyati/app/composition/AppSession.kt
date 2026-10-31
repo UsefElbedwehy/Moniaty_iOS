@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import co.munyati.authentication.domain.UserRole
+import co.munyati.core.configuration.Audience
 
 /**
  * Who is using the app right now; decides which shell `RootView` shows:
@@ -25,6 +26,8 @@ class AppSession {
         val isAnonymous: Boolean,
         val displayName: String?,
         val phone: String? = null,
+        /** Customers: «عروس», «معازيم» or both (null until the profile loads, or for a guest). */
+        val audience: Audience? = null,
     )
 
     var state: State by mutableStateOf(State.Checking)

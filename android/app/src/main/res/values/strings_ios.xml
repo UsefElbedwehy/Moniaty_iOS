@@ -28,6 +28,10 @@
     <string name="profile_appearance_dark">داكن</string>
     <string name="profile_appearance_light">فاتح</string>
     <string name="profile_appearance_system">تلقائي</string>
+    <string name="profile_audience">أتصفّح خدمات</string>
+    <string name="profile_audience_both">العروس والمعازيم</string>
+    <string name="profile_audience_bride">العروس</string>
+    <string name="profile_audience_guests">المعازيم</string>
     <string name="profile_blocked">الحسابات المحظورة</string>
     <string name="profile_brand">منيتي</string>
     <string name="profile_brideDetails">تفاصيل العروس</string>
@@ -48,6 +52,7 @@
     <string name="profile_privacy">سياسة الخصوصية</string>
     <string name="profile_rate">قيّمي منيتي</string>
     <string name="profile_role_bride">حساب عروس</string>
+    <string name="profile_role_guests">حساب معازيم</string>
     <string name="profile_role_provider">حساب مقدّمة خدمة</string>
     <string name="profile_section_app">التطبيق</string>
     <string name="profile_section_help">المساعدة</string>

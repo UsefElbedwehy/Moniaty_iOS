@@ -1,4 +1,5 @@
 import Foundation
+import Core
 
 /// The Domain-facing contract for authentication. The Presentation layer only ever talks to
 /// use cases, which talk to this — never to `Networking` or a concrete impl. Two implementations
@@ -13,9 +14,10 @@ public protocol AuthRepository: Sendable {
     /// a first/last name and calls `registerWithName`. The code stays valid across the two calls.
     func verifyOTP(challengeId: String, code: String, role: UserRole?) async throws -> User
     /// Complete a new user's signup: verify the same code and create the account with the given
-    /// name (first + last, both required) and the role picked on the landing screen. On success
-    /// the user is authenticated.
-    func registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole) async throws -> User
+    /// name (first + last, both required) and the role picked on the landing screen («عروس» and
+    /// «معازيم» are both bride accounts; `audience` says which she picked). On success the user is
+    /// authenticated.
+    func registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole, audience: Audience) async throws -> User
     /// Exchange an Apple identity token (from Sign in with Apple) for a session.
     /// `nonce` is the RAW nonce whose SHA-256 was sent in the Apple request.
     func signInWithApple(idToken: String, nonce: String) async throws -> User

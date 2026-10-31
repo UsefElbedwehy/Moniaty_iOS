@@ -195,6 +195,7 @@ final class AppEnvironment {
         context.displayName = session.user?.displayName
         context.phone = session.user?.phone
         context.cityIds = cities.queryCityIds
+        context.audience = session.hasAccount && session.user?.role != .provider ? session.user?.audience : nil
         context.citySummary = cities.summary(allLabel: L10n.string("cities.all"))
         context.cities = cities.available
         if wasGuest != context.isGuest { catalog.accountChanged() }
@@ -299,6 +300,7 @@ final class AppEnvironment {
         current.isAnonymous = profile.isAnonymous
         current.displayName = profile.displayName
         current.phone = profile.phone
+        current.audience = profile.audience
         session.state = .signedIn(current)
         cities.restore(profile.cityIds)
         refreshCatalogContext()
@@ -354,6 +356,22 @@ final class AppEnvironment {
         analytics(.cityFilterChanged, nil, props: ["cities": cities.isAll ? "all" : ids.joined(separator: ",")])
         guard session.hasAccount else { return }
         try? await profileRepository.setMyCities(ids)
+    }
+
+    /// Saves whom she browses for («عروس», «معازيم», both). The server filters Home, search and
+    /// the map by it, so the catalog reloads once it is saved.
+    func saveAudience(_ audience: Audience) async {
+        guard var user = session.user, session.hasAccount, user.audience != audience else { return }
+        let previous = user.audience
+        user.audience = audience
+        session.state = .signedIn(user)
+        do {
+            try await profileRepository.setMyAudience(audience)
+        } catch {
+            user.audience = previous
+            session.state = .signedIn(user)
+        }
+        refreshCatalogContext()
     }
 
     // MARK: - Push and links

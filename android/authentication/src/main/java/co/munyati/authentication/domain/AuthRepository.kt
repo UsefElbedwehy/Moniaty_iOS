@@ -1,5 +1,7 @@
 package co.munyati.authentication.domain
 
+import co.munyati.core.configuration.Audience
+
 /**
  * The Domain-facing contract for authentication. Presentation only talks to use cases, which talk
  * to this. Two implementations: the App's Supabase repository and [co.munyati.authentication.data.MockAuthRepository].
@@ -15,8 +17,18 @@ interface AuthRepository {
      */
     suspend fun verifyOtp(challengeId: String, code: String, role: UserRole? = null): User
 
-    /** Complete a new user's signup with first + last name and the role picked on the landing screen. */
-    suspend fun registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole): User
+    /**
+     * Complete a new user's signup with first + last name and the role picked on the landing screen
+     * («عروس» and «معازيم» are both bride accounts; [audience] says which she picked).
+     */
+    suspend fun registerWithName(
+        challengeId: String,
+        code: String,
+        firstName: String,
+        lastName: String,
+        role: UserRole,
+        audience: Audience,
+    ): User
 
     /** Enter the app without signing in. */
     suspend fun continueAsGuest(): AuthState

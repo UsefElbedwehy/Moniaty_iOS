@@ -38,6 +38,7 @@ public struct RemoteStudioRepository: StudioRepository {
             pCrNumber: d.crNumber.nilIfBlank, pFreelanceDocNumber: d.freelanceDocNumber.nilIfBlank,
             pFemaleStaffOnly: d.femaleStaffOnly
         ))
+        let _: OkResult = try await client.send(.rpc("set_my_audience"), body: AudienceArgs(pAudience: d.audience.rawValue))
     }
 
     public func saveService(_ d: ServiceDraft) async throws -> SaveResult {
@@ -94,6 +95,7 @@ extension String {
 
 private struct NoArgs: Encodable, Sendable {}
 private struct IdArgs: Encodable, Sendable { let pId: String }
+private struct AudienceArgs: Encodable, Sendable { let pAudience: String }
 private struct DaysArgs: Encodable, Sendable { let pDays: Int }
 private struct OkResult: Decodable, Sendable { let ok: Bool? }
 
