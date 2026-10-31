@@ -210,8 +210,7 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
 
 ## 10k. Brides and wedding guests (المعازيم)
 - [x] Run `supabase/migrations/20261031000000_audience.sql` once in the SQL editor (done 2026-10-31).
-- [ ] Redeploy `verify-otp` (`supabase functions deploy verify-otp`), signed in to the Supabase
-      account that owns the Munyati project.
+- [x] Redeploy `verify-otp` (done 2026-10-31).
 - What it is: the first screen offers «أنا عروس», «أنا من المعازيم» and «أنا مقدّمة خدمة». Brides
   and guests are both customer accounts; each can switch in Profile → «أتصفّح خدمات» (العروس،
   المعازيم، أو الاثنين). In Studio → «ملف النشاط» each provider picks «أقدّم خدماتي لـ»: the bride,
