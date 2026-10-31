@@ -32,6 +32,11 @@
 "common.saveFailed" = "تعذّر الحفظ. حاولي مرة أخرى.";
 "location.hint" = "حرّكي الخريطة حتى يقع الدبوس على موقعك.";
 "business.section.identity" = "النشاط";
+"business.audience" = "أقدّم خدماتي لـ";
+"business.audience.bride" = "العروس";
+"business.audience.guests" = "المعازيم";
+"business.audience.both" = "العروس والمعازيم";
+"business.audience.footer" = "تظهر خدماتك لمن تخدمينه فقط: العرائس، أو المعازيم، أو الاثنين.";
 "business.section.coverage" = "الأقسام والمدن";
 "business.section.location" = "الموقع";
 "business.section.verification" = "التوثيق والتواصل";

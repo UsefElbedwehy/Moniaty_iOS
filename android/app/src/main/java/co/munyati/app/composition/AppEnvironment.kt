@@ -1,43 +1,35 @@
 package co.munyati.app.composition
 
-import android.net.Uri
-import android.content.Intent
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import co.munyati.app.push.Push
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import co.munyati.app.BuildConfig
+import co.munyati.app.R
+import co.munyati.app.backend.AccountDeleter
+import co.munyati.app.backend.CmsPageRepository
 import co.munyati.app.backend.ContentRepository
+import co.munyati.app.backend.MockCmsPageRepository
 import co.munyati.app.backend.MockConfigurationRepository
 import co.munyati.app.backend.MockContentRepository
+import co.munyati.app.backend.MockMediaUploader
 import co.munyati.app.backend.MockProfileRepository
 import co.munyati.app.backend.ProfileRepository
 import co.munyati.app.backend.SessionStore
 import co.munyati.app.backend.SupabaseAuthRepository
+import co.munyati.app.backend.SupabaseCmsPageRepository
 import co.munyati.app.backend.SupabaseConfigurationRepository
 import co.munyati.app.backend.SupabaseContentRepository
+import co.munyati.app.backend.SupabaseMediaUploader
 import co.munyati.app.backend.SupabaseProfileRepository
+import co.munyati.app.backend.SupabaseReceiptStorage
+import co.munyati.app.backend.TapPlanCheckout
+import co.munyati.app.push.Push
 import co.munyati.authentication.domain.AuthState
 import co.munyati.authentication.domain.User
 import co.munyati.authentication.domain.UserRole
 import co.munyati.authentication.navigation.AuthenticationFeature
-import co.munyati.app.R
-import co.munyati.catalog.data.CatalogRepository
-import co.munyati.catalog.data.MockCatalogRepository
-import co.munyati.catalog.data.RemoteCatalogRepository
-import co.munyati.catalog.presentation.CatalogContext
-import co.munyati.catalog.presentation.CatalogFeature
-import co.munyati.app.backend.MockMediaUploader
-import co.munyati.app.backend.SupabaseMediaUploader
-import co.munyati.app.backend.TapPlanCheckout
-import co.munyati.providerstudio.data.MockPlanCheckout
-import co.munyati.providerstudio.data.MockStudioRepository
-import co.munyati.providerstudio.data.RemoteStudioRepository
-import co.munyati.providerstudio.presentation.StudioFeature
-import co.munyati.providerstudio.presentation.StudioSettingsLink
-import co.munyati.app.backend.SupabaseReceiptStorage
 import co.munyati.booking.data.BookingRepository
 import co.munyati.booking.data.MockBookingRepository
 import co.munyati.booking.data.MockReceiptStorage
@@ -47,19 +39,15 @@ import co.munyati.booking.domain.BookableService
 import co.munyati.booking.presentation.AvailabilityRoute
 import co.munyati.booking.presentation.BookingFeature
 import co.munyati.booking.presentation.PaymentMethodsRoute
+import co.munyati.catalog.data.CatalogRepository
+import co.munyati.catalog.data.MockCatalogRepository
+import co.munyati.catalog.data.RemoteCatalogRepository
 import co.munyati.catalog.domain.ServiceCard
-import co.munyati.app.backend.AccountDeleter
-import co.munyati.app.backend.CmsPageRepository
-import co.munyati.app.backend.MockCmsPageRepository
-import co.munyati.app.backend.SupabaseCmsPageRepository
-import co.munyati.core.error.AppError
-import co.munyati.shared.media.MediaUploading
-import co.munyati.trust.data.MockTrustRepository
-import co.munyati.trust.data.RemoteTrustRepository
-import co.munyati.trust.data.TrustRepository
-import co.munyati.trust.domain.SupportContact
-import co.munyati.trust.presentation.TrustFeature
+import co.munyati.catalog.presentation.CatalogContext
+import co.munyati.catalog.presentation.CatalogFeature
+import co.munyati.core.configuration.Audience
 import co.munyati.core.configuration.ConfigurationRepository
+import co.munyati.core.error.AppError
 import co.munyati.networking.ApiClient
 import co.munyati.networking.ApiEndpoint
 import co.munyati.networking.EmptyResponse
@@ -68,14 +56,27 @@ import co.munyati.networking.NetworkConfiguration
 import co.munyati.networking.OkHttpApiClient
 import co.munyati.networking.RecordAnalyticsEventArgs
 import co.munyati.networking.send
+import co.munyati.providerstudio.data.MockPlanCheckout
+import co.munyati.providerstudio.data.MockStudioRepository
+import co.munyati.providerstudio.data.RemoteStudioRepository
+import co.munyati.providerstudio.presentation.StudioFeature
+import co.munyati.providerstudio.presentation.StudioSettingsLink
 import co.munyati.shared.analytics.AnalyticsEvent
 import co.munyati.shared.analytics.AnalyticsRecorder
 import co.munyati.shared.localization.RemoteStrings
+import co.munyati.shared.media.MediaUploading
+import co.munyati.trust.data.MockTrustRepository
+import co.munyati.trust.data.RemoteTrustRepository
+import co.munyati.trust.data.TrustRepository
+import co.munyati.trust.domain.SupportContact
+import co.munyati.trust.presentation.TrustFeature
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import java.util.Locale
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import java.util.Locale
 
 /**
  * The composition root: builds every repository and holds app-wide state. The only place that knows
@@ -227,6 +228,7 @@ class AppEnvironment(private val context: Context) {
         ctx.displayName = session.user?.displayName
         ctx.phone = session.user?.phone
         ctx.cityIds = cities.queryCityIds
+        ctx.audience = if (session.hasAccount && session.role != UserRole.Provider) session.user?.audience else null
         ctx.citySummary = cities.summary(allCitiesLabel())
         ctx.cities = cities.available
         if (wasGuest != ctx.isGuest) catalog.accountChanged()
@@ -342,6 +344,7 @@ class AppEnvironment(private val context: Context) {
             isAnonymous = profile.isAnonymous,
             displayName = profile.displayName,
             phone = profile.phone,
+            audience = profile.audience,
         )
         session.state = AppSession.State.SignedIn(current)
         cities.restore(profile.cityIds)
@@ -394,6 +397,22 @@ class AppEnvironment(private val context: Context) {
         analytics(AnalyticsEvent.CityFilterChanged, props = mapOf("cities" to if (cities.isAll) "all" else ids.joinToString(",")))
         if (!session.hasAccount) return
         scope.launch { runCatching { profileRepository.setMyCities(ids) } }
+    }
+
+    /**
+     * Saves whom she browses for («عروس», «معازيم», both). The server filters Home, search and the
+     * map by it, so the catalog reloads once it is saved.
+     */
+    fun saveAudience(audience: Audience) {
+        val user = session.user ?: return
+        if (!session.hasAccount || user.audience == audience) return
+        session.state = AppSession.State.SignedIn(user.copy(audience = audience))
+        scope.launch {
+            if (runCatching { profileRepository.setMyAudience(audience) }.isFailure) {
+                session.user?.let { session.state = AppSession.State.SignedIn(it.copy(audience = user.audience)) }
+            }
+            refreshCatalogContext()
+        }
     }
 
     // Links

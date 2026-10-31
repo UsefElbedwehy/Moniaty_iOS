@@ -34,7 +34,7 @@ public actor RemoteAuthRepository: AuthRepository {
         return user
     }
 
-    public func registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole) async throws -> User {
+    public func registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole, audience: Audience) async throws -> User {
         // Reference impl doesn't model the two-step name flow; treat it as a plain verify.
         try await verifyOTP(challengeId: challengeId, code: code, role: role)
     }

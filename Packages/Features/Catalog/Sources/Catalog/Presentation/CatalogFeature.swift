@@ -10,6 +10,9 @@ import Shared
 public final class CatalogContext {
     /// nil = all cities.
     public var cityIds: [String]?
+    /// Whom a customer browses for. The server filters Home, search and the map by the saved
+    /// value; it is mirrored here only so those screens reload when she changes it.
+    public var audience: Audience?
     /// Short label for the city button, e.g. "الدمام، الخبر".
     public var citySummary: String
     public var displayName: String?

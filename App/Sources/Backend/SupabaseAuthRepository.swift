@@ -137,20 +137,24 @@ public actor SupabaseAuthRepository: AuthRepository {
     /// `OTPFlowError.requiresRegistration` so the UI can collect a name, then call
     /// `registerWithName` with the same still-valid code.
     public func verifyOTP(challengeId: String, code: String, role: UserRole?) async throws -> User {
-        try await verifyOrRegister(phone: challengeId, code: code, firstName: nil, lastName: nil, role: role)
+        try await verifyOrRegister(phone: challengeId, code: code, firstName: nil, lastName: nil, role: role, audience: nil)
     }
 
     /// Complete a new user's signup: same code + a required first/last name. The function creates
     /// the account and mints a session, which we persist like any other sign-in. This also
     /// transparently replaces a "Browse as guest" anonymous session with the real phone account.
-    public func registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole) async throws -> User {
-        try await verifyOrRegister(phone: challengeId, code: code, firstName: firstName, lastName: lastName, role: role)
+    public func registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole, audience: Audience) async throws -> User {
+        try await verifyOrRegister(phone: challengeId, code: code, firstName: firstName, lastName: lastName, role: role,
+                               audience: audience)
     }
 
-    private func verifyOrRegister(phone: String, code: String, firstName: String?, lastName: String?, role: UserRole?) async throws -> User {
+    private func verifyOrRegister(
+        phone: String, code: String, firstName: String?, lastName: String?, role: UserRole?, audience: Audience?
+    ) async throws -> User {
         let dto: VerifyOTPResponseDTO = try await client.send(
             .authentication.verifyOTP,
-            body: VerifyOTPBody(phone: phone, code: code, firstName: firstName, lastName: lastName, role: role?.rawValue)
+            body: VerifyOTPBody(phone: phone, code: code, firstName: firstName, lastName: lastName, role: role?.rawValue,
+                                audience: audience?.rawValue)
         )
         if dto.requiresRegistration == true {
             throw OTPFlowError.requiresRegistration(otherRole: dto.otherRole.flatMap(UserRole.init(rawValue:)))
@@ -288,6 +292,8 @@ private struct VerifyOTPBody: Encodable, Sendable {
     /// "bride" | "provider": the side picked on the landing screen. One number may hold one
     /// account of each kind; the server signs in to (or creates) the one for this side.
     let role: String?
+    /// Registration of a bride account only: "bride" | "guests", from «عروس» / «معازيم».
+    let audience: String?
 }
 
 /// `verify-otp` returns either a session (returning/registered user) or `{ requires_registration:

@@ -2,6 +2,8 @@ package co.munyati.app.backend
 
 import android.content.Context
 import co.munyati.authentication.domain.UserRole
+import co.munyati.catalog.domain.City
+import co.munyati.core.configuration.Audience
 import co.munyati.core.configuration.ConfigurationRepository
 import co.munyati.core.configuration.RemoteConfig
 import co.munyati.networking.ApiClient
@@ -12,7 +14,6 @@ import co.munyati.networking.send
 import co.munyati.shared.persistence.CacheStore
 import co.munyati.shared.persistence.FileCacheStore
 import kotlinx.serialization.Serializable
-import co.munyati.catalog.domain.City
 
 /** The signed-in person's profile: who they are, which side they're on, which cities they browse. */
 data class MyProfile(
@@ -24,11 +25,14 @@ data class MyProfile(
     val isAnonymous: Boolean,
     /** Provider accounts only: "pending" until an admin approves the join request. */
     val providerStatus: String?,
+    /** Whom she browses for (customers) or whom the provider serves. */
+    val audience: Audience? = null,
 )
 
 interface ProfileRepository {
     suspend fun fetchMyProfile(): MyProfile
     suspend fun setMyCities(cityIds: List<String>)
+    suspend fun setMyAudience(audience: Audience)
     suspend fun registerDeviceToken(token: String)
 }
 
@@ -49,11 +53,16 @@ class SupabaseProfileRepository(private val client: ApiClient) : ProfileReposito
             cityIds = dto.cityIds.orEmpty(),
             isAnonymous = dto.isAnonymous ?: false,
             providerStatus = dto.providerStatus,
+            audience = Audience.from(dto.audience),
         )
     }
 
     override suspend fun setMyCities(cityIds: List<String>) {
         client.send<SetCitiesArgs, EmptyResponse>(ApiEndpoint.Profile.setCities, SetCitiesArgs(cityIds))
+    }
+
+    override suspend fun setMyAudience(audience: Audience) {
+        client.send<SetAudienceArgs, EmptyResponse>(ApiEndpoint.Profile.setAudience, SetAudienceArgs(audience.rawValue))
     }
 
     override suspend fun registerDeviceToken(token: String) {
@@ -97,6 +106,7 @@ class MockProfileRepository : ProfileRepository {
     override suspend fun fetchMyProfile() =
         MyProfile("mock-user", "نورة", "+966500000000", null, listOf("dammam"), isAnonymous = false, providerStatus = null)
     override suspend fun setMyCities(cityIds: List<String>) = Unit
+    override suspend fun setMyAudience(audience: Audience) = Unit
     override suspend fun registerDeviceToken(token: String) = Unit
 }
 
@@ -137,9 +147,11 @@ private data class ProfileDto(
     val cityIds: List<String>? = null,
     val isAnonymous: Boolean? = null,
     val providerStatus: String? = null,
+    val audience: String? = null,
 )
 
 @Serializable private data class SetCitiesArgs(val pCityIds: List<String>)
+@Serializable private data class SetAudienceArgs(val pAudience: String)
 @Serializable private data class RegisterTokenArgs(val pToken: String, val pPlatform: String)
 @Serializable private data class StringsArgs(val pLang: String)
 @Serializable private data class StringRow(val key: String, val value: String)

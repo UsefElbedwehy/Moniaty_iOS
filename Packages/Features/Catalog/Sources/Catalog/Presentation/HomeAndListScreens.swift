@@ -43,7 +43,7 @@ struct ServiceListScreen: View {
         .onSubmit(of: .search) {
             analytics(.search, nil, props: ["query": filter.query])
         }
-        .task(id: TaskKey(filter: filter, cities: feature.context.cityIds)) {
+        .task(id: TaskKey(filter: filter, cities: feature.context.cityIds, audience: feature.context.audience)) {
             // Debounce typing.
             try? await Task.sleep(for: .milliseconds(isSearch && !filter.query.isEmpty ? 350 : 0))
             guard !Task.isCancelled else { return }
@@ -55,7 +55,7 @@ struct ServiceListScreen: View {
         }
     }
 
-    private struct TaskKey: Equatable { let filter: ServiceFilter; let cities: [String]? }
+    private struct TaskKey: Equatable { let filter: ServiceFilter; let cities: [String]?; let audience: Audience? }
 
     private var filterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {

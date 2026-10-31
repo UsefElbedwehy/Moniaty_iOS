@@ -110,7 +110,7 @@ private fun PinsMap(feature: CatalogFeature, categoryId: String?) {
             bounds = camera.projection?.visibleRegion?.latLngBounds
         }
     }
-    LaunchedEffect(bounds, categoryId, feature.context.cityIds) {
+    LaunchedEffect(bounds, categoryId, feature.context.cityIds, feature.context.audience) {
         val b = bounds ?: LatLngBounds(LatLng(26.125, 49.895), LatLng(26.575, 50.345))
         runCatching {
             feature.repository.mapPins(b.southwest.latitude, b.southwest.longitude, b.northeast.latitude, b.northeast.longitude, feature.context.cityIds, categoryId)

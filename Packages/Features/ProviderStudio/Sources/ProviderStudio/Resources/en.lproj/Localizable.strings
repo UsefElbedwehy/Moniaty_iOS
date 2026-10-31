@@ -32,6 +32,11 @@
 "common.saveFailed" = "Couldn't save. Please try again.";
 "location.hint" = "Move the map until the pin sits on your location.";
 "business.section.identity" = "Business";
+"business.audience" = "I serve";
+"business.audience.bride" = "The bride";
+"business.audience.guests" = "Wedding guests";
+"business.audience.both" = "Bride and guests";
+"business.audience.footer" = "Your services show only to the people you serve: brides, wedding guests, or both.";
 "business.section.coverage" = "Categories and cities";
 "business.section.location" = "Location";
 "business.section.verification" = "Verification and contact";

@@ -1,5 +1,6 @@
 package co.munyati.providerstudio.domain
 
+import co.munyati.core.configuration.Audience
 import co.munyati.shared.media.VideoAsset
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -22,6 +23,8 @@ data class MyBusiness(
     val freelanceDocNumber: String? = null,
     val isVerified: Boolean = false,
     val femaleStaffOnly: Boolean = false,
+    /** Whom she serves: "bride", "guests" or "both". Missing from older backends. */
+    val audience: String? = null,
     val trialEndsAt: String? = null,
     val reviewNote: String? = null,
     val categoryIds: List<String> = emptyList(),
@@ -110,6 +113,7 @@ data class BusinessDraft(
     val crNumber: String = "",
     val freelanceDocNumber: String = "",
     val femaleStaffOnly: Boolean = false,
+    val audience: Audience = Audience.Both,
 ) {
     constructor(b: MyBusiness) : this(
         businessName = b.businessName.orEmpty(),
@@ -126,6 +130,7 @@ data class BusinessDraft(
         crNumber = b.crNumber.orEmpty(),
         freelanceDocNumber = b.freelanceDocNumber.orEmpty(),
         femaleStaffOnly = b.femaleStaffOnly,
+        audience = Audience.from(b.audience) ?: Audience.Both,
     )
 
     val isValid: Boolean get() = businessName.trim().length >= 2

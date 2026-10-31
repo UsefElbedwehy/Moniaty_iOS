@@ -66,6 +66,7 @@ export default async function ProviderDetail({ params, searchParams }: {
             <dt>{t("المدن", "Cities")}</dt><dd>{list((cities.data ?? []).map((c) => c.city_id)) || "—"}</dd>
             <dt>{t("العنوان", "Address")}</dt><dd>{p.address ?? "—"}</dd>
             <dt>{t("إنستغرام", "Instagram")}</dt><dd className="ltr">{p.instagram ?? "—"}</dd>
+            <dt>{t("تخدم", "Serves")}</dt><dd>{p.audience === "bride" ? t("العروس", "The bride") : p.audience === "guests" ? t("المعازيم", "Wedding guests") : t("العروس والمعازيم", "Bride and guests")}</dd>
             <dt>{t("طاقم نسائي فقط", "Female staff only")}</dt><dd>{p.female_staff_only ? t("نعم", "Yes") : t("لا", "No")}</dd>
             <dt>{t("نهاية التجربة", "Trial ends")}</dt><dd>{fmtDate(p.trial_ends_at)}</dd>
             <dt>{t("التقييم", "Rating")}</dt><dd>{p.rating_avg ?? "—"} ({p.rating_count})</dd>

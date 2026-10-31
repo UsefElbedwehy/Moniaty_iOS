@@ -67,7 +67,8 @@ struct HomeScreen: View {
             Color.clear.frame(height: 0).background(DSGradient.primaryStart)
         }
         .refreshable { await load() }
-        .task(id: TaskKey(cities: context.cityIds, maxPrice: feature.budget.maxPrice, guest: context.isGuest)) {
+        .task(id: TaskKey(cities: context.cityIds, maxPrice: feature.budget.maxPrice, guest: context.isGuest,
+                          audience: context.audience)) {
             await load()
         }
         .task(id: context.isGuest) { await feature.budget.load(isGuest: context.isGuest) }
@@ -77,7 +78,7 @@ struct HomeScreen: View {
         .trackScreen("bride_home")
     }
 
-    private struct TaskKey: Equatable { let cities: [String]?; let maxPrice: Decimal?; let guest: Bool }
+    private struct TaskKey: Equatable { let cities: [String]?; let maxPrice: Decimal?; let guest: Bool; let audience: Audience? }
 
     // MARK: Hero
 

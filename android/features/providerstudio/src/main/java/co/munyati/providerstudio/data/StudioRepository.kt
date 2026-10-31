@@ -52,6 +52,7 @@ class RemoteStudioRepository(private val client: ApiClient) : StudioRepository {
                 pFemaleStaffOnly = d.femaleStaffOnly,
             ),
         )
+        client.send<AudienceArgs, OkResult>(ApiEndpoint.rpc("set_my_audience"), AudienceArgs(d.audience.rawValue))
     }
 
     override suspend fun saveService(draft: ServiceDraft): SaveResult {
@@ -111,6 +112,7 @@ class RemoteStudioRepository(private val client: ApiClient) : StudioRepository {
 }
 
 @Serializable private data class IdArgs(val pId: String)
+@Serializable private data class AudienceArgs(val pAudience: String)
 @Serializable private data class DaysArgs(val pDays: Int)
 @Serializable private data class OkResult(val ok: Boolean? = null)
 

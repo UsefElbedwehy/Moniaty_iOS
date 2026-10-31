@@ -25,6 +25,7 @@ struct AuthFactory: ViewFactory {
                     challengeId: challengeId,
                     code: code,
                     role: coordinator.selectedRole,
+                    audience: coordinator.selectedAudience,
                     registerWithName: useCases.registerWithName
                 ),
                 coordinator: coordinator

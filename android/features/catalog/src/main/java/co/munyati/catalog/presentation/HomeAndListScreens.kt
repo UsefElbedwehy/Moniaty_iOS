@@ -112,7 +112,7 @@ internal fun ServiceListScreen(feature: CatalogFeature, initialFilter: ServiceFi
         }
     }
 
-    LaunchedEffect(filter, feature.context.cityIds) {
+    LaunchedEffect(filter, feature.context.cityIds, feature.context.audience) {
         // Debounce typing.
         if (isSearch && filter.query.isNotEmpty()) delay(350)
         load(reset = true)

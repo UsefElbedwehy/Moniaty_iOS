@@ -56,7 +56,8 @@ struct ExploreScreen: View {
                 categories = home.categories
             }
         }
-        .task(id: TaskKey(region: region.map(RegionKey.init), categoryId: categoryId, cities: feature.context.cityIds)) {
+        .task(id: TaskKey(region: region.map(RegionKey.init), categoryId: categoryId,
+                          cities: feature.context.cityIds, audience: feature.context.audience)) {
             await loadPins()
         }
         .trackScreen("explore")
@@ -70,7 +71,9 @@ struct ExploreScreen: View {
         }
     }
 
-    private struct TaskKey: Equatable { let region: RegionKey?; let categoryId: String?; let cities: [String]? }
+    private struct TaskKey: Equatable {
+        let region: RegionKey?; let categoryId: String?; let cities: [String]?; let audience: Audience?
+    }
 
     private var categoryBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {

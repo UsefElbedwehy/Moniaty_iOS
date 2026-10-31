@@ -28,6 +28,10 @@
     <string name="profile_appearance_dark">Dark</string>
     <string name="profile_appearance_light">Light</string>
     <string name="profile_appearance_system">Automatic</string>
+    <string name="profile_audience">Browsing services for</string>
+    <string name="profile_audience_both">Bride and guests</string>
+    <string name="profile_audience_bride">The bride</string>
+    <string name="profile_audience_guests">Wedding guests</string>
     <string name="profile_blocked">Blocked accounts</string>
     <string name="profile_brand">Munyati</string>
     <string name="profile_brideDetails">Bride details</string>
@@ -48,6 +52,7 @@
     <string name="profile_privacy">Privacy policy</string>
     <string name="profile_rate">Rate Munyati</string>
     <string name="profile_role_bride">Bride account</string>
+    <string name="profile_role_guests">Wedding guest account</string>
     <string name="profile_role_provider">Service provider account</string>
     <string name="profile_section_app">App</string>
     <string name="profile_section_help">Help</string>

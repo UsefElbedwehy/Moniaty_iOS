@@ -17,9 +17,12 @@ public final class NameEntryViewModel {
     private let code: String
     private let registerWithName: any RegisterWithNameUseCase
     private let role: UserRole
+    private let audience: Audience
 
-    public init(challengeId: String, code: String, role: UserRole, registerWithName: any RegisterWithNameUseCase) {
+    public init(challengeId: String, code: String, role: UserRole, audience: Audience = .bride,
+                registerWithName: any RegisterWithNameUseCase) {
         self.role = role
+        self.audience = audience
         self.challengeId = challengeId
         self.code = code
         self.registerWithName = registerWithName
@@ -44,7 +47,8 @@ public final class NameEntryViewModel {
         state = .loading
         do {
             let user = try await registerWithName(
-                challengeId: challengeId, code: code, firstName: firstName, lastName: lastName, role: role
+                challengeId: challengeId, code: code, firstName: firstName, lastName: lastName, role: role,
+                audience: audience
             )
             state = .loaded(user)
             onUser(user)

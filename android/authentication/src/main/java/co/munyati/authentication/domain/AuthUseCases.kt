@@ -1,5 +1,6 @@
 package co.munyati.authentication.domain
 
+import co.munyati.core.configuration.Audience
 import co.munyati.core.error.AppError
 
 // Each use case is a thin, single-purpose type so ViewModels can be tested against fakes. Input
@@ -25,12 +26,19 @@ class VerifyOtp(private val repository: AuthRepository) {
 }
 
 class RegisterWithName(private val repository: AuthRepository) {
-    suspend operator fun invoke(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole): User {
+    suspend operator fun invoke(
+        challengeId: String,
+        code: String,
+        firstName: String,
+        lastName: String,
+        role: UserRole,
+        audience: Audience = Audience.Bride,
+    ): User {
         OtpCodeValidator.validate(code)
         val first = firstName.trim()
         val last = lastName.trim()
         if (first.isEmpty() || last.isEmpty()) throw AppError.Validation("name", "auth.error.nameRequired")
-        return repository.registerWithName(challengeId, code, first, last, role)
+        return repository.registerWithName(challengeId, code, first, last, role, audience)
     }
 }
 

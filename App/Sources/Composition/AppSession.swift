@@ -1,5 +1,6 @@
 import SwiftUI
 import Observation
+import Core
 import Authentication
 import Booking
 
@@ -23,6 +24,8 @@ final class AppSession {
         var isAnonymous: Bool
         var displayName: String?
         var phone: String? = nil
+        /// Customers: «عروس», «معازيم» or both (nil until the profile loads, or for a guest).
+        var audience: Audience? = nil
     }
 
     var state: State = .checking

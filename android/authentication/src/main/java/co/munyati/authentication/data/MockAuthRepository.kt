@@ -5,11 +5,12 @@ import co.munyati.authentication.domain.AuthState
 import co.munyati.authentication.domain.OtpChallenge
 import co.munyati.authentication.domain.User
 import co.munyati.authentication.domain.UserRole
+import co.munyati.core.configuration.Audience
 import co.munyati.core.error.AppError
+import java.util.UUID
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import java.util.UUID
 
 /** In-memory [AuthRepository] for running without a backend. Accepts the code 123456. */
 class MockAuthRepository(private val artificialDelayMs: Long = 350) : AuthRepository {
@@ -35,7 +36,14 @@ class MockAuthRepository(private val artificialDelayMs: Long = 350) : AuthReposi
     }
 
     // The mock has no "is this a new number" state, so registration just verifies.
-    override suspend fun registerWithName(challengeId: String, code: String, firstName: String, lastName: String, role: UserRole) =
+    override suspend fun registerWithName(
+        challengeId: String,
+        code: String,
+        firstName: String,
+        lastName: String,
+        role: UserRole,
+        audience: Audience,
+    ) =
         verifyOtp(challengeId, code)
 
     override suspend fun continueAsGuest(): AuthState {

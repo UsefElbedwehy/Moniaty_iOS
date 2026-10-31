@@ -1,5 +1,6 @@
 import SwiftUI
 import StoreKit
+import Core
 import DesignSystem
 import Shared
 import Catalog
@@ -121,7 +122,8 @@ struct ProfileScreen: View {
                 }
                 HStack(spacing: 6) {
                     DSSparkle(size: 10)
-                    L10n.text(user.role == .provider ? "profile.role.provider" : "profile.role.bride")
+                    L10n.text(user.role == .provider ? "profile.role.provider"
+                              : user.audience == .guests ? "profile.role.guests" : "profile.role.bride")
                 }
                 .font(.dsCaption)
                 .foregroundStyle(Color.dsPremiumGold)
@@ -279,6 +281,10 @@ struct ProfileScreen: View {
                 ProfileRow(symbol: "banknote", tint: .gold, titleKey: "profile.budget",
                            value: environment.catalog.currentBudget.map { formatSAR($0.remaining) })
             }
+            if session.hasAccount {
+                ProfileDivider()
+                audienceRow
+            }
             ProfileDivider()
             Button { showCities = true } label: {
                 ProfileRow(symbol: "mappin.and.ellipse", tint: .brand, titleKey: "profile.cities",
@@ -296,6 +302,26 @@ struct ProfileScreen: View {
             } else {
                 Button { session.isPresentingAuth = true } label: { brideDetailsRow }
             }
+        }
+    }
+
+    /// «أتصفّح خدمات»: the bride, the guests «المعازيم», or both. Home, search and the map show
+    /// only providers that serve her choice.
+    private var audienceRow: some View {
+        let current = session.user?.audience ?? .bride
+        return Menu {
+            Picker(L10n.string("profile.audience"), selection: Binding(
+                get: { current },
+                set: { choice in Task { await environment.saveAudience(choice) } }
+            )) {
+                ForEach(Audience.allCases, id: \.self) { option in
+                    Text(verbatim: L10n.string("profile.audience.\(option.rawValue)")).tag(option)
+                }
+            }
+        } label: {
+            ProfileRow(symbol: "person.2.fill", tint: .purple, titleKey: "profile.audience",
+                       value: L10n.string("profile.audience.\(current.rawValue)"),
+                       trailingSymbol: "chevron.up.chevron.down")
         }
     }
 

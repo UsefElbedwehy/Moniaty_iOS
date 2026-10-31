@@ -15,11 +15,14 @@ struct MyProfile: Equatable, Sendable {
     let isAnonymous: Bool
     /// Provider accounts only: "pending" until an admin approves the join request.
     let providerStatus: String?
+    /// Whom she browses for (customers) or whom the provider serves.
+    let audience: Audience?
 }
 
 protocol ProfileRepository: Sendable {
     func fetchMyProfile() async throws -> MyProfile
     func setMyCities(_ cityIds: [String]) async throws
+    func setMyAudience(_ audience: Audience) async throws
     func registerDeviceToken(_ token: String) async throws
 }
 
@@ -41,12 +44,17 @@ struct SupabaseProfileRepository: ProfileRepository {
             role: dto.role.flatMap(UserRole.init(rawValue:)),
             cityIds: dto.cityIds ?? [],
             isAnonymous: dto.isAnonymous ?? false,
-            providerStatus: dto.providerStatus
+            providerStatus: dto.providerStatus,
+            audience: dto.audience.flatMap(Audience.init(rawValue:))
         )
     }
 
     func setMyCities(_ cityIds: [String]) async throws {
         let _: EmptyResponse = try await client.send(.profile.setCities, body: SetCitiesArgs(pCityIds: cityIds))
+    }
+
+    func setMyAudience(_ audience: Audience) async throws {
+        let _: EmptyResponse = try await client.send(.profile.setAudience, body: SetAudienceArgs(pAudience: audience.rawValue))
     }
 
     func registerDeviceToken(_ token: String) async throws {
@@ -76,9 +84,10 @@ struct MockProfileRepository: ProfileRepository {
     func fetchMyProfile() async throws -> MyProfile {
         // role nil: keep the role chosen at sign-in, so both shells can be tried on sample data.
         MyProfile(id: "mock-user", displayName: "نورة", phone: "+966500000000", role: nil,
-                  cityIds: ["dammam"], isAnonymous: false, providerStatus: nil)
+                  cityIds: ["dammam"], isAnonymous: false, providerStatus: nil, audience: nil)
     }
     func setMyCities(_ cityIds: [String]) async throws {}
+    func setMyAudience(_ audience: Audience) async throws {}
     func registerDeviceToken(_ token: String) async throws {}
 }
 
@@ -103,10 +112,15 @@ private struct ProfileDTO: Decodable, Sendable {
     let cityIds: [String]?
     let isAnonymous: Bool?
     let providerStatus: String?
+    let audience: String?
 }
 
 private struct SetCitiesArgs: Encodable, Sendable {
     let pCityIds: [String]
+}
+
+private struct SetAudienceArgs: Encodable, Sendable {
+    let pAudience: String
 }
 
 private struct RegisterTokenArgs: Encodable, Sendable {

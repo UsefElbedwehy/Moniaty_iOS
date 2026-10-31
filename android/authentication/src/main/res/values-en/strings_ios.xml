@@ -37,6 +37,8 @@
     <string name="auth_phone_title">Your number</string>
     <string name="auth_role_bride_subtitle">Discover and book wedding services within your budget</string>
     <string name="auth_role_bride_title">I\'m a bride</string>
+    <string name="auth_role_guests_subtitle">Services for guests: makeup, styling and hospitality</string>
+    <string name="auth_role_guests_title">I\'m a wedding guest</string>
     <string name="auth_role_provider_subtitle">Join and receive bookings · first 2 months free</string>
     <string name="auth_role_provider_title">I\'m a service provider</string>
 </resources>

@@ -2,9 +2,10 @@ import SwiftUI
 import DesignSystem
 import Core
 
-/// The first screen: the منيتي wordmark, the tagline, and the role choice — "I'm a bride" or
-/// "I'm a service provider" — plus "Browse as guest". Picking a role starts phone sign-in; the
-/// role is held by the coordinator and sent with registration if the number is new.
+/// The first screen: the منيتي wordmark, the tagline, and the role choice — "I'm a bride",
+/// "I'm a wedding guest" (a bride account browsing guests' services) or "I'm a service provider"
+/// — plus "Browse as guest". Picking one starts phone sign-in; the choice is held by the
+/// coordinator and sent with registration if the number is new.
 /// Matches mockup 1 (`design/mockups/Main.dc.html`).
 struct AuthLandingView: View {
     @State private var viewModel: OnboardingViewModel
@@ -43,7 +44,13 @@ struct AuthLandingView: View {
                     subtitle: AuthL10n.string("auth.role.bride.subtitle"),
                     systemImage: "sparkles",
                     isProminent: true
-                ) { coordinator.startPhoneSignIn(as: .bride) }
+                ) { coordinator.startPhoneSignIn(as: .bride, audience: .bride) }
+                RoleCard(
+                    title: AuthL10n.string("auth.role.guests.title"),
+                    subtitle: AuthL10n.string("auth.role.guests.subtitle"),
+                    systemImage: "person.3",
+                    isProminent: false
+                ) { coordinator.startPhoneSignIn(as: .bride, audience: .guests) }
                 RoleCard(
                     title: AuthL10n.string("auth.role.provider.title"),
                     subtitle: AuthL10n.string("auth.role.provider.subtitle"),
@@ -117,7 +124,7 @@ struct AuthLandingView: View {
     }
 }
 
-/// One of the two big role buttons on the landing screen.
+/// One of the big role buttons on the landing screen.
 private struct RoleCard: View {
     let title: String
     let subtitle: String

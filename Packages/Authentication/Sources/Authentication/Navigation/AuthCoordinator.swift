@@ -29,6 +29,10 @@ public final class AuthCoordinator: Coordinator {
     /// existing account keeps the role stored on its profile.
     public private(set) var selectedRole: UserRole = .bride
 
+    /// «عروس» or «معازيم» on the landing screen (both are bride accounts). Saved with a new
+    /// account; she can change it later in Profile.
+    public private(set) var selectedAudience: Audience = .bride
+
     /// Set when the number already has an account of the other kind: the name screen explains
     /// that a separate account is being created for the side she picked.
     public private(set) var otherAccountRole: UserRole?
@@ -41,9 +45,10 @@ public final class AuthCoordinator: Coordinator {
 
     // MARK: - Intents
 
-    /// Landing → "I'm a bride" / "I'm a service provider".
-    public func startPhoneSignIn(as role: UserRole) {
+    /// Landing → "I'm a bride" / "I'm a wedding guest" / "I'm a service provider".
+    public func startPhoneSignIn(as role: UserRole, audience: Audience = .bride) {
         selectedRole = role
+        selectedAudience = audience
         push(.phoneEntry)
     }
 
