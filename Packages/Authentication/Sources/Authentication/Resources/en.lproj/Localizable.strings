@@ -43,8 +43,12 @@
 "auth.role.bride.subtitle" = "Discover and book wedding services within your budget";
 "auth.audience.title" = "What services are you looking for?";
 "auth.audience.bride" = "Services for me";
-"auth.audience.guests" = "Services for my guests (venues, hospitality…)";
+"auth.audience.bride.subtitle" = "Makeup, photography, styling and everything for the bride";
+"auth.audience.guests" = "Services for my guests";
+"auth.audience.guests.subtitle" = "Wedding venues, hospitality and services for attendees";
 "auth.audience.both" = "Both";
+"auth.audience.both.subtitle" = "Show me the bride's and the guests' services";
+"auth.audience.back" = "Back";
 "auth.role.provider.title" = "I'm a service provider";
 "auth.role.provider.subtitle" = "Join and receive bookings · first 2 months free";
 

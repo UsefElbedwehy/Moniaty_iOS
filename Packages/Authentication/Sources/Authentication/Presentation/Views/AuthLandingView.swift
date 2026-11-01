@@ -29,13 +29,6 @@ struct AuthLandingView: View {
         }
         .dsScreenBackground()
         .authHiddenBackButton()
-        .confirmationDialog(AuthL10n.string("auth.audience.title"), isPresented: $choosingAudience, titleVisibility: .visible) {
-            ForEach(Audience.allCases, id: \.self) { audience in
-                Button(AuthL10n.string("auth.audience.\(audience.rawValue)")) {
-                    coordinator.startPhoneSignIn(as: .bride, audience: audience)
-                }
-            }
-        }
     }
 
     private var content: some View {
@@ -44,6 +37,47 @@ struct AuthLandingView: View {
                 .padding(.top, DSSpacing.xxl)
 
             VStack(alignment: .leading, spacing: DSSpacing.sm) {
+                if choosingAudience { audienceChoice } else { roleChoice }
+            }
+            .padding(.top, DSSpacing.xxl)
+            .disabled(viewModel.isBusy)
+            .animation(reduceMotion ? nil : .default, value: choosingAudience)
+
+            Spacer(minLength: DSSpacing.xl)
+
+            guestButton
+        }
+        .padding(.horizontal, DSSpacing.xl)
+        .padding(.bottom, DSSpacing.lg)
+        .frame(maxWidth: .infinity)
+    }
+
+    /// Step 2 for a bride: what she is looking for, as big cards like the role choice.
+    @ViewBuilder
+    private var audienceChoice: some View {
+        AuthL10n.text("auth.audience.title")
+            .font(.dsSubhead)
+            .foregroundStyle(Color.dsTextSecondary)
+        ForEach(Array(Audience.allCases.enumerated()), id: \.element) { index, audience in
+            RoleCard(
+                title: AuthL10n.string("auth.audience.\(audience.rawValue)"),
+                subtitle: AuthL10n.string("auth.audience.\(audience.rawValue).subtitle"),
+                systemImage: ["person", "person.3", "sparkles"][index],
+                isProminent: index == 0
+            ) { coordinator.startPhoneSignIn(as: .bride, audience: audience) }
+        }
+        Button { choosingAudience = false } label: {
+            AuthL10n.text("auth.audience.back")
+                .font(.dsHeadline)
+                .foregroundStyle(Color.dsPrimary)
+                .frame(maxWidth: .infinity, minHeight: 44)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var roleChoice: some View {
                 AuthL10n.text("auth.landing.prompt")
                     .font(.dsSubhead)
                     .foregroundStyle(Color.dsTextSecondary)
@@ -59,17 +93,6 @@ struct AuthLandingView: View {
                     systemImage: "storefront",
                     isProminent: false
                 ) { coordinator.startPhoneSignIn(as: .provider) }
-            }
-            .padding(.top, DSSpacing.xxl)
-            .disabled(viewModel.isBusy)
-
-            Spacer(minLength: DSSpacing.xl)
-
-            guestButton
-        }
-        .padding(.horizontal, DSSpacing.xl)
-        .padding(.bottom, DSSpacing.lg)
-        .frame(maxWidth: .infinity)
     }
 
     private var brand: some View {

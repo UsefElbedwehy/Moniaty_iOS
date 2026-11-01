@@ -43,8 +43,12 @@
 "auth.role.bride.subtitle" = "اكتشفي واحجزي خدمات زفافك ضمن ميزانيتك";
 "auth.audience.title" = "ما الخدمات التي تبحثين عنها؟";
 "auth.audience.bride" = "خدمات لي أنا";
-"auth.audience.guests" = "خدمات لمعازيمي (قاعات، ضيافة…)";
+"auth.audience.bride.subtitle" = "المكياج والتصوير والتجهيز وكل ما تحتاجينه للعروس";
+"auth.audience.guests" = "خدمات لمعازيمي";
+"auth.audience.guests.subtitle" = "قاعات الأفراح والضيافة وخدمات الحضور";
 "auth.audience.both" = "الاثنين معاً";
+"auth.audience.both.subtitle" = "اعرضي لي خدمات العروس وخدمات المعازيم";
+"auth.audience.back" = "رجوع";
 "auth.role.provider.title" = "أنا مقدّمة خدمة";
 "auth.role.provider.subtitle" = "انضمي واستقبلي الحجوزات · أول شهرين مجاناً";
 

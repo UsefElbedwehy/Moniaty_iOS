@@ -22,8 +22,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.AutoAwesome
+import androidx.compose.material.icons.outlined.Groups
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Storefront
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -57,34 +58,6 @@ import co.munyati.designsystem.theme.DSSpacing
 @Composable
 internal fun AuthLandingScreen(viewModel: OnboardingViewModel, coordinator: AuthCoordinator) {
     var choosingAudience by remember { mutableStateOf(false) }
-    if (choosingAudience) {
-        AlertDialog(
-            onDismissRequest = { choosingAudience = false },
-            title = { Text(stringResource(R.string.auth_audience_title)) },
-            text = {
-                Column {
-                    listOf(
-                        Audience.Bride to R.string.auth_audience_bride,
-                        Audience.Guests to R.string.auth_audience_guests,
-                        Audience.Both to R.string.auth_audience_both,
-                    ).forEach { (audience, label) ->
-                        Text(
-                            stringResource(label),
-                            style = DS.type.headline,
-                            color = DS.colors.primary,
-                            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
-                                .clickable(role = Role.Button) {
-                                    choosingAudience = false
-                                    coordinator.startPhoneSignIn(co.munyati.authentication.domain.UserRole.Bride, audience)
-                                }
-                                .padding(vertical = DSSpacing.sm),
-                        )
-                    }
-                }
-            },
-            confirmButton = {},
-        )
-    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -100,21 +73,45 @@ internal fun AuthLandingScreen(viewModel: OnboardingViewModel, coordinator: Auth
             modifier = Modifier.padding(top = DSSpacing.xxl),
             verticalArrangement = Arrangement.spacedBy(DSSpacing.sm),
         ) {
-            Text(stringResource(R.string.auth_landing_prompt), style = DS.type.subhead, color = DS.colors.textSecondary)
-            RoleCard(
-                title = stringResource(R.string.auth_role_bride_title),
-                subtitle = stringResource(R.string.auth_role_bride_subtitle),
-                icon = Icons.Outlined.AutoAwesome,
-                isProminent = true,
-                enabled = !viewModel.isBusy,
-            ) { choosingAudience = true }
-            RoleCard(
-                title = stringResource(R.string.auth_role_provider_title),
-                subtitle = stringResource(R.string.auth_role_provider_subtitle),
-                icon = Icons.Outlined.Storefront,
-                isProminent = false,
-                enabled = !viewModel.isBusy,
-            ) { coordinator.startPhoneSignIn(co.munyati.authentication.domain.UserRole.Provider) }
+            if (choosingAudience) {
+                Text(stringResource(R.string.auth_audience_title), style = DS.type.subhead, color = DS.colors.textSecondary)
+                listOf(
+                    Triple(Audience.Bride, R.string.auth_audience_bride to R.string.auth_audience_bride_subtitle, Icons.Outlined.Person),
+                    Triple(Audience.Guests, R.string.auth_audience_guests to R.string.auth_audience_guests_subtitle, Icons.Outlined.Groups),
+                    Triple(Audience.Both, R.string.auth_audience_both to R.string.auth_audience_both_subtitle, Icons.Outlined.AutoAwesome),
+                ).forEachIndexed { index, (audience, texts, icon) ->
+                    RoleCard(
+                        title = stringResource(texts.first),
+                        subtitle = stringResource(texts.second),
+                        icon = icon,
+                        isProminent = index == 0,
+                        enabled = !viewModel.isBusy,
+                    ) { coordinator.startPhoneSignIn(co.munyati.authentication.domain.UserRole.Bride, audience) }
+                }
+                Box(
+                    modifier = Modifier.fillMaxWidth().heightIn(min = 44.dp)
+                        .clickable(role = Role.Button) { choosingAudience = false },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(stringResource(R.string.auth_audience_back), style = DS.type.headline, color = DS.colors.primary)
+                }
+            } else {
+                Text(stringResource(R.string.auth_landing_prompt), style = DS.type.subhead, color = DS.colors.textSecondary)
+                RoleCard(
+                    title = stringResource(R.string.auth_role_bride_title),
+                    subtitle = stringResource(R.string.auth_role_bride_subtitle),
+                    icon = Icons.Outlined.AutoAwesome,
+                    isProminent = true,
+                    enabled = !viewModel.isBusy,
+                ) { choosingAudience = true }
+                RoleCard(
+                    title = stringResource(R.string.auth_role_provider_title),
+                    subtitle = stringResource(R.string.auth_role_provider_subtitle),
+                    icon = Icons.Outlined.Storefront,
+                    isProminent = false,
+                    enabled = !viewModel.isBusy,
+                ) { coordinator.startPhoneSignIn(co.munyati.authentication.domain.UserRole.Provider) }
+            }
         }
 
         Spacer(Modifier.weight(1f).heightIn(min = DSSpacing.xl))
