@@ -2,13 +2,14 @@ import SwiftUI
 import DesignSystem
 import Core
 
-/// The first screen: the منيتي wordmark, the tagline, and the role choice — "I'm a bride",
-/// "I'm a wedding guest" (a bride account browsing guests' services) or "I'm a service provider"
-/// — plus "Browse as guest". Picking one starts phone sign-in; the choice is held by the
-/// coordinator and sent with registration if the number is new.
+/// The first screen: the منيتي wordmark, the tagline, and the role choice — "I'm a bride" or
+/// "I'm a service provider" — plus "Browse as guest". A bride then says what she is looking for
+/// (services for herself, for her wedding guests «المعازيم», or both) before phone sign-in; the
+/// choices are held by the coordinator and sent with registration if the number is new.
 /// Matches mockup 1 (`design/mockups/Main.dc.html`).
 struct AuthLandingView: View {
     @State private var viewModel: OnboardingViewModel
+    @State private var choosingAudience = false
     private let coordinator: AuthCoordinator
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -28,6 +29,13 @@ struct AuthLandingView: View {
         }
         .dsScreenBackground()
         .authHiddenBackButton()
+        .confirmationDialog(AuthL10n.string("auth.audience.title"), isPresented: $choosingAudience, titleVisibility: .visible) {
+            ForEach(Audience.allCases, id: \.self) { audience in
+                Button(AuthL10n.string("auth.audience.\(audience.rawValue)")) {
+                    coordinator.startPhoneSignIn(as: .bride, audience: audience)
+                }
+            }
+        }
     }
 
     private var content: some View {
@@ -44,13 +52,7 @@ struct AuthLandingView: View {
                     subtitle: AuthL10n.string("auth.role.bride.subtitle"),
                     systemImage: "sparkles",
                     isProminent: true
-                ) { coordinator.startPhoneSignIn(as: .bride, audience: .bride) }
-                RoleCard(
-                    title: AuthL10n.string("auth.role.guests.title"),
-                    subtitle: AuthL10n.string("auth.role.guests.subtitle"),
-                    systemImage: "person.3",
-                    isProminent: false
-                ) { coordinator.startPhoneSignIn(as: .bride, audience: .guests) }
+                ) { choosingAudience = true }
                 RoleCard(
                     title: AuthL10n.string("auth.role.provider.title"),
                     subtitle: AuthL10n.string("auth.role.provider.subtitle"),

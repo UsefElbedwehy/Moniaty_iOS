@@ -22,12 +22,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.AutoAwesome
-import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.Storefront
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +56,35 @@ import co.munyati.designsystem.theme.DSSpacing
  */
 @Composable
 internal fun AuthLandingScreen(viewModel: OnboardingViewModel, coordinator: AuthCoordinator) {
+    var choosingAudience by remember { mutableStateOf(false) }
+    if (choosingAudience) {
+        AlertDialog(
+            onDismissRequest = { choosingAudience = false },
+            title = { Text(stringResource(R.string.auth_audience_title)) },
+            text = {
+                Column {
+                    listOf(
+                        Audience.Bride to R.string.auth_audience_bride,
+                        Audience.Guests to R.string.auth_audience_guests,
+                        Audience.Both to R.string.auth_audience_both,
+                    ).forEach { (audience, label) ->
+                        Text(
+                            stringResource(label),
+                            style = DS.type.headline,
+                            color = DS.colors.primary,
+                            modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                                .clickable(role = Role.Button) {
+                                    choosingAudience = false
+                                    coordinator.startPhoneSignIn(co.munyati.authentication.domain.UserRole.Bride, audience)
+                                }
+                                .padding(vertical = DSSpacing.sm),
+                        )
+                    }
+                }
+            },
+            confirmButton = {},
+        )
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -74,14 +107,7 @@ internal fun AuthLandingScreen(viewModel: OnboardingViewModel, coordinator: Auth
                 icon = Icons.Outlined.AutoAwesome,
                 isProminent = true,
                 enabled = !viewModel.isBusy,
-            ) { coordinator.startPhoneSignIn(co.munyati.authentication.domain.UserRole.Bride, Audience.Bride) }
-            RoleCard(
-                title = stringResource(R.string.auth_role_guests_title),
-                subtitle = stringResource(R.string.auth_role_guests_subtitle),
-                icon = Icons.Outlined.Groups,
-                isProminent = false,
-                enabled = !viewModel.isBusy,
-            ) { coordinator.startPhoneSignIn(co.munyati.authentication.domain.UserRole.Bride, Audience.Guests) }
+            ) { choosingAudience = true }
             RoleCard(
                 title = stringResource(R.string.auth_role_provider_title),
                 subtitle = stringResource(R.string.auth_role_provider_subtitle),

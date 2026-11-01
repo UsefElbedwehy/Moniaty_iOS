@@ -41,8 +41,10 @@
 "auth.landing.prompt" = "How would you like to start?";
 "auth.role.bride.title" = "I'm a bride";
 "auth.role.bride.subtitle" = "Discover and book wedding services within your budget";
-"auth.role.guests.title" = "I'm a wedding guest";
-"auth.role.guests.subtitle" = "Services for guests: makeup, styling and hospitality";
+"auth.audience.title" = "What services are you looking for?";
+"auth.audience.bride" = "Services for me";
+"auth.audience.guests" = "Services for my guests (venues, hospitality…)";
+"auth.audience.both" = "Both";
 "auth.role.provider.title" = "I'm a service provider";
 "auth.role.provider.subtitle" = "Join and receive bookings · first 2 months free";
 

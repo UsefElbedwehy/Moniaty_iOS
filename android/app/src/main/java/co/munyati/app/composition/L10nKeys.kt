@@ -56,7 +56,6 @@ internal val l10nKeys: Map<String, Int> = mapOf(
     "profile.privacy" to R.string.profile_privacy,
     "profile.rate" to R.string.profile_rate,
     "profile.role.bride" to R.string.profile_role_bride,
-    "profile.role.guests" to R.string.profile_role_guests,
     "profile.role.provider" to R.string.profile_role_provider,
     "profile.section.app" to R.string.profile_section_app,
     "profile.section.help" to R.string.profile_section_help,
