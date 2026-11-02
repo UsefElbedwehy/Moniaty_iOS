@@ -47,4 +47,13 @@
     <string name="auth_role_bride_title">I\'m a bride</string>
     <string name="auth_role_provider_subtitle">Join and receive bookings · first 2 months free</string>
     <string name="auth_role_provider_title">I\'m a service provider</string>
+    <string name="auth_slides_book_body">Pick the date and time that suit you and send your request; the provider confirms it.</string>
+    <string name="auth_slides_book_title">Book your date with ease</string>
+    <string name="auth_slides_discover_body">Makeup, photography, venues, henna and more, from verified providers in Khobar, Dammam and Qatif.</string>
+    <string name="auth_slides_discover_title">Everything for the bride, in one place</string>
+    <string name="auth_slides_next">Next</string>
+    <string name="auth_slides_pay_body">Transfer the amount by bank transfer or from your wallet, and upload the receipt in the app.</string>
+    <string name="auth_slides_pay_title">Pay the provider directly</string>
+    <string name="auth_slides_skip">Skip</string>
+    <string name="auth_slides_start">Get started</string>
 </resources>

@@ -47,4 +47,13 @@
     <string name="auth_role_bride_title">أنا عروس</string>
     <string name="auth_role_provider_subtitle">انضمي واستقبلي الحجوزات · أول شهرين مجاناً</string>
     <string name="auth_role_provider_title">أنا مقدّمة خدمة</string>
+    <string name="auth_slides_book_body">اختاري التاريخ والوقت المناسبين وأرسلي طلبك، وتؤكّده مقدّمة الخدمة.</string>
+    <string name="auth_slides_book_title">احجزي موعدك بسهولة</string>
+    <string name="auth_slides_discover_body">مكياج وتصوير وقاعات وحنّاء وأكثر، من مقدّمات خدمة موثّقات في الخبر والدمام والقطيف.</string>
+    <string name="auth_slides_discover_title">كل تجهيزات العروس في مكان واحد</string>
+    <string name="auth_slides_next">التالي</string>
+    <string name="auth_slides_pay_body">حوّلي المبلغ بتحويل بنكي أو من المحفظة، وارفعي الإيصال من التطبيق.</string>
+    <string name="auth_slides_pay_title">ادفعي لمقدّمة الخدمة مباشرة</string>
+    <string name="auth_slides_skip">تخطّي</string>
+    <string name="auth_slides_start">ابدئي الآن</string>
 </resources>

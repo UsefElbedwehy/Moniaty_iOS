@@ -55,3 +55,13 @@
 /* Name screen: the number already has the other kind of account. */
 "auth.name.secondAccount.bride" = "This number already has a service provider account. We'll create a separate bride account for booking other providers; your own services can't be booked from it. To open your provider account, go back and choose “I'm a service provider”.";
 "auth.name.secondAccount.provider" = "This number already has a bride account. We'll create a separate service provider account. To open your bride account, go back and choose “I'm a bride”.";
+
+"auth.slides.skip" = "Skip";
+"auth.slides.next" = "Next";
+"auth.slides.start" = "Get started";
+"auth.slides.discover.title" = "Everything for the bride, in one place";
+"auth.slides.discover.body" = "Makeup, photography, venues, henna and more, from verified providers in Khobar, Dammam and Qatif.";
+"auth.slides.book.title" = "Book your date with ease";
+"auth.slides.book.body" = "Pick the date and time that suit you and send your request; the provider confirms it.";
+"auth.slides.pay.title" = "Pay the provider directly";
+"auth.slides.pay.body" = "Transfer the amount by bank transfer or from your wallet, and upload the receipt in the app.";
