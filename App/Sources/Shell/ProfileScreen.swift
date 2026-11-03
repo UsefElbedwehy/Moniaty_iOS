@@ -122,7 +122,8 @@ struct ProfileScreen: View {
                 }
                 HStack(spacing: 6) {
                     DSSparkle(size: 10)
-                    L10n.text(user.role == .provider ? "profile.role.provider" : "profile.role.bride")
+                    L10n.text(user.role == .provider ? "profile.role.provider"
+                              : user.audience == .guests ? "profile.role.guests" : "profile.role.bride")
                 }
                 .font(.dsCaption)
                 .foregroundStyle(Color.dsPremiumGold)

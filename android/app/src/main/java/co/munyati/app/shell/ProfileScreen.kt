@@ -416,6 +416,7 @@ private fun ProfileHero(environment: AppEnvironment, modifier: Modifier) {
                         l10n(
                             when {
                                 user.role == UserRole.Provider -> R.string.profile_role_provider
+                                user.audience == Audience.Guests -> R.string.profile_role_guests
                                 else -> R.string.profile_role_bride
                             },
                         ),

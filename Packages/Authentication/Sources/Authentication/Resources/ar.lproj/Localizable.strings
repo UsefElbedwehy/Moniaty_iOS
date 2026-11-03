@@ -41,14 +41,8 @@
 "auth.landing.prompt" = "كيف تحبين أن تبدئي؟";
 "auth.role.bride.title" = "أنا عروس";
 "auth.role.bride.subtitle" = "اكتشفي واحجزي خدمات زفافك ضمن ميزانيتك";
-"auth.audience.title" = "ما الخدمات التي تبحثين عنها؟";
-"auth.audience.bride" = "خدمات لي أنا";
-"auth.audience.bride.subtitle" = "المكياج والتصوير والتجهيز وكل ما تحتاجينه للعروس";
-"auth.audience.guests" = "خدمات لمعازيمي";
-"auth.audience.guests.subtitle" = "قاعات الأفراح والضيافة وخدمات الحضور";
-"auth.audience.both" = "الاثنين معاً";
-"auth.audience.both.subtitle" = "اعرضي لي خدمات العروس وخدمات المعازيم";
-"auth.audience.back" = "رجوع";
+"auth.role.guests.title" = "أنا من المعازيم";
+"auth.role.guests.subtitle" = "خدمات المعازيم: مكياج وتجهيز وضيافة";
 "auth.role.provider.title" = "أنا مقدّمة خدمة";
 "auth.role.provider.subtitle" = "انضمي واستقبلي الحجوزات · أول شهرين مجاناً";
 

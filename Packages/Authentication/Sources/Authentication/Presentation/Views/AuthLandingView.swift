@@ -2,14 +2,13 @@ import SwiftUI
 import DesignSystem
 import Core
 
-/// The first screen: the منيتي wordmark, the tagline, and the role choice — "I'm a bride" or
-/// "I'm a service provider" — plus "Browse as guest". A bride then says what she is looking for
-/// (services for herself, for her wedding guests «المعازيم», or both) before phone sign-in; the
-/// choices are held by the coordinator and sent with registration if the number is new.
+/// The first screen: the منيتي wordmark, the tagline, and the role choice — "I'm a bride",
+/// "I'm a wedding guest" (a bride account browsing guests' services) or "I'm a service provider"
+/// — plus "Browse as guest". Picking one starts phone sign-in; the choice is held by the
+/// coordinator and sent with registration if the number is new.
 /// Matches mockup 1 (`design/mockups/Main.dc.html`).
 struct AuthLandingView: View {
     @State private var viewModel: OnboardingViewModel
-    @State private var choosingAudience = false
     private let coordinator: AuthCoordinator
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -37,47 +36,6 @@ struct AuthLandingView: View {
                 .padding(.top, DSSpacing.xxl)
 
             VStack(alignment: .leading, spacing: DSSpacing.sm) {
-                if choosingAudience { audienceChoice } else { roleChoice }
-            }
-            .padding(.top, DSSpacing.xxl)
-            .disabled(viewModel.isBusy)
-            .animation(reduceMotion ? nil : .default, value: choosingAudience)
-
-            Spacer(minLength: DSSpacing.xl)
-
-            guestButton
-        }
-        .padding(.horizontal, DSSpacing.xl)
-        .padding(.bottom, DSSpacing.lg)
-        .frame(maxWidth: .infinity)
-    }
-
-    /// Step 2 for a bride: what she is looking for, as big cards like the role choice.
-    @ViewBuilder
-    private var audienceChoice: some View {
-        AuthL10n.text("auth.audience.title")
-            .font(.dsSubhead)
-            .foregroundStyle(Color.dsTextSecondary)
-        ForEach(Array(Audience.allCases.enumerated()), id: \.element) { index, audience in
-            RoleCard(
-                title: AuthL10n.string("auth.audience.\(audience.rawValue)"),
-                subtitle: AuthL10n.string("auth.audience.\(audience.rawValue).subtitle"),
-                systemImage: ["person", "person.3", "sparkles"][index],
-                isProminent: index == 0
-            ) { coordinator.startPhoneSignIn(as: .bride, audience: audience) }
-        }
-        Button { choosingAudience = false } label: {
-            AuthL10n.text("auth.audience.back")
-                .font(.dsHeadline)
-                .foregroundStyle(Color.dsPrimary)
-                .frame(maxWidth: .infinity, minHeight: 44)
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-
-    @ViewBuilder
-    private var roleChoice: some View {
                 AuthL10n.text("auth.landing.prompt")
                     .font(.dsSubhead)
                     .foregroundStyle(Color.dsTextSecondary)
@@ -86,13 +44,30 @@ struct AuthLandingView: View {
                     subtitle: AuthL10n.string("auth.role.bride.subtitle"),
                     systemImage: "sparkles",
                     isProminent: true
-                ) { choosingAudience = true }
+                ) { coordinator.startPhoneSignIn(as: .bride, audience: .bride) }
+                RoleCard(
+                    title: AuthL10n.string("auth.role.guests.title"),
+                    subtitle: AuthL10n.string("auth.role.guests.subtitle"),
+                    systemImage: "person.3",
+                    isProminent: false
+                ) { coordinator.startPhoneSignIn(as: .bride, audience: .guests) }
                 RoleCard(
                     title: AuthL10n.string("auth.role.provider.title"),
                     subtitle: AuthL10n.string("auth.role.provider.subtitle"),
                     systemImage: "storefront",
                     isProminent: false
                 ) { coordinator.startPhoneSignIn(as: .provider) }
+            }
+            .padding(.top, DSSpacing.xxl)
+            .disabled(viewModel.isBusy)
+
+            Spacer(minLength: DSSpacing.xl)
+
+            guestButton
+        }
+        .padding(.horizontal, DSSpacing.xl)
+        .padding(.bottom, DSSpacing.lg)
+        .frame(maxWidth: .infinity)
     }
 
     private var brand: some View {
