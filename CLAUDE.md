@@ -35,7 +35,13 @@ upload the receipt. Repo name is `Moniaty_iOS`, but the brand is **Munyati / Ù…Ù
   place that imports Firebase or knows Supabase. Features receive protocols and closures.
 - `dashboard/` is the admin web app (Next.js 15, Arabic RTL, `@supabase/ssr`). It uses only the
   anon key: reads rely on admin RLS policies and writes on `admin_*` RPCs. It **can** be built and
-  type-checked here (`npm install && npm run build`).
+  type-checked here (`npm install && npm run build`). Hosted on **Cloudflare Workers** (OpenNext,
+  Worker `munyati-admin`, https://munyati-admin.munyati-dashboard.workers.dev, Munyati's own Cloudflare
+  account `0c80992cee84e730d01943c5cd956dad`; never use another project's account or token). Every push
+  to `main` touching `dashboard/` deploys via `.github/workflows/deploy-dashboard.yml` (secret
+  `CLOUDFLARE_API_TOKEN`, variables `CLOUDFLARE_ACCOUNT_ID` + `NEXT_PUBLIC_SUPABASE_*`). Workers build:
+  `npx opennextjs-cloudflare build`, local test `npx wrangler dev`. Auth runs in classic `middleware.ts`
+  (fully supported; don't move it to Next 16 `proxy.ts`, which is experimental on Workers). No Vercel.
 - The app talks to Supabase over plain HTTPS (PostgREST RPCs + edge functions); it does
   **not** use the Supabase SDK.
 - `android/` is the Android app (Kotlin + Jetpack Compose, Gradle), identical to iOS in screens,
