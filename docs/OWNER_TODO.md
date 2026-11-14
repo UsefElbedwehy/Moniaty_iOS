@@ -4,7 +4,7 @@ Everything below is outside the code: accounts, keys, uploads and decisions. Do 
 this order; items marked ⏳ take weeks, so start them first.
 
 **Status (2026-10-24):** both apps are feature-complete, build and pass their tests; the
-dashboard is live on Vercel; all migrations are applied to the live Supabase project; the iOS
+dashboard is live on Cloudflare Workers (moved from Vercel on 2026-11-14); all migrations are applied to the live Supabase project; the iOS
 Release build has its privacy manifest and builds for devices. What's left is here: accounts and
 approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE_LISTING.md`).
 
@@ -74,8 +74,11 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
 - [ ] Put the Supabase URL + anon key in `website/config.js`.
 - [ ] Deploy `website/` (Vercel or Cloudflare Pages, free) and point **munyati.co** DNS to it.
 - [ ] After the App Store listing exists, put the App Store link in `website/config.js`.
-- [x] Deploy the dashboard (`dashboard/`, Vercel): live at https://munyati-admin.vercel.app
-      (add `admin.munyati.co` with `vercel domains add admin.munyati.co` + the CNAME it shows).
+- [x] Deploy the dashboard (`dashboard/`, Cloudflare Workers, auto-deploys on push to `main`):
+      live at https://munyati-admin.munyati-dashboard.workers.dev (see `dashboard/README.md`).
+- [ ] Optional: add `admin.munyati.co` as a custom domain (Cloudflare → Workers & Pages →
+      munyati-admin → Settings → Domains; easiest once munyati.co's DNS is on Cloudflare).
+- [ ] Optional: delete the old Vercel project `munyati-admin` (its Git link is already disconnected).
 - [ ] After the first Play upload, put the **Play app signing SHA-256** in
       `website/.well-known/assetlinks.json` (Play Console → Test and release → App integrity), so
       munyati.co links open the Android app.
@@ -111,7 +114,7 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
 
 ## 9. Home v2 and Profile v2 (carousel banners)
 - [x] Apply `supabase/migrations/20261018000000_home_banners.sql` to the live project (SQL editor or `supabase db push`). Until then the apps show only the built-in brand slides.
-- [x] Redeploy the dashboard (Vercel) so **بنرات الرئيسية / Home banners** appears; add banners there (image 2:1, up to 1 MB; link such as `https://munyati.co/c/makeup`).
+- [x] Redeploy the dashboard so **بنرات الرئيسية / Home banners** appears; add banners there (image 2:1, up to 1 MB; link such as `https://munyati.co/c/makeup`).
 - [ ] Make sure `https://munyati.co/providers` explains how providers join: Home's "تقدّمين خدمات للعرائس؟" card opens it.
 - [ ] Optional: add `social_links` (instagram, tiktok, snapchat, x, whatsapp) in Settings → remote config to show the "تابعينا" icons in Profile.
 
