@@ -58,5 +58,6 @@ public struct ErrorStateView: View {
         }
         .padding(DSSpacing.xl)
         .accessibilityElement(children: .contain)
+        .frame(maxWidth: .infinity, alignment: .center)
     }
 }
