@@ -1,0 +1,31 @@
+# Deploys munyati.co (website/, static files on Cloudflare Workers) on every push to main that
+# touches it. Uses the same secret/variable as the dashboard deploy (same Cloudflare account):
+#   secret   CLOUDFLARE_API_TOKEN
+#   variable CLOUDFLARE_ACCOUNT_ID
+name: Deploy website to Cloudflare
+on:
+  push:
+    branches: [main]
+    paths:
+      - "website/**"
+      - ".github/workflows/deploy-website.yml"
+  workflow_dispatch:
+concurrency:
+  group: deploy-website
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: website
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npx --yes wrangler@4.162.0 deploy

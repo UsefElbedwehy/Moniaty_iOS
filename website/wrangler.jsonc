@@ -1,0 +1,15 @@
+// munyati.co: static files served by Cloudflare Workers (static assets). worker.js only runs
+// when no file matches the path (the rewrites that vercel.json used to do).
+{
+  "$schema": "https://unpkg.com/wrangler@4.162.0/config-schema.json",
+  "name": "munyati-website",
+  "main": "worker.js",
+  "compatibility_date": "2026-11-13",
+  "assets": {
+    "directory": ".",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "none"
+  },
+  "observability": { "enabled": true }
+}

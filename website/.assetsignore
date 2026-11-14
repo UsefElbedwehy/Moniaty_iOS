@@ -1,0 +1,13 @@
+# Files in this folder that must not be served.
+.git
+.github
+.vercel
+.wrangler
+.dev.vars
+node_modules
+wrangler.jsonc
+worker.js
+README.md
+_headers
+.assetsignore
+.gitignore
