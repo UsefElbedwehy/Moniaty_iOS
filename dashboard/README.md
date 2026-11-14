@@ -36,7 +36,22 @@ npm install
 npm run dev                    # http://localhost:3000
 npm run build && npm start     # production
 ```
-Deploy anywhere Next.js runs (Vercel is simplest). Set the two `NEXT_PUBLIC_*` variables there.
+## Hosting (Cloudflare Workers)
+Live at https://munyati-admin.munyati-dashboard.workers.dev: Worker `munyati-admin` in Munyati's own
+Cloudflare account (`moniaty.official@gmail.com`, account ID `0c80992cee84e730d01943c5cd956dad`),
+built with OpenNext (`@opennextjs/cloudflare`, config in `wrangler.jsonc` and `open-next.config.ts`).
+It moved from Vercel on 2026-11-14 because Vercel's free plan had disabled the deployment (HTTP 402).
+
+- **Auto-deploy:** every push to `main` that touches `dashboard/` runs
+  `.github/workflows/deploy-dashboard.yml` (also runnable by hand: `gh workflow run "Deploy to Cloudflare"`).
+  It needs the repo secret `CLOUDFLARE_API_TOKEN` ("Edit Cloudflare Workers" token of that account) and
+  the repo variables `CLOUDFLARE_ACCOUNT_ID`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
+  `NEXT_PUBLIC_*` values are inlined at build time, so they must exist wherever the build runs.
+- **Manual deploy:** `npx wrangler whoami` (must show the Munyati account), then `npm run deploy`.
+- **Test the Workers build locally:** `npx opennextjs-cloudflare build && npx wrangler dev --port 8799`
+  (or `npm run preview`).
+- `compatibility_date` in `wrangler.jsonc` can't be later than the bundled `workerd` release date.
+- Custom domain (`admin.munyati.co`): Cloudflare → Workers & Pages → munyati-admin → Settings → Domains.
 
 ## First admin
 1. Supabase → Authentication → Users → **Add user → Create new user** with your email and a strong
