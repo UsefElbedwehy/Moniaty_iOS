@@ -42,6 +42,10 @@ upload the receipt. Repo name is `Moniaty_iOS`, but the brand is **Munyati / Ù…Ù
   `CLOUDFLARE_API_TOKEN`, variables `CLOUDFLARE_ACCOUNT_ID` + `NEXT_PUBLIC_SUPABASE_*`). Workers build:
   `npx opennextjs-cloudflare build`, local test `npx wrangler dev`. Auth runs in classic `middleware.ts`
   (fully supported; don't move it to Next 16 `proxy.ts`, which is experimental on Workers). No Vercel.
+- `website/` is munyati.co: static HTML, no build, on Cloudflare Workers (Worker `munyati-website`,
+  same account; `worker.js` does the rewrites, `_headers` the AASA content type, `.assetsignore` hides
+  config files). Pushes to `main` touching `website/` deploy via `.github/workflows/deploy-website.yml`.
+  The munyati.co DNS zone is on Cloudflare and carries the Microsoft 365 mail records: keep them.
 - The app talks to Supabase over plain HTTPS (PostgREST RPCs + edge functions); it does
   **not** use the Supabase SDK.
 - `android/` is the Android app (Kotlin + Jetpack Compose, Gradle), identical to iOS in screens,

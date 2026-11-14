@@ -72,7 +72,9 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
 ## 6. Website (Phase 7) — see `website/README.md`
 - [ ] Put your **Apple Team ID** in `website/.well-known/apple-app-site-association`.
 - [ ] Put the Supabase URL + anon key in `website/config.js`.
-- [ ] Deploy `website/` (Vercel or Cloudflare Pages, free) and point **munyati.co** DNS to it.
+- [x] Deploy `website/` (Cloudflare Workers, auto-deploys on push to `main`; see `website/README.md`).
+- [ ] Point **munyati.co** to Cloudflare: at GoDaddy set the nameservers to `maciej.ns.cloudflare.com`
+      and `raina.ns.cloudflare.com` (keep the Microsoft 365 mail records in Cloudflare DNS first).
 - [ ] After the App Store listing exists, put the App Store link in `website/config.js`.
 - [x] Deploy the dashboard (`dashboard/`, Cloudflare Workers, auto-deploys on push to `main`):
       live at https://munyati-admin.munyati-dashboard.workers.dev (see `dashboard/README.md`).
