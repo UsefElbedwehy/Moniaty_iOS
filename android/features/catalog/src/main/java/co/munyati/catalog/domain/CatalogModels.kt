@@ -2,6 +2,7 @@ package co.munyati.catalog.domain
 
 import co.munyati.shared.media.GalleryItem
 import co.munyati.shared.media.VideoAsset
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.math.RoundingMode
 import java.text.NumberFormat
@@ -37,12 +38,36 @@ data class CatalogCategory(
     val priceHint: String? get() = localized(priceHintAr.orEmpty(), priceHintEn.orEmpty()).ifEmpty { null }
 }
 
+/** How a service shows its price («السعر» in the provider's service form). */
+@Serializable
+enum class PriceMode(val raw: String) {
+    /** «٥٠٠ ر.س»: the bride pays this price. */
+    @SerialName("fixed") Fixed("fixed"),
+    /** «يبدأ من ٥٠٠ ر.س»: the provider sets the final price (at least this) when she approves. */
+    @SerialName("from") From("from"),
+    /** «السعر عند الطلب»: brides never see the price; the expected price is only for the budget filter. */
+    @SerialName("on_request") OnRequest("on_request");
+
+    /** The provider sets the final price when approving (or proposing another time). */
+    val needsFinalPrice: Boolean get() = this != Fixed
+}
+
+/** A price typed in Arabic or Latin digits ("٢٨٠٠", "1500.5", "٩٩٫٥"); null when empty or not a number. */
+fun parsePriceInput(text: String): Double? {
+    val ascii = text.map { ch -> if (Character.isDigit(ch)) Character.forDigit(Character.getNumericValue(ch), 10) else ch }
+        .joinToString("").replace('٫', '.').filter { it.isDigit() || it == '.' }
+    return if (ascii.isEmpty()) null else ascii.toDoubleOrNull()
+}
+
 /** The card shown in every list. */
 @Serializable
 data class ServiceCard(
     val id: String,
     val title: String,
-    val price: Double,
+    /** Null when the provider hides the price (`priceMode == OnRequest`). */
+    val price: Double? = null,
+    /** Absent from older responses (= fixed); read it through `pricing`. */
+    val priceMode: PriceMode? = null,
     val imageUrl: String? = null,
     val categoryId: String,
     val providerId: String,
@@ -61,6 +86,9 @@ data class ServiceCard(
 ) {
     /** The provider takes requests for any date and time («حسب الطلب»). */
     val isOnRequest: Boolean get() = bookingMode == "request"
+
+    /** The price mode, Fixed when the server didn't say. */
+    val pricing: PriceMode get() = priceMode ?: PriceMode.Fixed
 }
 
 @Serializable

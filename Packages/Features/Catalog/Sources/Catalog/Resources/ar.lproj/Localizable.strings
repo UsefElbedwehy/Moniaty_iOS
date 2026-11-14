@@ -1,6 +1,8 @@
 /* Catalog feature strings. */
 
 "price.sar" = "%@ ر.س";
+"price.from" = "يبدأ من %@";
+"price.onRequest" = "السعر عند الطلب";
 "common.empty.title" = "لا يوجد شيء هنا بعد";
 "common.empty.message" = "جرّبي مدينة أو قسماً آخر.";
 "common.seeAll" = "عرض الكل";

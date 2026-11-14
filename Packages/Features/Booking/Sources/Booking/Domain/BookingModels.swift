@@ -1,3 +1,4 @@
+import Catalog
 import Foundation
 
 /// Mirrors the Postgres `booking_status` enum (supabase/migrations/20261012000000_booking.sql).
@@ -55,7 +56,12 @@ public struct BookingSummary: Identifiable, Hashable, Sendable, Decodable {
     public let serviceId: String?
     public let serviceTitle: String
     public let categoryId: String?
-    public let price: Decimal
+    /// Nil for the bride while an on-request booking waits for the provider's final price.
+    public let price: Decimal?
+    /// Absent from older responses (= fixed).
+    public let priceMode: PriceMode?
+    /// False while the provider can still set the final price (from / on request, before approval).
+    public let priceIsFinal: Bool?
     public let startsAt: Date
     public let endsAt: Date
     public let note: String?
@@ -64,6 +70,16 @@ public struct BookingSummary: Identifiable, Hashable, Sendable, Decodable {
     public let provider: BookingProvider
     /// Masked for providers until payment is confirmed.
     public let brideName: String?
+
+    public var pricing: PriceMode { priceMode ?? .fixed }
+    /// The provider must enter the final price when she approves or proposes another time.
+    public var needsFinalPrice: Bool { !(priceIsFinal ?? true) }
+    /// "٥٠٠ ر.س" once final; before that "يبدأ من ٥٠٠ ر.س" or «يُحدَّد عند الموافقة».
+    public var priceText: String {
+        if let price, priceIsFinal ?? true { return formatSAR(price) }
+        if let price, pricing == .from { return formatServicePrice(price, mode: .from) }
+        return BookingL10n.string("price.pending")
+    }
 }
 
 public struct PaymentMethodSnapshot: Hashable, Sendable, Decodable {

@@ -1,5 +1,8 @@
 package co.munyati.booking
 
+import co.munyati.booking.domain.BookingSummary
+import co.munyati.booking.presentation.validFinalPrice
+import co.munyati.catalog.domain.PriceMode
 import co.munyati.booking.data.MockBookingRepository
 import co.munyati.booking.data.RemoteBookingRepository
 import co.munyati.booking.domain.ActionResult
@@ -7,6 +10,7 @@ import co.munyati.booking.domain.BookingStatus
 import co.munyati.booking.domain.PaymentMethodDraft
 import co.munyati.networking.ApiClient
 import co.munyati.networking.ApiEndpoint
+import co.munyati.networking.ApiJson
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
@@ -76,5 +80,32 @@ class BookingTest {
         body = """{"ok":true,"id":"m1"}"""
         assertEquals(ActionResult.Ok("m1"), remote.savePaymentMethod(PaymentMethodDraft(label = "بنك", accountName = "لمسة", value = "SA0380000000")))
         assertEquals(JsonNull, Json.parseToJsonElement(sent).jsonObject["p_id"]) // p_id has no SQL default
+    }
+
+    @Test fun `price modes - final price rules, wire fields, and approve sends p_price`() = runTest {
+        val json = ApiJson
+        fun summary(fields: String) = json.decodeFromString(BookingSummary.serializer(),
+            """{"id":"b1","reference_code":"MN-1","status":"requested","service_title":"قاعة",$fields,
+               "starts_at":"2026-12-01T18:00:00+00:00","ends_at":"2026-12-01T21:00:00+00:00","provider":{"id":"p1","is_verified":true}}""")
+        val hidden = summary(""""price":null,"price_mode":"on_request","price_is_final":false""")
+        assertEquals(PriceMode.OnRequest, hidden.pricing)
+        assertTrue(hidden.needsFinalPrice)
+        assertEquals(2500.0, validFinalPrice(hidden, "٢٥٠٠"))
+        assertNull(validFinalPrice(hidden, "0"))
+
+        val from = summary(""""price":800,"price_mode":"from","price_is_final":false""")
+        assertNull(validFinalPrice(from, "700"))      // below the advertised start
+        assertEquals(950.0, validFinalPrice(from, "950"))
+
+        val legacy = summary(""""price":500""")       // older backends: fixed and final
+        assertEquals(PriceMode.Fixed, legacy.pricing)
+        assertTrue(!legacy.needsFinalPrice)
+
+        var sent = ""
+        val remote = RemoteBookingRepository(object : ApiClient {
+            override suspend fun sendRaw(endpoint: ApiEndpoint, bodyJson: String?): String { sent = bodyJson.orEmpty(); return """{"ok":true}""" }
+        })
+        remote.approve("b1", 950.0)
+        assertEquals("950.0", Json.parseToJsonElement(sent).jsonObject["p_price"].toString())
     }
 }

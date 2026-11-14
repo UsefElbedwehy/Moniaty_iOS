@@ -2,6 +2,8 @@
 
 package co.munyati.booking.presentation
 
+import co.munyati.catalog.domain.PriceMode
+import co.munyati.catalog.presentation.formatServicePrice
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -162,7 +164,7 @@ internal fun BookingRequestScreen(feature: BookingFeature, service: BookableServ
                         Text(service.title, style = DS.type.headline, color = DS.colors.textPrimary)
                         Text(service.providerName.orEmpty(), style = DS.type.footnote, color = DS.colors.textSecondary)
                     }
-                    Text(formatSar(service.price), style = DS.type.headline, color = DS.colors.primary)
+                    Text(formatServicePrice(service.price, service.priceMode), style = DS.type.headline, color = DS.colors.primary)
                 }
             }
 
@@ -242,8 +244,14 @@ internal fun BookingRequestScreen(feature: BookingFeature, service: BookableServ
                 Modifier.fillMaxWidth().clip(RoundedCornerShape(DSRadius.card)).background(DS.colors.primaryMuted).padding(DSSpacing.md),
                 verticalArrangement = Arrangement.spacedBy(DSSpacing.xs),
             ) {
-                feature.remainingBudget()?.let { remaining ->
-                    Text(stringResource(R.string.booking_request_budgetAfter, formatSar(remaining - service.price)), style = DS.type.subhead, color = DS.colors.textPrimary)
+                val price = service.price
+                if (service.priceMode == PriceMode.Fixed && price != null) {
+                    feature.remainingBudget()?.let { remaining ->
+                        Text(stringResource(R.string.booking_request_budgetAfter, formatSar(remaining - price)), style = DS.type.subhead, color = DS.colors.textPrimary)
+                    }
+                }
+                if (service.priceMode.needsFinalPrice) {
+                    Text(stringResource(R.string.booking_request_finalPriceLater), style = DS.type.subhead, color = DS.colors.textPrimary)
                 }
                 Text(stringResource(R.string.booking_request_paymentInfo), style = DS.type.footnote, color = DS.colors.textSecondary)
             }
@@ -362,7 +370,7 @@ internal fun BookingRow(booking: BookingSummary, role: BookingRole, onClick: () 
         }
         val who = if (role == BookingRole.Bride) booking.provider.name.orEmpty() else booking.brideName.orEmpty()
         Text("${booking.serviceTitle} · $who", style = DS.type.headline, color = DS.colors.textPrimary, maxLines = 2)
-        Text("${bookingDateText(booking.startsAt)} · ${formatSar(booking.price)}", style = DS.type.footnote, color = DS.colors.textSecondary)
+        Text("${bookingDateText(booking.startsAt)} · ${booking.priceText()}", style = DS.type.footnote, color = DS.colors.textSecondary)
         // Where the booking stands at a glance, for bookings still in progress.
         if (booking.status.isActive && booking.status.step > 0) ProgressSteps(booking.status.step, Modifier.padding(top = 4.dp))
     }

@@ -149,7 +149,7 @@ struct ServicesListScreen: View {
                                     .clipShape(RoundedRectangle(cornerRadius: 12))
                                 VStack(alignment: .leading, spacing: 2) {
                                     Text(verbatim: service.title).font(.dsHeadline).foregroundStyle(Color.dsTextPrimary)
-                                    Text(verbatim: "\(store.categoryName(service.categoryId)) · \(formatSAR(service.price))")
+                                    Text(verbatim: "\(store.categoryName(service.categoryId)) · \(studioPriceText(service))")
                                         .font(.dsFootnote).foregroundStyle(Color.dsTextSecondary)
                                 }
                                 Spacer()
@@ -233,8 +233,6 @@ struct ServiceEditScreen: View {
                         Text(verbatim: category.name).tag(Optional(category.id))
                     }
                 }
-                TextField(StudioL10n.string("service.price"), text: $draft.priceText)
-                    .keyboardType(.decimalPad)
                 Picker(StudioL10n.string("service.duration"), selection: $draft.durationMinutes) {
                     Text(verbatim: "—").tag(Int?.none)
                     ForEach(Self.durations, id: \.self) { minutes in
@@ -243,6 +241,21 @@ struct ServiceEditScreen: View {
                 }
                 TextField(StudioL10n.string("service.description"), text: $draft.description, axis: .vertical)
                     .lineLimit(3...10)
+            }
+
+            Section {
+                Picker(StudioL10n.string("service.priceMode"), selection: $draft.priceMode) {
+                    ForEach(PriceMode.allCases, id: \.self) { mode in
+                        Text(verbatim: StudioL10n.string("service.priceMode.\(mode.rawValue)")).tag(mode)
+                    }
+                }
+                .pickerStyle(.segmented)
+                TextField(StudioL10n.string("service.price.\(draft.priceMode.rawValue)"), text: $draft.priceText)
+                    .keyboardType(.decimalPad)
+            } header: {
+                StudioL10n.text("service.section.price")
+            } footer: {
+                StudioL10n.text("service.priceMode.footer.\(draft.priceMode.rawValue)")
             }
 
             Section(StudioL10n.string("service.section.photos")) {
@@ -531,5 +544,13 @@ struct StoreEditScreen: View {
                 message = StudioL10n.string("common.saveFailed")
             }
         }
+    }
+}
+
+/// The provider's own list row: "٥٠٠ ر.س", "يبدأ من ٥٠٠ ر.س" or "عند الطلب (متوقع ٣٬٠٠٠ ر.س)".
+func studioPriceText(_ service: MyService) -> String {
+    switch service.priceMode ?? .fixed {
+    case .onRequest: StudioL10n.format("service.price.expectedRow", formatSAR(service.price))
+    case let mode: formatServicePrice(service.price, mode: mode)
     }
 }

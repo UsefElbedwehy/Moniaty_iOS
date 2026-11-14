@@ -1,5 +1,7 @@
 package co.munyati.catalog
 
+import co.munyati.catalog.domain.PriceMode
+import co.munyati.catalog.domain.parsePriceInput
 import co.munyati.catalog.data.MockCatalogRepository
 import co.munyati.catalog.data.RemoteCatalogRepository
 import co.munyati.catalog.domain.Budget
@@ -100,5 +102,22 @@ class CatalogTest {
         assertTrue(detail.moreFromProvider.isEmpty())
         body = "null"
         assertNull(remote.service("missing"))
+    }
+
+    @Test fun `price modes - on-request cards carry no price, but the budget filter still uses the expected one`() = runTest {
+        val all = repo.search(ServiceFilter(), cityIds = null, maxPrice = null, offset = 0)
+        val hall = all.first { it.id == "s5" }
+        assertEquals(PriceMode.OnRequest, hall.pricing)
+        assertNull(hall.price)
+        assertEquals(PriceMode.From, all.first { it.id == "s3" }.pricing)
+        assertEquals(PriceMode.Fixed, all.first { it.id == "s1" }.pricing)
+        val cheap = repo.search(ServiceFilter(withinBudget = true), cityIds = null, maxPrice = 10000.0, offset = 0)
+        assertTrue(cheap.none { it.id == "s5" }) // expected 28,000 > 10,000
+    }
+
+    @Test fun `prices typed in Arabic or Latin digits`() {
+        assertEquals(2800.0, parsePriceInput("٢٨٠٠"))
+        assertEquals(99.5, parsePriceInput("٩٩٫٥"))
+        assertNull(parsePriceInput(""))
     }
 }

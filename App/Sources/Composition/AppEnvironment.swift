@@ -261,6 +261,7 @@ final class AppEnvironment {
             id: card.id,
             title: card.title,
             price: card.price,
+            priceMode: card.pricing,
             providerName: card.providerName
         )
     }

@@ -156,6 +156,8 @@
     <string name="catalog_preparations_section_done">تمّت</string>
     <string name="catalog_preparations_section_todo">قيد التجهيز</string>
     <string name="catalog_preparations_title">تجهيزاتي</string>
+    <string name="catalog_price_from">يبدأ من %s</string>
+    <string name="catalog_price_onRequest">السعر عند الطلب</string>
     <string name="catalog_price_sar">%s ر.س</string>
     <string name="catalog_rating_a11y">التقييم %s من ٥</string>
     <string name="catalog_search_placeholder">ابحثي عن خدمة أو مقدّمة خدمة</string>

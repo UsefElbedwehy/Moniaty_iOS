@@ -47,11 +47,44 @@ public struct CatalogCategory: Identifiable, Hashable, Sendable, Decodable {
     }
 }
 
+/// How a service shows its price («السعر» in the provider's service form).
+public enum PriceMode: String, CaseIterable, Hashable, Sendable, Codable {
+    /// «٥٠٠ ر.س»: the bride pays this price.
+    case fixed
+    /// «يبدأ من ٥٠٠ ر.س»: the provider sets the final price (at least this) when she approves.
+    case from
+    /// «السعر عند الطلب»: brides never see the price; the provider's expected price is used only
+    /// for the budget filter and sorting, and she sets the final price when she approves.
+    case onRequest = "on_request"
+
+    /// The provider sets the final price when approving (or proposing another time).
+    public var needsFinalPrice: Bool { self != .fixed }
+}
+
+/// The price as brides see it: "٥٠٠ ر.س", "يبدأ من ٥٠٠ ر.س" or "السعر عند الطلب".
+/// `price` is nil for on_request (the server never sends the expected price to brides).
+public func formatServicePrice(_ price: Decimal?, mode: PriceMode, locale: Locale = .current) -> String {
+    guard let price, mode != .onRequest else { return CatalogL10n.string("price.onRequest") }
+    let amount = formatSAR(price, locale: locale)
+    return mode == .from ? String(format: CatalogL10n.string("price.from"), amount) : amount
+}
+
+/// A price typed in Arabic or Latin digits ("٢٨٠٠", "1500.5", "٩٩٫٥"); nil when empty or not a number.
+public func parsePriceInput(_ text: String) -> Decimal? {
+    let ascii = String(text.map { ch in ch.wholeNumberValue.map { Character(String($0)) } ?? ch })
+        .replacingOccurrences(of: "٫", with: ".")
+        .filter { $0.isNumber || $0 == "." }
+    return ascii.isEmpty ? nil : Decimal(string: ascii)
+}
+
 /// The card shown in every list.
 public struct ServiceCard: Identifiable, Hashable, Sendable, Decodable {
     public let id: String
     public let title: String
-    public let price: Decimal
+    /// Nil when the provider hides the price (`priceMode == .onRequest`).
+    public let price: Decimal?
+    /// Absent from older responses (= fixed); read it through `pricing`.
+    public let priceMode: PriceMode?
     public let imageUrl: URL?
     public let categoryId: String
     public let providerId: String
@@ -70,6 +103,11 @@ public struct ServiceCard: Identifiable, Hashable, Sendable, Decodable {
 
     /// The provider takes requests for any date and time («حسب الطلب»).
     public var isOnRequest: Bool { bookingMode == "request" }
+
+    /// The price mode, `fixed` when the server didn't say.
+    public var pricing: PriceMode { priceMode ?? .fixed }
+    /// "٥٠٠ ر.س", "يبدأ من ٥٠٠ ر.س" or "السعر عند الطلب".
+    public var priceText: String { formatServicePrice(price, mode: pricing) }
 }
 
 public struct ProviderSummary: Identifiable, Hashable, Sendable, Decodable {

@@ -1,5 +1,7 @@
 package co.munyati.providerstudio.domain
 
+import co.munyati.catalog.domain.PriceMode
+import co.munyati.catalog.domain.parsePriceInput
 import co.munyati.core.configuration.Audience
 import co.munyati.shared.media.VideoAsset
 import kotlinx.serialization.SerialName
@@ -66,6 +68,7 @@ data class MyService(
     val title: String,
     val description: String? = null,
     val categoryId: String,
+    /** Her real price: the fixed price, the starting price, or the hidden expected price. */
     val price: Double,
     val durationMinutes: Int? = null,
     val femaleStaffOnly: Boolean = false,
@@ -75,6 +78,8 @@ data class MyService(
     val status: Status = Status.Active,
     /** Missing from backends older than the videos migration. */
     val videos: List<VideoAsset> = emptyList(),
+    /** Absent from older backends (= fixed). */
+    val priceMode: PriceMode? = null,
 ) {
     @Serializable
     enum class Status {
@@ -143,6 +148,7 @@ data class ServiceDraft(
     val description: String = "",
     val categoryId: String? = null,
     val priceText: String = "",
+    val priceMode: PriceMode = PriceMode.Fixed,
     val durationMinutes: Int? = null,
     val femaleStaffOnly: Boolean = false,
     val atCustomerLocation: Boolean = false,
@@ -157,6 +163,7 @@ data class ServiceDraft(
         description = s.description.orEmpty(),
         categoryId = s.categoryId,
         priceText = if (s.price % 1.0 == 0.0) s.price.toLong().toString() else s.price.toString(),
+        priceMode = s.priceMode ?: PriceMode.Fixed,
         durationMinutes = s.durationMinutes,
         femaleStaffOnly = s.femaleStaffOnly,
         atCustomerLocation = s.atCustomerLocation,
@@ -167,18 +174,7 @@ data class ServiceDraft(
     )
 
     /** The price typed in Arabic or Latin digits ("٢٥٠٫٥" or "250.5"). */
-    val price: Double?
-        get() {
-            val ascii = priceText.map { ch ->
-                when (ch) {
-                    in '٠'..'٩' -> '0' + (ch - '٠')
-                    in '۰'..'۹' -> '0' + (ch - '۰')
-                    '٫' -> '.'
-                    else -> ch
-                }
-            }.filter { it.isDigit() || it == '.' }.joinToString("")
-            return ascii.toDoubleOrNull()
-        }
+    val price: Double? get() = parsePriceInput(priceText)
 
     val isValid: Boolean get() = title.trim().length >= 2 && categoryId != null && price != null
 }

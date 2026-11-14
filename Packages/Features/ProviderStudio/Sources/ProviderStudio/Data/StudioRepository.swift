@@ -47,7 +47,7 @@ public struct RemoteStudioRepository: StudioRepository {
             pDescription: d.description.nilIfBlank, pDurationMinutes: d.durationMinutes,
             pFemaleStaffOnly: d.femaleStaffOnly, pAtCustomerLocation: d.atCustomerLocation, pStoreId: d.storeId,
             pImageUrls: d.imageUrls.map(\.absoluteString), pStatus: d.isActive ? "active" : "paused",
-            pVideos: d.videos
+            pVideos: d.videos, pPriceMode: d.priceMode.rawValue
         ))
         return result.toDomain(maxKey: result.maxServices)
     }
@@ -143,6 +143,7 @@ private struct ServiceArgs: Encodable, Sendable {
     let pImageUrls: [String]
     let pStatus: String
     let pVideos: [VideoAsset]
+    let pPriceMode: String
 
     // p_id must be sent even when nil (it has no default in SQL), so encode it explicitly.
     func encode(to encoder: Encoder) throws {
@@ -159,11 +160,12 @@ private struct ServiceArgs: Encodable, Sendable {
         try c.encode(pImageUrls, forKey: .pImageUrls)
         try c.encode(pStatus, forKey: .pStatus)
         try c.encode(pVideos, forKey: .pVideos)
+        try c.encode(pPriceMode, forKey: .pPriceMode)
     }
 
     private enum CodingKeys: String, CodingKey {
         case pId, pTitle, pCategoryId, pPrice, pDescription, pDurationMinutes, pFemaleStaffOnly,
-             pAtCustomerLocation, pStoreId, pImageUrls, pStatus, pVideos
+             pAtCustomerLocation, pStoreId, pImageUrls, pStatus, pVideos, pPriceMode
     }
 }
 

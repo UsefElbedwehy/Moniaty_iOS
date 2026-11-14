@@ -61,7 +61,7 @@ struct BookingRequestScreenView: View {
                             ).foregroundStyle(Color.dsTextSecondary)
                         }
                         Spacer()
-                        Text(verbatim: formatSAR(service.price)).font(
+                        Text(verbatim: formatServicePrice(service.price, mode: service.priceMode)).font(
                             .dsHeadline
                         ).foregroundStyle(Color.dsPrimary)
                     }
@@ -214,14 +214,18 @@ struct BookingRequestScreenView: View {
                 )
 
                 VStack(alignment: .leading, spacing: DSSpacing.xs) {
-                    if let remaining = feature.remainingBudget() {
+                    if service.priceMode == .fixed, let price = service.price,
+                       let remaining = feature.remainingBudget() {
                         Text(
                             verbatim: BookingL10n.format(
                                 "request.budgetAfter",
-                                formatSAR(remaining - service.price)
+                                formatSAR(remaining - price)
                             )
                         )
                         .font(.dsSubhead)
+                    }
+                    if service.priceMode.needsFinalPrice {
+                        BookingL10n.text("request.finalPriceLater").font(.dsSubhead)
                     }
                     BookingL10n.text("request.paymentInfo").font(.dsFootnote)
                         .foregroundStyle(Color.dsTextSecondary)

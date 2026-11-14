@@ -38,9 +38,9 @@ public actor MockCatalogRepository: CatalogRepository {
     nonisolated(unsafe) private static let services: [[String: Any]] = [
         ["id": "s1", "title": "مكياج العروس", "price": 2800, "category_id": "makeup", "provider_id": "p-lamsa", "duration_minutes": 180, "at_customer_location": true, "description": "مكياج ناعم يدوم طوال الليلة، شامل الرموش وتثبيت التسريحة."],
         ["id": "s2", "title": "مكياج ليلة الحناء", "price": 1500, "category_id": "makeup", "provider_id": "p-lamsa", "duration_minutes": 120],
-        ["id": "s3", "title": "تصوير الزفاف كاملاً", "price": 6500, "category_id": "photography", "provider_id": "p-reem", "duration_minutes": 360],
+        ["id": "s3", "title": "تصوير الزفاف كاملاً", "price": 6500, "price_mode": "from", "category_id": "photography", "provider_id": "p-reem", "duration_minutes": 360],
         ["id": "s4", "title": "جلسة تصوير العروس", "price": 3500, "category_id": "photography", "provider_id": "p-reem", "duration_minutes": 120],
-        ["id": "s5", "title": "قاعة كبرى حتى ٤٠٠ ضيفة", "price": 28000, "category_id": "venues", "provider_id": "p-lulu"],
+        ["id": "s5", "title": "قاعة كبرى حتى ٤٠٠ ضيفة", "price": 28000, "price_mode": "on_request", "category_id": "venues", "provider_id": "p-lulu"],
         ["id": "s6", "title": "نقش حناء العروس", "price": 600, "category_id": "henna", "provider_id": "p-henna", "duration_minutes": 90]
     ]
 
@@ -52,6 +52,8 @@ public actor MockCatalogRepository: CatalogRepository {
         card["female_staff_only"] = provider["female_staff_only"] ?? false
         card["is_favorite"] = favoriteIds.contains(service["id"] as? String ?? "")
         card["image_url"] = "https://picsum.photos/seed/\(service["id"] as? String ?? "x")/800/600"
+        // Like the server: brides never receive the expected price of an on_request service.
+        if service["price_mode"] as? String == "on_request" { card["price"] = nil }
         return card
     }
 

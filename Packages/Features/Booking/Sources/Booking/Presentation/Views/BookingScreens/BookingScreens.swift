@@ -165,7 +165,7 @@ struct BookingRow: View {
             .lineLimit(2)
             Text(
                 verbatim:
-                    "\(bookingDateText(booking.startsAt)) · \(formatSAR(booking.price))"
+                    "\(bookingDateText(booking.startsAt)) · \(booking.priceText)"
             )
             .font(.dsFootnote)
             .foregroundStyle(Color.dsTextSecondary)
@@ -217,11 +217,12 @@ struct BookingDetailScreen: View {
     @State private var showDemoIntro = false
 
     enum Sheet: Identifiable {
-        case pay, propose, decline, rejectPayment, dispute
+        case pay, approve, propose, decline, rejectPayment, dispute
         case receipt(BookingReceipt)
         var id: String {
             switch self {
             case .pay: "pay"
+            case .approve: "approve"
             case .propose: "propose"
             case .decline: "decline"
             case .rejectPayment: "reject"
@@ -339,8 +340,12 @@ struct BookingDetailScreen: View {
                     ).font(.dsSubhead)
                     Text(verbatim: bookingDateText(b.startsAt)).font(.dsSubhead)
                         .foregroundStyle(Color.dsTextSecondary)
-                    Text(verbatim: formatSAR(b.price)).font(.dsHeadline)
+                    Text(verbatim: b.priceText).font(.dsHeadline)
                         .foregroundStyle(Color.dsPrimary)
+                    if role == .provider, b.needsFinalPrice, b.status == .requested {
+                        BookingL10n.text("price.setOnApprove").font(.dsFootnote)
+                            .foregroundStyle(Color.dsTextSecondary)
+                    }
                     if let note = b.note, !note.isEmpty {
                         Text(verbatim: note).font(.dsFootnote).foregroundStyle(
                             Color.dsTextSecondary
@@ -527,10 +532,16 @@ struct BookingDetailScreen: View {
                     BookingL10n.key("action.approve"),
                     isLoading: isWorking
                 ) {
-                    run {
-                        try await feature.repository.approve(
-                            bookingId: bookingId
-                        )
+                    // From / on request: she enters the final price first.
+                    if detail.summary.needsFinalPrice {
+                        sheet = .approve
+                    } else {
+                        run {
+                            try await feature.repository.approve(
+                                bookingId: bookingId,
+                                price: nil
+                            )
+                        }
                     }
                 }
                 SecondaryButton(BookingL10n.key("action.propose")) {
@@ -605,12 +616,25 @@ struct BookingDetailScreen: View {
                     Task { await load() }
                 }
             }
+        case .approve:
+            if let summary = state.value?.summary {
+                FinalPriceSheet(summary: summary) { price in
+                    try await feature.repository.approve(
+                        bookingId: bookingId,
+                        price: price
+                    )
+                } onDone: {
+                    Task { await load() }
+                }
+            }
         case .propose:
-            ProposeTimeSheet { date, note in
+            ProposeTimeSheet(priceFor: state.value?.summary.needsFinalPrice == true
+                             ? state.value?.summary : nil) { date, note, price in
                 try await feature.repository.proposeReschedule(
                     bookingId: bookingId,
                     startsAt: date,
-                    note: note
+                    note: note,
+                    price: price
                 )
             } onDone: {
                 Task { await load() }
@@ -833,7 +857,7 @@ struct PaymentScreen: View {
             }
         }
         .onAppear {
-            if amountText.isEmpty { amountText = "\(detail.summary.price)" }
+            if amountText.isEmpty, let price = detail.summary.price { amountText = "\(price)" }
         }
         .alert(
             message ?? "",
@@ -917,7 +941,7 @@ struct PaymentSummaryCard: View {
                 )
                 .font(.dsFootnote)
                 .opacity(0.85)
-                Text(verbatim: formatSAR(summary.price))
+                Text(verbatim: summary.priceText)
                     .font(.dsLargeTitle)
             }
             .accessibilityElement(children: .combine)
@@ -1058,17 +1082,110 @@ struct ReceiptViewer: View {
 
 // MARK: - Small action sheets
 
-struct ProposeTimeSheet: View {
-    let action: (Date, String?) async throws -> ActionResult
+/// The final-price field for from / on-request bookings, with the hint under it.
+struct FinalPriceSection: View {
+    let summary: BookingSummary
+    @Binding var text: String
+
+    var body: some View {
+        Section {
+            TextField(BookingL10n.string("finalPrice.field"), text: $text)
+                .keyboardType(.decimalPad)
+        } header: {
+            BookingL10n.text("finalPrice.title")
+        } footer: {
+            if let price = summary.price {
+                Text(verbatim: BookingL10n.format(
+                    summary.pricing == .from ? "finalPrice.footer.from" : "finalPrice.footer.on_request",
+                    formatSAR(price)
+                ))
+            }
+        }
+    }
+
+    /// The typed price when it passes the same checks as the server, else nil.
+    var price: Decimal? {
+        guard let value = parsePriceInput(text), value > 0, value <= 1_000_000 else { return nil }
+        if summary.pricing == .from, let start = summary.price, value < start { return nil }
+        return value
+    }
+}
+
+/// Approve a from / on-request booking: the provider enters the final price the bride will pay.
+struct FinalPriceSheet: View {
+    let summary: BookingSummary
+    let action: (Decimal) async throws -> ActionResult
     let onDone: () -> Void
-    @State private var date =
-        Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
-    @State private var note = ""
+    @State private var text = ""
     @State private var isSending = false
     @State private var message: String?
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
+        let section = FinalPriceSection(summary: summary, text: $text)
+        Form { section }
+            .dsFormBackground()
+            .navigationTitle(BookingL10n.string("finalPrice.title"))
+            .navigationBarTitleDisplayMode(.inline)
+            .onAppear {
+                // "From": start at the advertised price; on request: let her type.
+                if text.isEmpty, summary.pricing == .from, let price = summary.price { text = "\(price)" }
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(BookingL10n.string("common.cancel")) { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(BookingL10n.string("finalPrice.approve")) {
+                        guard let price = section.price else {
+                            message = BookingL10n.refusal(
+                                parsePriceInput(text) == nil ? "price_required" : "price_below_start")
+                            return
+                        }
+                        isSending = true
+                        Task {
+                            defer { isSending = false }
+                            do {
+                                switch try await action(price) {
+                                case .ok:
+                                    onDone()
+                                    dismiss()
+                                case .refused(let code):
+                                    message = BookingL10n.refusal(code)
+                                }
+                            } catch {
+                                message = BookingL10n.string("error.generic")
+                            }
+                        }
+                    }
+                    .disabled(isSending || text.isEmpty)
+                }
+            }
+            .alert(
+                message ?? "",
+                isPresented: Binding(get: { message != nil }, set: { if !$0 { message = nil } })
+            ) {
+                Button(BookingL10n.string("common.ok"), role: .cancel) {}
+            }
+    }
+}
+
+/// Propose another time. When the price isn't final yet (`priceFor` set), the provider also enters
+/// the final price: the bride sees it with the new time and pays it if she accepts.
+struct ProposeTimeSheet: View {
+    var priceFor: BookingSummary? = nil
+    let action: (Date, String?, Decimal?) async throws -> ActionResult
+    let onDone: () -> Void
+    @State private var date =
+        Calendar.current.date(byAdding: .day, value: 1, to: .now) ?? .now
+    @State private var note = ""
+    @State private var priceText = ""
+    @State private var isSending = false
+    @State private var message: String?
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        let priceSection = priceFor.map { FinalPriceSection(summary: $0, text: $priceText) }
         Form {
             DatePicker(
                 BookingL10n.string("proposal.newTime"),
@@ -1082,23 +1199,39 @@ struct ProposeTimeSheet: View {
                 text: $note,
                 axis: .vertical
             )
+            if let priceSection { priceSection }
         }
         .dsFormBackground()
         .navigationTitle(BookingL10n.string("action.propose"))
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            if priceText.isEmpty, let summary = priceFor, summary.pricing == .from, let price = summary.price {
+                priceText = "\(price)"
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button(BookingL10n.string("common.cancel")) { dismiss() }
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button(BookingL10n.string("common.send")) {
+                    var price: Decimal?
+                    if let priceSection {
+                        guard let value = priceSection.price else {
+                            message = BookingL10n.refusal(
+                                parsePriceInput(priceText) == nil ? "price_required" : "price_below_start")
+                            return
+                        }
+                        price = value
+                    }
                     isSending = true
                     Task {
                         defer { isSending = false }
                         do {
                             switch try await action(
                                 date,
-                                note.isEmpty ? nil : note
+                                note.isEmpty ? nil : note,
+                                price
                             ) {
                             case .ok:
                                 onDone()
@@ -1125,7 +1258,6 @@ struct ProposeTimeSheet: View {
         }
     }
 }
-
 struct ReasonSheet: View {
     let titleKey: String
     let optional: Bool

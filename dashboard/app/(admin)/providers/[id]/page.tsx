@@ -8,7 +8,7 @@ import { ProviderDecision } from "@/components/ProviderDecision";
 import { isOwner } from "@/lib/admin";
 import { thumbUrl } from "@/lib/format";
 import { i18n } from "@/lib/i18n";
-import { bookingStatus, providerStatus } from "@/lib/labels";
+import { bookingStatus, priceMode, providerStatus } from "@/lib/labels";
 import { grantSubscription, reviewProvider, setServiceStatus } from "../actions";
 
 export default async function ProviderDetail({ params, searchParams }: {
@@ -16,7 +16,7 @@ export default async function ProviderDetail({ params, searchParams }: {
 }) {
   const { id } = await params;
   const sp = await searchParams;
-  const { t, lang, list, arrow, date: fmtDate, dateTime: fmtDateTime, sar: fmtSAR } = await i18n();
+  const { t, lang, list, arrow, label, date: fmtDate, dateTime: fmtDateTime, sar: fmtSAR } = await i18n();
   const supabase = await supabaseServer();
   const { data: p } = await supabase.from("providers").select("*").eq("id", id).maybeSingle();
   if (!p) notFound();
@@ -24,7 +24,7 @@ export default async function ProviderDetail({ params, searchParams }: {
     supabase.from("profiles").select("phone, display_name, created_at, is_banned, deleted_at").eq("id", id).maybeSingle(),
     supabase.from("provider_categories").select("category_id").eq("provider_id", id),
     supabase.from("provider_cities").select("city_id").eq("provider_id", id),
-    supabase.from("services").select("id, title, price, status, category_id, image_urls, videos, created_at").eq("provider_id", id).is("archived_at", null).order("created_at"),
+    supabase.from("services").select("id, title, price, price_mode, status, category_id, image_urls, videos, created_at").eq("provider_id", id).is("archived_at", null).order("created_at"),
     supabase.from("stores").select("id, name, is_active, address").eq("provider_id", id).is("archived_at", null),
     supabase.from("provider_subscriptions").select("plan_id, source, status, starts_at, ends_at, note").eq("provider_id", id).order("starts_at", { ascending: false }).limit(10),
     supabase.from("bookings").select("id, reference_code, status, price, starts_at, is_demo").eq("provider_id", id).order("created_at", { ascending: false }).limit(10),
@@ -121,7 +121,10 @@ export default async function ProviderDetail({ params, searchParams }: {
                   </div>
                 </td>
                 <td>{s.category_id}</td>
-                <td>{fmtSAR(s.price)}</td>
+                <td>
+                  {fmtSAR(s.price)}
+                  {s.price_mode && s.price_mode !== "fixed" && <div className="muted small">{label(priceMode, s.price_mode)}</div>}
+                </td>
                 <td>{s.status === "active" ? <span className="badge good">{t("نشطة", "Active")}</span> : <span className="badge">{t("موقوفة", "Paused")}</span>}</td>
                 <td>
                   <form className="inline" action={setServiceStatus}>

@@ -52,7 +52,7 @@ public actor MockStudioRepository: StudioRepository {
         object["services"] = services.values.map { s -> [String: Any] in
             var row: [String: Any] = [
                 "id": s.id ?? "", "title": s.title, "description": s.description, "category_id": s.categoryId ?? "",
-                "price": NSDecimalNumber(decimal: s.price ?? 0), "female_staff_only": s.femaleStaffOnly,
+                "price": NSDecimalNumber(decimal: s.price ?? 0), "price_mode": s.priceMode.rawValue, "female_staff_only": s.femaleStaffOnly,
                 "at_customer_location": s.atCustomerLocation, "image_urls": s.imageUrls.map(\.absoluteString),
                 "videos": s.videos.map { v -> [String: Any] in
                     var video: [String: Any] = ["url": v.url.absoluteString]

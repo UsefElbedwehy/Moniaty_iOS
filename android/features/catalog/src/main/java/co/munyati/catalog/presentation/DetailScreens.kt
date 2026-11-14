@@ -142,7 +142,7 @@ private fun ServiceContent(feature: CatalogFeature, detail: ServiceDetail) {
         Column(Modifier.padding(DSSpacing.lg), verticalArrangement = Arrangement.spacedBy(DSSpacing.lg)) {
             Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
                 Text(detail.card.title, style = DS.type.title1, color = DS.colors.textPrimary)
-                Text(formatSar(detail.card.price), style = DS.type.title2, color = DS.colors.primary)
+                Text(detail.card.priceText(), style = DS.type.title2, color = DS.colors.primary)
             }
             ProviderRow(detail.provider) { navigator.navigate(ProviderRoute(detail.provider.id)) }
             Column(verticalArrangement = Arrangement.spacedBy(DSSpacing.xs)) {
@@ -177,7 +177,7 @@ private fun BookBar(detail: ServiceDetail, canBook: Boolean, onBook: () -> Unit)
             if (!isLargeText()) {
                 Column {
                     Text(stringResource(R.string.catalog_detail_price), style = DS.type.caption, color = DS.colors.textSecondary)
-                    Text(formatSar(detail.card.price), style = DS.type.headline, color = DS.colors.textPrimary)
+                    Text(detail.card.priceText(), style = DS.type.headline, color = DS.colors.textPrimary)
                 }
             }
             if (detail.isOwn || !canBook) {
