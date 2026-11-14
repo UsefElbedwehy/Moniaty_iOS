@@ -1,6 +1,8 @@
 /* Catalog feature strings. */
 
 "price.sar" = "SAR %@";
+"price.from" = "From %@";
+"price.onRequest" = "Price on request";
 "common.empty.title" = "Nothing here yet";
 "common.empty.message" = "Try another city or category.";
 "common.seeAll" = "See all";

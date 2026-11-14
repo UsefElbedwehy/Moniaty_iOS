@@ -1,16 +1,16 @@
-import SwiftUI
-import UIKit
-import FirebaseCore
-import FirebaseAnalytics
-import FirebaseCrashlytics
-import Core
-import Networking
 import Authentication
-import Shared
-import Catalog
-import ProviderStudio
 import Booking
+import Catalog
+import Core
+import FirebaseAnalytics
+import FirebaseCore
+import FirebaseCrashlytics
+import Networking
+import ProviderStudio
+import Shared
+import SwiftUI
 import Trust
+import UIKit
 
 /// The composition root: builds every repository once, owns the app-wide stores, and is the
 /// only place that knows about Supabase and Firebase. Features get plain values and closures.
@@ -51,14 +51,19 @@ final class AppEnvironment {
         let trustRepository: TrustRepository
         let mediaUploader: MediaUploading
         if Self.useRemoteBackend, let values = BackendConfiguration.load(),
-           let config = BackendConfiguration.makeNetworkConfiguration() {
-            let auth = SupabaseAuthRepository(client: URLSessionAPIClient(configuration: config))
+            let config = BackendConfiguration.makeNetworkConfiguration()
+        {
+            let auth = SupabaseAuthRepository(
+                client: URLSessionAPIClient(configuration: config)
+            )
             let dataClient = URLSessionAPIClient(
                 configuration: config,
                 authTokenProvider: { await auth.currentAccessToken() }
             )
             supabaseAuth = auth
-            configurationRepository = SupabaseConfigurationRepository(client: dataClient)
+            configurationRepository = SupabaseConfigurationRepository(
+                client: dataClient
+            )
             profileRepository = SupabaseProfileRepository(client: dataClient)
             contentRepository = SupabaseContentRepository(client: dataClient)
             cmsPageRepository = SupabaseCMSPageRepository(client: dataClient)
@@ -90,14 +95,30 @@ final class AppEnvironment {
             let baseURL = values.baseURL
             let anonKey = values.anonKey
             performDeleteAccount = {
-                guard let token = await auth.currentAccessToken() else { throw AccountDeletionError.notSignedIn }
-                var request = URLRequest(url: baseURL.appendingPathComponent("functions/v1/delete-account"))
+                guard let token = await auth.currentAccessToken() else {
+                    throw AccountDeletionError.notSignedIn
+                }
+                var request = URLRequest(
+                    url: baseURL.appendingPathComponent(
+                        "functions/v1/delete-account"
+                    )
+                )
                 request.httpMethod = "POST"
-                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+                request.setValue(
+                    "Bearer \(token)",
+                    forHTTPHeaderField: "Authorization"
+                )
                 request.setValue(anonKey, forHTTPHeaderField: "apikey")
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                let (_, response) = try await URLSession.shared.data(for: request)
-                guard let http = response as? HTTPURLResponse, (200..<300).contains(http.statusCode) else {
+                request.setValue(
+                    "application/json",
+                    forHTTPHeaderField: "Content-Type"
+                )
+                let (_, response) = try await URLSession.shared.data(
+                    for: request
+                )
+                guard let http = response as? HTTPURLResponse,
+                    (200..<300).contains(http.statusCode)
+                else {
                     throw AccountDeletionError.requestFailed
                 }
             }
@@ -112,11 +133,18 @@ final class AppEnvironment {
             let studioRepository = MockStudioRepository()
             mediaUploader = MockMediaUploader()
             trustRepository = MockTrustRepository()
-            studio = StudioFeature(repository: studioRepository, uploader: mediaUploader,
-                                   checkout: MockPlanCheckout(repository: studioRepository))
+            studio = StudioFeature(
+                repository: studioRepository,
+                uploader: mediaUploader,
+                checkout: MockPlanCheckout(repository: studioRepository)
+            )
             // One mock for both shells: a request sent as a bride shows up in the provider inbox.
             // UI-test hook: `UITEST_SAMPLE_BOOKINGS=1` starts with sample bookings (screenshots).
-            bookingRepository = MockBookingRepository(sampleBookings: ProcessInfo.processInfo.environment["UITEST_SAMPLE_BOOKINGS"] == "1")
+            bookingRepository = MockBookingRepository(
+                sampleBookings: ProcessInfo.processInfo.environment[
+                    "UITEST_SAMPLE_BOOKINGS"
+                ] == "1"
+            )
             receiptStorage = MockReceiptStorage()
             analytics = .disabled
             performDeleteAccount = nil
@@ -124,8 +152,12 @@ final class AppEnvironment {
         catalog = CatalogFeature(
             repository: catalogRepository,
             context: CatalogContext(citySummary: L10n.string("cities.all")),
-            openCityPicker: { [weak self] in self?.session.isPickingCities = true },
-            requireSignIn: { [weak self] in self?.session.isPresentingAuth = true }
+            openCityPicker: { [weak self] in
+                self?.session.isPickingCities = true
+            },
+            requireSignIn: { [weak self] in
+                self?.session.isPresentingAuth = true
+            }
         )
         booking = BookingFeature(
             repository: bookingRepository,
@@ -133,40 +165,87 @@ final class AppEnvironment {
             remainingBudget: { [weak self] in self?.catalog.remainingBudget },
             onBookingsChanged: { [weak self] in self?.catalog.refreshBudget() }
         )
-        catalog.setBookingHandler { [weak self] card in self?.requestBooking(card) }
+        catalog.setBookingHandler { [weak self] card in
+            self?.requestBooking(card)
+        }
         // Home banners: app links go through the deep-link router, other pages to the browser.
         catalog.setLinkHandler { [weak self] url in
-            if let link = DeepLink(url: url) { self?.deepLink.pending = link } else { UIApplication.shared.open(url) }
+            if let link = DeepLink(url: url) {
+                self?.deepLink.pending = link
+            } else {
+                UIApplication.shared.open(url)
+            }
         }
 
         trust = TrustFeature(
             repository: trustRepository,
             uploader: mediaUploader,
             isSignedIn: { [weak self] in self?.session.hasAccount ?? false },
-            requireSignIn: { [weak self] in self?.session.isPresentingAuth = true }
+            requireSignIn: { [weak self] in
+                self?.session.isPresentingAuth = true
+            }
         )
         let trustFeature = self.trust!
-        catalog.setTrustViews(CatalogTrustViews(
-            reviews: { AnyView(trustFeature.reviewsSection(providerId: $0)) },
-            moreMenu: { ref in
-                switch ref {
-                // A provider's id is also their account id, so it can be blocked directly.
-                case .provider(let id): AnyView(trustFeature.moreMenu(.provider(id), blockUserId: id))
-                case .service(let id): AnyView(trustFeature.moreMenu(.service(id)))
-                case .store(let id): AnyView(trustFeature.moreMenu(.store(id)))
+        catalog.setTrustViews(
+            CatalogTrustViews(
+                reviews: {
+                    AnyView(trustFeature.reviewsSection(providerId: $0))
+                },
+                moreMenu: { ref in
+                    switch ref {
+                    // A provider's id is also their account id, so it can be blocked directly.
+                    case .provider(let id):
+                        AnyView(
+                            trustFeature.moreMenu(
+                                .provider(id),
+                                blockUserId: id
+                            )
+                        )
+                    case .service(let id):
+                        AnyView(trustFeature.moreMenu(.service(id)))
+                    case .store(let id):
+                        AnyView(trustFeature.moreMenu(.store(id)))
+                    }
                 }
-            }
-        ))
-        booking.setTrustViews(BookingTrustViews(
-            review: { id, role in AnyView(trustFeature.bookingReviewSection(bookingId: id, role: role == .bride ? .bride : .provider)) },
-            moreMenu: { id in AnyView(trustFeature.moreMenu(.booking(id), blockBookingId: id)) },
-            helpSheet: { id in AnyView(trustFeature.ticketSheet(bookingId: id)) }
-        ))
+            )
+        )
+        booking.setTrustViews(
+            BookingTrustViews(
+                review: { id, role in
+                    AnyView(
+                        trustFeature.bookingReviewSection(
+                            bookingId: id,
+                            role: role == .bride ? .bride : .provider
+                        )
+                    )
+                },
+                moreMenu: { id in
+                    AnyView(
+                        trustFeature.moreMenu(.booking(id), blockBookingId: id)
+                    )
+                },
+                helpSheet: { id in
+                    AnyView(trustFeature.ticketSheet(bookingId: id))
+                }
+            )
+        )
         let bookingFeature = self.booking!
         studio.setSettingsDestination { link in
             switch link {
-            case .availability: AnyView(bookingFeature.destination(for: .availability, role: .provider))
-            case .paymentMethods: AnyView(bookingFeature.destination(for: .paymentMethods, role: .provider))
+            case .availability:
+                AnyView(
+                    bookingFeature.destination(
+                        for: .availability,
+                        role: .provider
+                    )
+                )
+            case .paymentMethods:
+                AnyView(
+                    bookingFeature.destination(
+                        for: .paymentMethods,
+                        role: .provider
+                    )
+                )
             }
         }
     }
@@ -178,8 +257,13 @@ final class AppEnvironment {
             return
         }
         guard session.user?.role != .provider else { return }
-        session.bookingRequest = BookableService(id: card.id, title: card.title, price: card.price,
-                                                 providerName: card.providerName)
+        session.bookingRequest = BookableService(
+            id: card.id,
+            title: card.title,
+            price: card.price,
+            priceMode: card.pricing,
+            providerName: card.providerName
+        )
     }
 
     /// Mirrors who is signed in and which cities are chosen into the catalog, which reloads
@@ -190,13 +274,20 @@ final class AppEnvironment {
         context.isGuest = !session.hasAccount
         context.canBook = session.user?.role != .provider
         // "Hide" flags, so a missing flag (or a config not loaded yet) keeps the slides.
-        context.showsBudgetSlide = remoteConfig.config?.isFeatureEnabled("hideHomeBudgetSlide") != true
-        context.showsDiscoverSlide = remoteConfig.config?.isFeatureEnabled("hideHomeDiscoverSlide") != true
+        context.showsBudgetSlide =
+            remoteConfig.config?.isFeatureEnabled("hideHomeBudgetSlide") != true
+        context.showsDiscoverSlide =
+            remoteConfig.config?.isFeatureEnabled("hideHomeDiscoverSlide")
+            != true
         context.displayName = session.user?.displayName
         context.phone = session.user?.phone
         context.cityIds = cities.queryCityIds
-        context.audience = session.hasAccount && session.user?.role != .provider ? session.user?.audience : nil
-        context.citySummary = cities.summary(allLabel: L10n.string("cities.all"))
+        context.audience =
+            session.hasAccount && session.user?.role != .provider
+            ? session.user?.audience : nil
+        context.citySummary = cities.summary(
+            allLabel: L10n.string("cities.all")
+        )
         context.cities = cities.available
         if wasGuest != context.isGuest { catalog.accountChanged() }
     }
@@ -205,36 +296,60 @@ final class AppEnvironment {
 
     /// Curated events → Postgres + Firebase; screens → Firebase; errors → Crashlytics + Postgres.
     private static func makeAnalytics(client: APIClient) -> AnalyticsRecorder {
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+        let appVersion =
+            Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
         let osVersion = UIDevice.current.systemVersion
         return AnalyticsRecorder(
             onEvent: { event, entityId, context, props in
                 var parameters: [String: Any] = props
                 if let entityId { parameters["entity_id"] = entityId }
                 if let context { parameters["context"] = context }
-                if FirebaseApp.app() != nil { Analytics.logEvent(event.rawValue, parameters: parameters) }
+                if FirebaseApp.app() != nil {
+                    Analytics.logEvent(event.rawValue, parameters: parameters)
+                }
                 Task {
                     let _: EmptyResponse? = try? await client.send(
                         .analytics.record,
-                        body: RecordAnalyticsEventArgs(pEventType: event.rawValue, pEntityId: entityId, pContextId: context, pProps: props.isEmpty ? nil : props)
+                        body: RecordAnalyticsEventArgs(
+                            pEventType: event.rawValue,
+                            pEntityId: entityId,
+                            pContextId: context,
+                            pProps: props.isEmpty ? nil : props
+                        )
                     )
                 }
             },
             onScreen: { name in
                 guard FirebaseApp.app() != nil else { return }
-                Analytics.logEvent(AnalyticsEventScreenView, parameters: [AnalyticsParameterScreenName: name])
+                Analytics.logEvent(
+                    AnalyticsEventScreenView,
+                    parameters: [AnalyticsParameterScreenName: name]
+                )
             },
             onError: { code, message, screen in
                 if FirebaseApp.app() != nil {
-                    Crashlytics.crashlytics().record(error: NSError(
-                        domain: "co.munyati.app", code: 0,
-                        userInfo: [NSLocalizedDescriptionKey: "\(code): \(message)", "screen": screen ?? "-"]
-                    ))
+                    Crashlytics.crashlytics().record(
+                        error: NSError(
+                            domain: "co.munyati.app",
+                            code: 0,
+                            userInfo: [
+                                NSLocalizedDescriptionKey:
+                                    "\(code): \(message)",
+                                "screen": screen ?? "-",
+                            ]
+                        )
+                    )
                 }
                 Task {
                     let _: EmptyResponse? = try? await client.send(
                         .analytics.logError,
-                        body: LogClientErrorArgs(pCode: code, pMessage: message, pScreen: screen, pAppVersion: appVersion, pOsVersion: osVersion)
+                        body: LogClientErrorArgs(
+                            pCode: code,
+                            pMessage: message,
+                            pScreen: screen,
+                            pAppVersion: appVersion,
+                            pOsVersion: osVersion
+                        )
                     )
                 }
             }
@@ -243,9 +358,14 @@ final class AppEnvironment {
 
     // MARK: - Auth
 
-    func makeAuthFeature(onFinished: @escaping (AuthState) -> Void) -> AuthenticationFeature {
+    func makeAuthFeature(onFinished: @escaping (AuthState) -> Void)
+        -> AuthenticationFeature
+    {
         if let supabaseAuth {
-            return AuthenticationFeature(repository: supabaseAuth, onFinished: onFinished)
+            return AuthenticationFeature(
+                repository: supabaseAuth,
+                onFinished: onFinished
+            )
         }
         return AuthenticationFeature.makeDefault(onFinished: onFinished)
     }
@@ -271,7 +391,14 @@ final class AppEnvironment {
         case .guest:
             // "Browse as guest" without a server session (mock backend, or anonymous sign-in
             // unavailable): browse as a bride; anything that needs an account asks to sign in.
-            session.state = .signedIn(.init(id: "guest", role: .bride, isAnonymous: true, displayName: nil))
+            session.state = .signedIn(
+                .init(
+                    id: "guest",
+                    role: .bride,
+                    isAnonymous: true,
+                    displayName: nil
+                )
+            )
         case .authenticated(let user):
             await signedIn(user)
         }
@@ -281,7 +408,14 @@ final class AppEnvironment {
 
     private func signedIn(_ user: User) async {
         let isAnonymous = await supabaseAuth?.currentUserIsAnonymous ?? false
-        session.state = .signedIn(.init(id: user.id, role: user.role, isAnonymous: isAnonymous, displayName: user.displayName))
+        session.state = .signedIn(
+            .init(
+                id: user.id,
+                role: user.role,
+                isAnonymous: isAnonymous,
+                displayName: user.displayName
+            )
+        )
         await syncProfile()
         refreshCatalogContext()
     }
@@ -292,11 +426,14 @@ final class AppEnvironment {
         guard var current = session.user, current.id != "guest" else { return }
         guard let profile = try? await profileRepository.fetchMyProfile() else {
             // Offline: keep what we have. A guest browses as a bride.
-            if current.role == nil, current.isAnonymous { current.role = .bride }
+            if current.role == nil, current.isAnonymous {
+                current.role = .bride
+            }
             session.state = .signedIn(current)
             return
         }
-        current.role = profile.role ?? (profile.isAnonymous ? .bride : current.role)
+        current.role =
+            profile.role ?? (profile.isAnonymous ? .bride : current.role)
         current.isAnonymous = profile.isAnonymous
         current.displayName = profile.displayName
         current.phone = profile.phone
@@ -318,7 +455,9 @@ final class AppEnvironment {
     }
 
     func deleteAccount() async throws {
-        guard let performDeleteAccount else { throw AccountDeletionError.notSignedIn }
+        guard let performDeleteAccount else {
+            throw AccountDeletionError.notSignedIn
+        }
         try await performDeleteAccount()
         await signOut()
     }
@@ -326,9 +465,12 @@ final class AppEnvironment {
     // MARK: - Remote config, strings, cities
 
     func loadRemoteConfig() async {
-        if let config = try? await configurationRepository.fetchConfiguration() {
+        if let config = try? await configurationRepository.fetchConfiguration()
+        {
             remoteConfig.update(config)
-        } else if let cached = await configurationRepository.cachedConfiguration() {
+        } else if let cached =
+            await configurationRepository.cachedConfiguration()
+        {
             remoteConfig.update(cached)
         }
         refreshCatalogContext()
@@ -336,8 +478,12 @@ final class AppEnvironment {
 
     /// Installs dashboard-edited text for the current language (falls back to the bundle).
     func loadRemoteStrings() async {
-        let language = Locale.current.language.languageCode?.identifier == "ar" ? "ar" : "en"
-        if let strings = try? await contentRepository.fetchStrings(language: language) {
+        let language =
+            Locale.current.language.languageCode?.identifier == "ar"
+            ? "ar" : "en"
+        if let strings = try? await contentRepository.fetchStrings(
+            language: language
+        ) {
             RemoteStrings.shared.install(strings)
         }
     }
@@ -353,7 +499,11 @@ final class AppEnvironment {
     func saveCities() async {
         let ids = cities.isAll ? [] : Array(cities.selected).sorted()
         refreshCatalogContext()
-        analytics(.cityFilterChanged, nil, props: ["cities": cities.isAll ? "all" : ids.joined(separator: ",")])
+        analytics(
+            .cityFilterChanged,
+            nil,
+            props: ["cities": cities.isAll ? "all" : ids.joined(separator: ",")]
+        )
         guard session.hasAccount else { return }
         try? await profileRepository.setMyCities(ids)
     }
@@ -361,7 +511,9 @@ final class AppEnvironment {
     /// Saves whom she browses for («عروس», «معازيم», both). The server filters Home, search and
     /// the map by it, so the catalog reloads once it is saved.
     func saveAudience(_ audience: Audience) async {
-        guard var user = session.user, session.hasAccount, user.audience != audience else { return }
+        guard var user = session.user, session.hasAccount,
+            user.audience != audience
+        else { return }
         let previous = user.audience
         user.audience = audience
         session.state = .signedIn(user)
@@ -379,7 +531,9 @@ final class AppEnvironment {
     func bindPush(_ service: PushNotifying) {
         service.onTokenChange = { [weak self] token in
             guard let self else { return }
-            Task { try? await self.profileRepository.registerDeviceToken(token) }
+            Task {
+                try? await self.profileRepository.registerDeviceToken(token)
+            }
         }
         service.onNotificationTap = { [weak self] tap in
             self?.open(DeepLink(string: tap.deepLink))
@@ -400,8 +554,11 @@ final class AppEnvironment {
     }
 
     static var appVersionString: String {
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
-        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "-"
+        let version =
+            Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+            ?? "-"
+        let build =
+            Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "-"
         return "\(version) (\(build))"
     }
 }

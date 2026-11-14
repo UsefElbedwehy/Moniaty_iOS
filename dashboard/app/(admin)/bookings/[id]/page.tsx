@@ -4,7 +4,7 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { Badge, Flash } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { i18n } from "@/lib/i18n";
-import { bookingStatus, disputeReason, party } from "@/lib/labels";
+import { bookingStatus, disputeReason, party, priceMode } from "@/lib/labels";
 import { resolveDispute } from "../actions";
 import { RecordActions } from "@/components/RecordActions";
 import { isOwner } from "@/lib/admin";
@@ -55,7 +55,13 @@ export default async function BookingDetail({ params, searchParams }: {
             <dt>{t("مقدّمة الخدمة", "Provider")}</dt><dd><Link href={`/providers/${b.provider_id}`}>{provider?.business_name ?? "—"}</Link></dd>
             <dt>{t("العروس", "Bride")}</dt><dd>{bride.data?.display_name ?? b.bride_name ?? "—"} <span className="ltr muted">{bride.data?.phone ?? ""}</span></dd>
             <dt>{t("الموعد", "Appointment")}</dt><dd>{fmtDateTime(b.starts_at)}</dd>
-            <dt>{t("المبلغ", "Amount")}</dt><dd>{fmtSAR(b.price)}</dd>
+            <dt>{t("المبلغ", "Amount")}</dt>
+            <dd>
+              {fmtSAR(b.price)}
+              {b.price_mode && b.price_mode !== "fixed" && (
+                <span className="muted"> · {label(priceMode, b.price_mode)}{!b.price_set_at && ` · ${t("تقديري، لم تحدّد مقدّمة الخدمة السعر النهائي بعد", "estimate; the provider hasn’t set the final price yet")}`}</span>
+              )}
+            </dd>
             <dt>{t("موعد الدفع", "Payment due")}</dt><dd>{fmtDateTime(b.payment_due_at)}</dd>
             <dt>{t("ملاحظة العروس", "Bride's note")}</dt><dd>{b.note ?? "—"}</dd>
             <dt>{t("طرق الدفع وقت الموافقة", "Payment methods at approval")}</dt>

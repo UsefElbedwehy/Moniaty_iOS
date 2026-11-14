@@ -64,7 +64,7 @@ class RemoteStudioRepository(private val client: ApiClient) : StudioRepository {
                 pDescription = d.description.nilIfBlank(), pDurationMinutes = d.durationMinutes,
                 pFemaleStaffOnly = d.femaleStaffOnly, pAtCustomerLocation = d.atCustomerLocation, pStoreId = d.storeId,
                 pImageUrls = d.imageUrls, pStatus = if (d.isActive) "active" else "paused",
-                pVideos = d.videos,
+                pVideos = d.videos, pPriceMode = d.priceMode.raw,
             ),
         )
         return result.toDomain(result.maxServices)
@@ -163,6 +163,7 @@ private data class ServiceArgs(
     val pImageUrls: List<String>,
     val pStatus: String,
     val pVideos: List<VideoAsset>,
+    val pPriceMode: String,
 )
 
 @Serializable

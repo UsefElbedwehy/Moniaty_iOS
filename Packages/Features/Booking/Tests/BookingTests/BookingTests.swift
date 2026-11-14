@@ -1,6 +1,7 @@
 import Testing
 import Foundation
 @testable import Booking
+import Catalog
 
 @Suite("Booking models and the mock lifecycle")
 struct BookingTests {
@@ -80,7 +81,7 @@ struct BookingTests {
         #expect(try await repo.booking(id: id)?.summary.status == .requested)
         #expect(try await repo.booking(id: id)?.paymentMethods.isEmpty == true)
 
-        _ = try await repo.approve(bookingId: id)
+        _ = try await repo.approve(bookingId: id, price: nil)
         let approved = try #require(try await repo.booking(id: id))
         #expect(approved.summary.status == .awaitingPayment)
         #expect(!approved.paymentMethods.isEmpty)
@@ -104,5 +105,32 @@ struct BookingTests {
         draft.accountName = "Name"
         draft.value = "GB29NWBK60161331926819"
         #expect(try await repo.savePaymentMethod(draft) == .refused("invalid_iban"))
+    }
+
+    @Test("price modes: the bride waits for the final price; 'from' shows the starting price until then")
+    func priceModes() throws {
+        func summary(_ fields: String) throws -> BookingSummary {
+            let json = """
+            {"id": "b1", "reference_code": "MN-1", "status": "requested", "is_demo": false,
+             "service_title": "Hall", \(fields), "starts_at": "2026-12-01T18:00:00Z",
+             "ends_at": "2026-12-01T21:00:00Z", "status_changed_at": "2026-11-14T10:00:00Z",
+             "provider": {"id": "p1", "is_verified": true}}
+            """
+            return try decoder().decode(BookingSummary.self, from: Data(json.utf8))
+        }
+        let hidden = try summary(#""price": null, "price_mode": "on_request", "price_is_final": false"#)
+        #expect(hidden.pricing == .onRequest && hidden.needsFinalPrice)
+        #expect(hidden.priceText == BookingL10n.string("price.pending"))
+
+        let from = try summary(#""price": 800, "price_mode": "from", "price_is_final": false"#)
+        #expect(from.needsFinalPrice)
+        #expect(from.priceText == formatServicePrice(800, mode: .from))
+
+        let approved = try summary(#""price": 950, "price_mode": "from", "price_is_final": true"#)
+        #expect(!approved.needsFinalPrice && approved.priceText == formatSAR(950))
+
+        // Older backends send neither field: a fixed, final price.
+        let legacy = try summary(#""price": 500"#)
+        #expect(legacy.pricing == .fixed && !legacy.needsFinalPrice && legacy.priceText == formatSAR(500))
     }
 }

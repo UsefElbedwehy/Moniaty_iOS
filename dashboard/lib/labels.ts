@@ -66,3 +66,10 @@ export const role: LabelMap = { bride: ["عروس", "Bride"], provider: ["مقد
 
 /** Who opened a dispute, filed a report, etc. */
 export const party: LabelMap = { bride: ["العروس", "Bride"], provider: ["مقدّمة الخدمة", "Provider"], admin: ["الإدارة", "Admin"], system: ["النظام", "System"] };
+
+/** How a service shows its price (services.price_mode / bookings.price_mode). */
+export const priceMode: LabelMap = {
+  fixed: ["سعر ثابت", "Fixed price"],
+  from: ["يبدأ من", "Starts from"],
+  on_request: ["عند الطلب (السعر متوقع ومخفي عن العرائس)", "On request (expected price, hidden from brides)"],
+};

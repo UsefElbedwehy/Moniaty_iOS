@@ -1,5 +1,10 @@
 package co.munyati.providerstudio.presentation
 
+import co.munyati.catalog.domain.PriceMode
+import co.munyati.catalog.presentation.formatServicePrice
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -252,7 +257,7 @@ private fun ServiceRow(store: StudioStore, service: MyService, onClick: () -> Un
         RemoteImage(service.imageUrls.firstOrNull(), thumbnail = true, modifier = Modifier.size(52.dp).clip(RoundedCornerShape(12.dp)), placeholder = DS.colors.primaryMuted)
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(service.title, style = DS.type.headline, color = DS.colors.textPrimary)
-            Text("${store.categoryName(service.categoryId)} · ${formatSar(service.price)}", style = DS.type.footnote, color = DS.colors.textSecondary)
+            Text("${store.categoryName(service.categoryId)} · ${studioPriceText(service)}", style = DS.type.footnote, color = DS.colors.textSecondary)
         }
         if (service.status == MyService.Status.Paused) StatusBadge(StatusBadgeKind.Pending, stringResource(R.string.studio_service_paused))
     }
@@ -331,12 +336,25 @@ internal fun ServiceEditScreen(feature: StudioFeature, serviceId: String?) {
             DSPickerRow(stringResource(R.string.studio_service_category), listOf<String?>(null) + store.categories.map { it.id }, draft.categoryId,
                 label = { id -> id?.let(store::categoryName) ?: none }) { draft = draft.copy(categoryId = it) }
             DSFormDivider()
-            DSTextFieldRow(draft.priceText, { draft = draft.copy(priceText = it) }, stringResource(R.string.studio_service_price), keyboardType = KeyboardType.Decimal)
-            DSFormDivider()
             DSPickerRow(stringResource(R.string.studio_service_duration), listOf<Int?>(null) + durations, draft.durationMinutes,
                 label = { it?.let(::durationLabel) ?: none }) { draft = draft.copy(durationMinutes = it) }
             DSFormDivider()
             DSTextFieldRow(draft.description, { draft = draft.copy(description = it) }, stringResource(R.string.studio_service_description), minLines = 3)
+        }
+
+        DSFormSection(stringResource(R.string.studio_service_section_price), footer = stringResource(priceModeFooter(draft.priceMode))) {
+            SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(DSSpacing.sm)) {
+                PriceMode.entries.forEachIndexed { index, mode ->
+                    SegmentedButton(
+                        selected = draft.priceMode == mode,
+                        onClick = { draft = draft.copy(priceMode = mode) },
+                        shape = SegmentedButtonDefaults.itemShape(index, PriceMode.entries.size),
+                        colors = SegmentedButtonDefaults.colors(activeContainerColor = DS.colors.primaryMuted, activeContentColor = DS.colors.primary),
+                    ) { Text(stringResource(priceModeLabel(mode)), maxLines = 1) }
+                }
+            }
+            DSFormDivider()
+            DSTextFieldRow(draft.priceText, { draft = draft.copy(priceText = it) }, stringResource(priceFieldLabel(draft.priceMode)), keyboardType = KeyboardType.Decimal)
         }
 
         DSFormSection(stringResource(R.string.studio_service_section_photos)) {
@@ -512,4 +530,29 @@ internal fun StoreEditScreen(feature: StudioFeature, storeId: String?) {
         }
     }
     MessageDialog(message) { message = null }
+}
+
+private fun priceModeLabel(mode: PriceMode) = when (mode) {
+    PriceMode.Fixed -> R.string.studio_service_priceMode_fixed
+    PriceMode.From -> R.string.studio_service_priceMode_from
+    PriceMode.OnRequest -> R.string.studio_service_priceMode_on_request
+}
+
+private fun priceFieldLabel(mode: PriceMode) = when (mode) {
+    PriceMode.Fixed -> R.string.studio_service_price_fixed
+    PriceMode.From -> R.string.studio_service_price_from
+    PriceMode.OnRequest -> R.string.studio_service_price_on_request
+}
+
+private fun priceModeFooter(mode: PriceMode) = when (mode) {
+    PriceMode.Fixed -> R.string.studio_service_priceMode_footer_fixed
+    PriceMode.From -> R.string.studio_service_priceMode_footer_from
+    PriceMode.OnRequest -> R.string.studio_service_priceMode_footer_on_request
+}
+
+/** The provider's own list row: "٥٠٠ ر.س", "يبدأ من ٥٠٠ ر.س" or "عند الطلب (متوقع ٣٬٠٠٠ ر.س)". */
+@Composable
+private fun studioPriceText(service: MyService): String = when (val mode = service.priceMode ?: PriceMode.Fixed) {
+    PriceMode.OnRequest -> stringResource(R.string.studio_service_price_expectedRow, formatSar(service.price))
+    else -> formatServicePrice(service.price, mode)
 }

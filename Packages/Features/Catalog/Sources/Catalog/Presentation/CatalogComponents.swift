@@ -84,7 +84,7 @@ struct ServiceCardView: View {
                 .font(.dsFootnote)
                 .foregroundStyle(Color.dsTextSecondary)
                 HStack {
-                    Text(verbatim: formatSAR(card.price))
+                    Text(verbatim: card.priceText)
                         .font(.dsSubhead)
                         .foregroundStyle(Color.dsPrimary)
                     Spacer(minLength: 0)

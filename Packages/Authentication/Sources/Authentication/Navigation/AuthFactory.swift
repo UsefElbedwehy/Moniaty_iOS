@@ -1,7 +1,7 @@
 import SwiftUI
 import Core
 
-/// Builds the SwiftUI destination for each `AuthRoute`, and the onboarding root. Views never
+/// Builds the SwiftUI destination for each `AuthRoute`, and the root (intro slides on first launch, then the role choice). Views never
 /// build each other — they ask the coordinator to navigate, and the coordinator's stack renders
 /// through this factory. This is also the single place view models are constructed.
 @MainActor
@@ -36,13 +36,13 @@ struct AuthFactory: ViewFactory {
     /// The feature's root screen (the sign-in landing page), the base of the navigation stack.
     @ViewBuilder
     func makeRoot() -> some View {
-        AuthLandingView(
+        AuthIntroGate(landing: AuthLandingView(
             viewModel: OnboardingViewModel(
                 continueAsGuest: useCases.continueAsGuest,
                 appleSignIn: useCases.appleSignIn
             ),
             coordinator: coordinator
-        )
+        ))
     }
 
     @ViewBuilder

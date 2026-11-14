@@ -425,3 +425,4 @@ SMS, not the server, becomes the biggest cost. Keep login sessions long so users
 | 10 | Name | **منيتي - Munyati** everywhere |
 | 11 | Design | Designed here: HTML mockups first, then the SwiftUI design system |
 | 12 | Android | **Yes**, identical to iOS in everything (owner, 2026-10-19). Native Kotlin + Compose, started after iOS works end to end (Phase 9). ⚠️ Open: Google Play payments policy for Tap-paid provider plans; the `source` column (decision #2) can take a `google_play` value if Play Billing is required. |
+| 13 | Price display | Three modes per service (owner, 2026-11-14): **fixed**; **starts from** (final price ≥ it); **on request** (price hidden; a mandatory expected price feeds the budget filter and sorting). For the last two the provider sets the final price on approval or with a new time; the bride sees it before paying. No limit on how far the final price is from the expected one (the bride can cancel for free). |

@@ -1,6 +1,7 @@
 package co.munyati.booking.domain
 
 import co.munyati.core.dates.PostgresDate
+import co.munyati.catalog.domain.PriceMode
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.Instant
@@ -51,7 +52,12 @@ data class BookingSummary(
     val serviceId: String? = null,
     val serviceTitle: String,
     val categoryId: String? = null,
-    val price: Double,
+    /** Null for the bride while an on-request booking waits for the provider's final price. */
+    val price: Double? = null,
+    /** Absent from older responses (= fixed). */
+    val priceMode: PriceMode? = null,
+    /** False while the provider can still set the final price (from / on request, before approval). */
+    val priceIsFinal: Boolean? = null,
     @SerialName("starts_at") val startsAtRaw: String,
     @SerialName("ends_at") val endsAtRaw: String,
     val note: String? = null,
@@ -63,6 +69,9 @@ data class BookingSummary(
 ) {
     val startsAt: Instant get() = PostgresDate.parse(startsAtRaw) ?: Instant.EPOCH
     val paymentDueAt: Instant? get() = PostgresDate.parse(paymentDueAtRaw)
+    val pricing: PriceMode get() = priceMode ?: PriceMode.Fixed
+    /** The provider must enter the final price when she approves or proposes another time. */
+    val needsFinalPrice: Boolean get() = priceIsFinal == false
 }
 
 @Serializable
@@ -214,4 +223,11 @@ enum class DisputeReason(val rawValue: String) {
 }
 
 /** What a booking request needs to know about the service (from the catalog card). */
-data class BookableService(val id: String, val title: String, val price: Double, val providerName: String?)
+data class BookableService(
+    val id: String,
+    val title: String,
+    /** Null when the provider hides the price (on request). */
+    val price: Double?,
+    val providerName: String?,
+    val priceMode: PriceMode = PriceMode.Fixed,
+)

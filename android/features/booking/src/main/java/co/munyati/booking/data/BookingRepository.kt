@@ -35,9 +35,10 @@ interface BookingRepository {
     suspend fun respondToProposal(bookingId: String, accept: Boolean): ActionResult
     suspend fun submitReceipt(bookingId: String, storagePath: String, amount: Double, transferredAt: Instant, senderBank: String?, sha256: String): ActionResult
     // Provider
-    suspend fun approve(bookingId: String): ActionResult
+    /** `price`: the final price, required when the booking's price isn't final (from / on request). */
+    suspend fun approve(bookingId: String, price: Double? = null): ActionResult
     suspend fun decline(bookingId: String, reason: String?): ActionResult
-    suspend fun proposeReschedule(bookingId: String, startsAt: Instant, note: String?): ActionResult
+    suspend fun proposeReschedule(bookingId: String, startsAt: Instant, note: String?, price: Double? = null): ActionResult
     suspend fun confirmPayment(bookingId: String): ActionResult
     suspend fun rejectPayment(bookingId: String, reason: String): ActionResult
     suspend fun complete(bookingId: String): ActionResult
@@ -79,10 +80,10 @@ class RemoteBookingRepository(private val client: ApiClient) : BookingRepository
     override suspend fun submitReceipt(bookingId: String, storagePath: String, amount: Double, transferredAt: Instant, senderBank: String?, sha256: String) =
         act("submit_receipt", ReceiptArgs(bookingId, storagePath, amount, transferredAt.toString(), senderBank, sha256))
 
-    override suspend fun approve(bookingId: String) = act("approve_booking", BookingArgs(bookingId))
+    override suspend fun approve(bookingId: String, price: Double?) = act("approve_booking", ApproveArgs(bookingId, price))
     override suspend fun decline(bookingId: String, reason: String?) = act("decline_booking", ReasonArgs(bookingId, reason))
-    override suspend fun proposeReschedule(bookingId: String, startsAt: Instant, note: String?) =
-        act("propose_reschedule", ProposeArgs(bookingId, startsAt.toString(), note))
+    override suspend fun proposeReschedule(bookingId: String, startsAt: Instant, note: String?, price: Double?) =
+        act("propose_reschedule", ProposeArgs(bookingId, startsAt.toString(), note, price))
     override suspend fun confirmPayment(bookingId: String) = act("confirm_payment", BookingArgs(bookingId))
     override suspend fun rejectPayment(bookingId: String, reason: String) = act("reject_payment", ReasonArgs(bookingId, reason))
     override suspend fun complete(bookingId: String) = act("complete_booking", BookingArgs(bookingId))
@@ -151,7 +152,8 @@ private data class DetailExtras(
 @Serializable private data class CreateArgs(val pServiceId: String, val pStartsAt: String, val pNote: String?)
 @Serializable private data class RespondArgs(val pBooking: String, val pAccept: Boolean)
 @Serializable private data class ReasonArgs(val pBooking: String, val pReason: String?)
-@Serializable private data class ProposeArgs(val pBooking: String, val pStartsAt: String, val pNote: String?)
+@Serializable private data class ApproveArgs(val pBooking: String, val pPrice: Double? = null)
+@Serializable private data class ProposeArgs(val pBooking: String, val pStartsAt: String, val pNote: String?, val pPrice: Double? = null)
 @Serializable private data class DisputeArgs(val pBooking: String, val pReason: String, val pDetails: String?)
 @Serializable
 private data class ReceiptArgs(val pBooking: String, val pStoragePath: String, val pAmount: Double, val pTransferredAt: String, val pSenderBank: String?, val pSha256: String)

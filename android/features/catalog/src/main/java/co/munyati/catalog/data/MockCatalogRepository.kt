@@ -7,6 +7,7 @@ import co.munyati.catalog.domain.DressListing
 import co.munyati.catalog.domain.DressListingsPage
 import co.munyati.catalog.domain.DressNotice
 import co.munyati.catalog.domain.Preparation
+import co.munyati.catalog.domain.PriceMode
 import co.munyati.catalog.domain.CatalogCategory
 import co.munyati.catalog.domain.HomeBanner
 import co.munyati.catalog.domain.HomeContent
@@ -32,6 +33,7 @@ class MockCatalogRepository : CatalogRepository {
     private data class Service(
         val id: String, val title: String, val price: Double, val categoryId: String, val providerId: String,
         val durationMinutes: Int? = null, val atCustomerLocation: Boolean = false, val description: String? = null,
+        val priceMode: PriceMode = PriceMode.Fixed,
     )
 
     private val categories = listOf(
@@ -55,9 +57,9 @@ class MockCatalogRepository : CatalogRepository {
     private val services = listOf(
         Service("s1", "مكياج العروس", 2800.0, "makeup", "p-lamsa", 180, true, "مكياج ناعم يدوم طوال الليلة، شامل الرموش وتثبيت التسريحة."),
         Service("s2", "مكياج ليلة الحناء", 1500.0, "makeup", "p-lamsa", 120),
-        Service("s3", "تصوير الزفاف كاملاً", 6500.0, "photography", "p-reem", 360),
+        Service("s3", "تصوير الزفاف كاملاً", 6500.0, "photography", "p-reem", 360, priceMode = PriceMode.From),
         Service("s4", "جلسة تصوير العروس", 3500.0, "photography", "p-reem", 120),
-        Service("s5", "قاعة كبرى حتى ٤٠٠ ضيفة", 28000.0, "venues", "p-lulu"),
+        Service("s5", "قاعة كبرى حتى ٤٠٠ ضيفة", 28000.0, "venues", "p-lulu", priceMode = PriceMode.OnRequest),
         Service("s6", "نقش حناء العروس", 600.0, "henna", "p-henna", 90),
     )
 
@@ -66,7 +68,9 @@ class MockCatalogRepository : CatalogRepository {
     private fun card(s: Service): ServiceCard {
         val p = summary(s.providerId)
         return ServiceCard(
-            id = s.id, title = s.title, price = s.price, categoryId = s.categoryId, providerId = s.providerId,
+            // Like the server: brides never receive the expected price of an on-request service.
+            id = s.id, title = s.title, price = s.price.takeIf { s.priceMode != PriceMode.OnRequest },
+            priceMode = s.priceMode, categoryId = s.categoryId, providerId = s.providerId,
             providerName = p.name, isVerified = p.isVerified, femaleStaffOnly = p.femaleStaffOnly,
             isFavorite = s.id in favoriteIds, imageUrl = "https://picsum.photos/seed/${s.id}/800/600",
         )

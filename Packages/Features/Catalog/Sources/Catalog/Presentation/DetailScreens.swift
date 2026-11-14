@@ -55,7 +55,7 @@ struct ServiceDetailScreen: View {
             VStack(alignment: .leading, spacing: DSSpacing.lg) {
                 VStack(alignment: .leading, spacing: DSSpacing.xs) {
                     Text(verbatim: detail.card.title).font(.dsTitle1)
-                    Text(verbatim: formatSAR(detail.card.price)).font(.dsTitle2).foregroundStyle(Color.dsPrimary)
+                    Text(verbatim: detail.card.priceText).font(.dsTitle2).foregroundStyle(Color.dsPrimary)
                 }
                 NavigationLink(value: CatalogRoute.provider(id: detail.provider.id)) {
                     ProviderRow(provider: detail.provider)
@@ -107,7 +107,7 @@ struct ServiceDetailScreen: View {
             if !typeSize.isAccessibilitySize {
                 VStack(alignment: .leading, spacing: 0) {
                     CatalogL10n.text("detail.price").font(.dsCaption).foregroundStyle(Color.dsTextSecondary)
-                    Text(verbatim: formatSAR(detail.card.price)).font(.dsHeadline)
+                    Text(verbatim: detail.card.priceText).font(.dsHeadline)
                 }
             }
             if detail.isOwn || !feature.context.canBook {

@@ -124,7 +124,7 @@ struct CatalogTests {
         let makeup = try await repo.search(ServiceFilter(categoryId: "makeup"), cityIds: nil, maxPrice: nil, offset: 0)
         #expect(makeup.allSatisfy { $0.categoryId == "makeup" })
         let cheap = try await repo.search(ServiceFilter(withinBudget: true), cityIds: nil, maxPrice: 1000, offset: 0)
-        #expect(cheap.allSatisfy { $0.price <= 1000 })
+        #expect(cheap.allSatisfy { ($0.price ?? 0) <= 1000 })
         let qatif = try await repo.search(ServiceFilter(), cityIds: ["qatif"], maxPrice: nil, offset: 0)
         #expect(qatif.map(\.providerId) == ["p-henna"])
     }
@@ -135,5 +135,29 @@ struct CatalogTests {
         #expect(try await repo.toggleFavorite(serviceId: "s1"))
         #expect(try await repo.favorites().map(\.id) == ["s1"])
         #expect(try await repo.toggleFavorite(serviceId: "s1") == false)
+    }
+
+    @Test("price modes: on-request cards carry no price, but the budget filter still uses the expected one")
+    func priceModes() async throws {
+        let repo = MockCatalogRepository()
+        let all = try await repo.search(ServiceFilter(), cityIds: nil, maxPrice: nil, offset: 0)
+        let hall = try #require(all.first { $0.id == "s5" })
+        #expect(hall.pricing == .onRequest && hall.price == nil)
+        #expect(hall.priceText == CatalogL10n.string("price.onRequest"))
+        let photo = try #require(all.first { $0.id == "s3" })
+        #expect(photo.pricing == .from && photo.priceText == String(format: CatalogL10n.string("price.from"), formatSAR(6500)))
+        #expect(try #require(all.first { $0.id == "s1" }).pricing == .fixed)
+
+        var budget = ServiceFilter()
+        budget.withinBudget = true
+        let cheap = try await repo.search(budget, cityIds: nil, maxPrice: 10000, offset: 0)
+        #expect(!cheap.contains { $0.id == "s5" })   // expected 28,000 > 10,000
+    }
+
+    @Test("prices typed in Arabic or Latin digits")
+    func priceInput() {
+        #expect(parsePriceInput("٢٨٠٠") == 2800)
+        #expect(parsePriceInput("٩٩٫٥") == Decimal(string: "99.5"))
+        #expect(parsePriceInput("") == nil)
     }
 }

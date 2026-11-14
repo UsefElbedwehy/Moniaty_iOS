@@ -70,6 +70,7 @@ import androidx.compose.ui.unit.sp
 import co.munyati.catalog.R
 import co.munyati.catalog.domain.Budget
 import co.munyati.catalog.domain.CatalogCategory
+import co.munyati.catalog.domain.PriceMode
 import co.munyati.catalog.domain.ProviderSummary
 import co.munyati.catalog.domain.ServiceCard
 import co.munyati.catalog.domain.formatAmount
@@ -90,6 +91,18 @@ import java.util.Locale
 /** "٢٬٨٠٠ ر.س" / "SAR 2,800". */
 @Composable
 internal fun formatSar(amount: Double): String = stringResource(R.string.catalog_price_sar, formatAmount(amount))
+
+/** The price as brides see it: "٥٠٠ ر.س", "يبدأ من ٥٠٠ ر.س" or "السعر عند الطلب" (iOS `formatServicePrice`). */
+@Composable
+fun formatServicePrice(price: Double?, mode: PriceMode): String {
+    if (price == null || mode == PriceMode.OnRequest) return stringResource(R.string.catalog_price_onRequest)
+    val amount = formatSar(price)
+    return if (mode == PriceMode.From) stringResource(R.string.catalog_price_from, amount) else amount
+}
+
+/** "٥٠٠ ر.س", "يبدأ من ٥٠٠ ر.س" or "السعر عند الطلب". */
+@Composable
+fun ServiceCard.priceText(): String = formatServicePrice(price, pricing)
 
 /** True at the largest font sizes, where layouts drop to fewer columns (iOS accessibility sizes). */
 @Composable
@@ -153,7 +166,7 @@ internal fun ServiceCardView(card: ServiceCard, feature: CatalogFeature, modifie
             if (card.isVerified) VerifiedMark()
         }
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(formatSar(card.price), style = DS.type.subhead, color = DS.colors.primary)
+            Text(card.priceText(), style = DS.type.subhead, color = DS.colors.primary)
             Spacer(Modifier.weight(1f))
             val avg = card.ratingAvg
             if (avg != null && (card.ratingCount ?: 0) > 0) RatingLabel(avg, null)

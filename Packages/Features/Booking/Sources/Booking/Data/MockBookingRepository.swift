@@ -140,7 +140,8 @@ public actor MockBookingRepository: BookingRepository {
         rows[id]?.summary["payment_due_at"] = Self.iso.string(from: .now.addingTimeInterval(48 * 3600))
     }
 
-    public func approve(bookingId: String) async throws -> ActionResult {
+    public func approve(bookingId: String, price: Decimal?) async throws -> ActionResult {
+        if let refusal = setFinalPrice(bookingId, price) { return refusal }
         move(bookingId, to: .awaitingPayment, by: "provider")
         snapshotMethods(bookingId)
         return .ok(id: bookingId)
@@ -151,12 +152,27 @@ public actor MockBookingRepository: BookingRepository {
         return .ok(id: bookingId)
     }
 
-    public func proposeReschedule(bookingId: String, startsAt: Date, note: String?) async throws -> ActionResult {
+    public func proposeReschedule(bookingId: String, startsAt: Date, note: String?, price: Decimal?) async throws -> ActionResult {
+        if let refusal = setFinalPrice(bookingId, price) { return refusal }
         rows[bookingId]?.proposal = ["id": UUID().uuidString, "starts_at": Self.iso.string(from: startsAt),
                                      "ends_at": Self.iso.string(from: startsAt.addingTimeInterval(3 * 3600)),
                                      "note": note ?? "", "expires_at": Self.iso.string(from: .now.addingTimeInterval(86400))]
         move(bookingId, to: .rescheduleProposed, by: "provider")
         return .ok(id: bookingId)
+    }
+
+    /// Like `final_price_error` on the server: from / on-request bookings need the final price.
+    private func setFinalPrice(_ id: String, _ price: Decimal?) -> ActionResult? {
+        guard let summary = rows[id]?.summary, summary["price_is_final"] as? Bool == false else { return nil }
+        guard let price else { return .refused("price_required") }
+        if price <= 0 { return .refused("invalid_price") }
+        if summary["price_mode"] as? String == "from", let start = summary["price"] as? NSNumber,
+           price < start.decimalValue {
+            return .refused("price_below_start")
+        }
+        rows[id]?.summary["price"] = NSDecimalNumber(decimal: price)
+        rows[id]?.summary["price_is_final"] = true
+        return nil
     }
 
     public func confirmPayment(bookingId: String) async throws -> ActionResult {

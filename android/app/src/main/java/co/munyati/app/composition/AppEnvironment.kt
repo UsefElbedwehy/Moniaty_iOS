@@ -208,7 +208,7 @@ class AppEnvironment(private val context: Context) {
             return
         }
         if (session.role == UserRole.Provider) return
-        session.bookingRequest = BookableService(card.id, card.title, card.price, card.providerName)
+        session.bookingRequest = BookableService(card.id, card.title, card.price, card.providerName, card.pricing)
     }
 
     private fun allCitiesLabel() = RemoteStrings.string("cities.all", context.getString(R.string.cities_all))

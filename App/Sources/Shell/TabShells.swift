@@ -1,9 +1,9 @@
-import SwiftUI
-import DesignSystem
-import Shared
-import Catalog
 import Booking
+import Catalog
+import DesignSystem
 import ProviderStudio
+import Shared
+import SwiftUI
 
 /// The four native tabs (`docs/PLAN.md` §3). Home and Explore come from the Catalog feature
 /// (bride) and the ProviderStudio feature (provider); Bookings from the Booking feature.
@@ -12,7 +12,9 @@ enum AppTab: String, Hashable {
 
     /// UI-test hook: `UITEST_START_TAB=profile` opens on that tab (screenshots, automated runs).
     static var initial: AppTab {
-        ProcessInfo.processInfo.environment["UITEST_START_TAB"].flatMap(AppTab.init(rawValue:)) ?? .home
+        ProcessInfo.processInfo.environment["UITEST_START_TAB"].flatMap(
+            AppTab.init(rawValue:)
+        ) ?? .home
     }
 }
 
@@ -33,32 +35,48 @@ struct BrideShell: View {
         TabView(selection: $tab) {
             NavigationStack(path: $homePath) {
                 catalog.homeScreen()
-                    .navigationDestination(for: CatalogRoute.self) { catalog.destination(for: $0) }
-                    .navigationDestination(for: BookingRoute.self) { booking.destination(for: $0, role: .bride) }
+                    .navigationDestination(for: CatalogRoute.self) {
+                        catalog.destination(for: $0)
+                    }
+                    .navigationDestination(for: BookingRoute.self) {
+                        booking.destination(for: $0, role: .bride)
+                    }
             }
             .tabItem { Label(L10n.string("tab.home"), systemImage: "house") }
             .tag(AppTab.home)
 
             NavigationStack {
                 catalog.exploreScreen()
-                    .navigationDestination(for: CatalogRoute.self) { catalog.destination(for: $0) }
+                    .navigationDestination(for: CatalogRoute.self) {
+                        catalog.destination(for: $0)
+                    }
             }
             .tabItem { Label(L10n.string("tab.explore"), systemImage: "map") }
             .tag(AppTab.explore)
 
             NavigationStack(path: $bookingsPath) {
                 BookingsTab(environment: environment, role: .bride)
-                    .navigationDestination(for: BookingRoute.self) { booking.destination(for: $0, role: .bride) }
-                    .navigationDestination(for: CatalogRoute.self) { catalog.destination(for: $0) }
+                    .navigationDestination(for: BookingRoute.self) {
+                        booking.destination(for: $0, role: .bride)
+                    }
+                    .navigationDestination(for: CatalogRoute.self) {
+                        catalog.destination(for: $0)
+                    }
             }
-            .tabItem { Label(L10n.string("tab.bookings"), systemImage: "calendar") }
+            .tabItem {
+                Label(L10n.string("tab.bookings"), systemImage: "calendar")
+            }
             .tag(AppTab.bookings)
 
             NavigationStack(path: $profilePath) {
                 ProfileScreen(environment: environment)
-                    .navigationDestination(for: CatalogRoute.self) { catalog.destination(for: $0) }
+                    .navigationDestination(for: CatalogRoute.self) {
+                        catalog.destination(for: $0)
+                    }
             }
-            .tabItem { Label(L10n.string("tab.profile"), systemImage: "person") }
+            .tabItem {
+                Label(L10n.string("tab.profile"), systemImage: "person")
+            }
             .tag(AppTab.profile)
         }
         .sheet(isPresented: $session.isPickingCities) {
@@ -94,7 +112,9 @@ struct BrideShell: View {
             homePath.append(CatalogRoute.store(id: id))
         case .category(let id):
             tab = .home
-            homePath.append(CatalogRoute.services(ServiceFilter(categoryId: id)))
+            homePath.append(
+                CatalogRoute.services(ServiceFilter(categoryId: id))
+            )
         case .plans, .notifications:
             tab = .home
         }
@@ -117,30 +137,49 @@ struct ProviderShell: View {
         TabView(selection: $tab) {
             NavigationStack(path: $homePath) {
                 environment.studio.homeScreen()
-                    .navigationDestination(for: CatalogRoute.self) { catalog.destination(for: $0) }
-                    .navigationDestination(for: BookingRoute.self) { booking.destination(for: $0, role: .provider) }
-                    .navigationDestination(for: StudioRoute.self) { environment.studio.destination(for: $0) }
+                    .navigationDestination(for: CatalogRoute.self) {
+                        catalog.destination(for: $0)
+                    }
+                    .navigationDestination(for: BookingRoute.self) {
+                        booking.destination(for: $0, role: .provider)
+                    }
+                    .navigationDestination(for: StudioRoute.self) {
+                        environment.studio.destination(for: $0)
+                    }
             }
             .tabItem { Label(L10n.string("tab.home"), systemImage: "house") }
             .tag(AppTab.home)
 
             NavigationStack {
                 catalog.exploreScreen()
-                    .navigationDestination(for: CatalogRoute.self) { catalog.destination(for: $0) }
+                    .navigationDestination(for: CatalogRoute.self) {
+                        catalog.destination(for: $0)
+                    }
             }
             .tabItem { Label(L10n.string("tab.explore"), systemImage: "map") }
             .tag(AppTab.explore)
 
             NavigationStack(path: $bookingsPath) {
                 BookingsTab(environment: environment, role: .provider)
-                    .navigationDestination(for: BookingRoute.self) { booking.destination(for: $0, role: .provider) }
-                    .navigationDestination(for: CatalogRoute.self) { catalog.destination(for: $0) }
+                    .navigationDestination(for: BookingRoute.self) {
+                        booking.destination(for: $0, role: .provider)
+                    }
+                    .navigationDestination(for: CatalogRoute.self) {
+                        catalog.destination(for: $0)
+                    }
             }
-            .tabItem { Label(L10n.string("tab.providerBookings"), systemImage: "calendar") }
+            .tabItem {
+                Label(
+                    L10n.string("tab.providerBookings"),
+                    systemImage: "calendar"
+                )
+            }
             .tag(AppTab.bookings)
 
             NavigationStack { ProfileScreen(environment: environment) }
-                .tabItem { Label(L10n.string("tab.profile"), systemImage: "person") }
+                .tabItem {
+                    Label(L10n.string("tab.profile"), systemImage: "person")
+                }
                 .tag(AppTab.profile)
         }
         .onChange(of: environment.deepLink.pending, initial: true) { _, link in

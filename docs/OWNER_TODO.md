@@ -221,6 +221,17 @@ approvals, keys and the store listings (§11, ready-to-paste text in `docs/STORE
   choice. Existing providers start as «العروس والمعازيم», so ask the bride-only and guest-only ones
   to set it. The provider page in the dashboard shows it.
 
+## 10l. Three ways to show a price
+- [ ] Run `supabase/migrations/20261114000000_price_modes.sql` once in the SQL editor, **before**
+      the new app builds reach anyone (they send the new fields; the old builds keep working).
+- What it is: in Studio → service, «طريقة عرض السعر» has «سعر ثابت» (as before), «يبدأ من»
+  (brides see «يبدأ من ٥٠٠ ر.س») and «عند الطلب» (brides see «السعر عند الطلب»; the provider's
+  expected price stays hidden and only places the service in «ضمن ميزانيتي» and price sorting).
+  For the last two, the provider writes the **final price** when she approves the request or
+  proposes another time. The bride sees it before paying, and the receipt check and the budget use
+  it. «يبدأ من» can't end lower than the advertised price. Existing services stay «سعر ثابت».
+  The dashboard shows the mode on the provider, service and booking pages and can change it.
+
 ## 11. Store listings
 - [ ] App Store Connect: paste the name, subtitle, keywords, descriptions, review notes and privacy
       answers from `docs/STORE_LISTING.md`; upload the screenshots in `design/store/ios/`

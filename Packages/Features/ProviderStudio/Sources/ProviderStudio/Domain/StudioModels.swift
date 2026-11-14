@@ -1,3 +1,4 @@
+import Catalog
 import Foundation
 import Core
 import Shared
@@ -65,7 +66,10 @@ public struct MyService: Identifiable, Hashable, Sendable, Decodable {
     public let title: String
     public let description: String?
     public let categoryId: String
+    /// Her real price: the fixed price, the starting price, or the hidden expected price.
     public let price: Decimal
+    /// Absent from older backends (= fixed).
+    public let priceMode: PriceMode?
     public let durationMinutes: Int?
     public let femaleStaffOnly: Bool
     public let atCustomerLocation: Bool
@@ -136,6 +140,7 @@ public struct ServiceDraft: Sendable, Equatable {
     public var description = ""
     public var categoryId: String?
     public var priceText = ""
+    public var priceMode: PriceMode = .fixed
     public var durationMinutes: Int?
     public var femaleStaffOnly = false
     public var atCustomerLocation = false
@@ -152,6 +157,7 @@ public struct ServiceDraft: Sendable, Equatable {
         description = service.description ?? ""
         categoryId = service.categoryId
         priceText = "\(service.price)"
+        priceMode = service.priceMode ?? .fixed
         durationMinutes = service.durationMinutes
         femaleStaffOnly = service.femaleStaffOnly
         atCustomerLocation = service.atCustomerLocation
@@ -162,12 +168,7 @@ public struct ServiceDraft: Sendable, Equatable {
     }
 
     /// The price typed in Arabic or Latin digits.
-    var price: Decimal? {
-        let ascii = String(priceText.map { ch in ch.wholeNumberValue.map { Character(String($0)) } ?? ch })
-            .replacingOccurrences(of: "٫", with: ".")
-            .filter { $0.isNumber || $0 == "." }
-        return ascii.isEmpty ? nil : Decimal(string: ascii)
-    }
+    var price: Decimal? { parsePriceInput(priceText) }
 
     var isValid: Bool {
         title.trimmingCharacters(in: .whitespaces).count >= 2 && categoryId != nil && price != nil

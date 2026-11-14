@@ -2,6 +2,8 @@
 
 package co.munyati.booking.presentation
 
+import co.munyati.catalog.domain.PriceMode
+import co.munyati.catalog.domain.parsePriceInput
 import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -129,7 +131,7 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 
-private enum class DetailSheet { Propose, Decline, RejectPayment, Dispute }
+private enum class DetailSheet { Approve, Propose, Decline, RejectPayment, Dispute }
 
 @Composable
 internal fun BookingDetailScreen(feature: BookingFeature, bookingId: String, role: BookingRole) {
@@ -209,8 +211,16 @@ internal fun BookingDetailScreen(feature: BookingFeature, bookingId: String, rol
     }
 
     when (sheet) {
-        DetailSheet.Propose -> ProposeTimeSheet(onDismiss = { sheet = null }) { date, note ->
-            feature.repository.proposeReschedule(bookingId, date, note).also { if (it is ActionResult.Ok) load() }
+        DetailSheet.Approve -> state.value?.summary?.let { summary ->
+            FinalPriceSheet(summary, onDismiss = { sheet = null }) { price ->
+                feature.repository.approve(bookingId, price).also { if (it is ActionResult.Ok) load() }
+            }
+        }
+        DetailSheet.Propose -> {
+            val summary = state.value?.summary
+            ProposeTimeSheet(priceFor = summary?.takeIf { it.needsFinalPrice }, onDismiss = { sheet = null }) { date, note, price ->
+                feature.repository.proposeReschedule(bookingId, date, note, price).also { if (it is ActionResult.Ok) load() }
+            }
         }
         DetailSheet.Decline -> ReasonSheet(R.string.booking_action_decline, optional = true, onDismiss = { sheet = null }) { reason ->
             feature.repository.decline(bookingId, reason).also { load() }
@@ -288,7 +298,10 @@ private fun DetailContent(
                 Text(b.serviceTitle, style = DS.type.title2, color = DS.colors.textPrimary)
                 Text(if (role == BookingRole.Bride) b.provider.name.orEmpty() else b.brideName.orEmpty(), style = DS.type.subhead, color = DS.colors.textPrimary)
                 Text(bookingDateText(b.startsAt), style = DS.type.subhead, color = DS.colors.textSecondary)
-                Text(formatSar(b.price), style = DS.type.headline, color = DS.colors.primary)
+                Text(b.priceText(), style = DS.type.headline, color = DS.colors.primary)
+                if (role == BookingRole.Provider && b.needsFinalPrice && b.status == BookingStatus.Requested) {
+                    Text(stringResource(R.string.booking_price_setOnApprove), style = DS.type.footnote, color = DS.colors.textSecondary)
+                }
                 if (!b.note.isNullOrEmpty()) Text(b.note, style = DS.type.footnote, color = DS.colors.textSecondary)
                 ProgressSteps(b.status.step)
                 Text(bookingString("hint.${role.rawValue}.${b.status.rawValue}"), style = DS.type.footnote, color = DS.colors.textSecondary)
@@ -325,7 +338,10 @@ private fun DetailContent(
                 role == BookingRole.Bride && b.status == BookingStatus.AwaitingPayment ->
                     PrimaryButton(stringResource(R.string.booking_action_pay), icon = Icons.Outlined.CreditCard) { navigator.navigate(BookingPaymentRoute(b.id)) }
                 role == BookingRole.Provider && b.status == BookingStatus.Requested -> {
-                    PrimaryButton(stringResource(R.string.booking_action_approve), isLoading = isWorking) { onAction { repo.approve(b.id) } }
+                    // From / on request: she enters the final price first.
+                    PrimaryButton(stringResource(R.string.booking_action_approve), isLoading = isWorking) {
+                        if (b.needsFinalPrice) onSheet(DetailSheet.Approve) else onAction { repo.approve(b.id) }
+                    }
                     SecondaryButton(stringResource(R.string.booking_action_propose)) { onSheet(DetailSheet.Propose) }
                     SecondaryButton(stringResource(R.string.booking_action_decline)) { onSheet(DetailSheet.Decline) }
                 }
@@ -428,7 +444,7 @@ private fun PaymentScreen(feature: BookingFeature, detail: BookingDetail) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var image by remember { mutableStateOf<ByteArray?>(null) }
-    var amountText by remember { mutableStateOf(detail.summary.price.let { if (it % 1.0 == 0.0) it.toLong().toString() else it.toString() }) }
+    var amountText by remember { mutableStateOf(detail.summary.price?.let(::priceInputText).orEmpty()) }
     var transferredAt by remember { mutableStateOf(Instant.now()) }
     var senderBank by remember { mutableStateOf("") }
     var isSending by remember { mutableStateOf(false) }
@@ -573,7 +589,7 @@ private fun PaymentSummaryCard(summary: BookingSummary) {
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
             Text(stringResource(R.string.booking_pay_amountFrom, summary.provider.name.orEmpty()), style = DS.type.footnote, color = Color.White.copy(alpha = 0.85f))
-            Text(formatSar(summary.price), style = DS.type.largeTitle, color = Color.White)
+            Text(summary.priceText(), style = DS.type.largeTitle, color = Color.White)
         }
         Row(
             Modifier.fillMaxWidth().clip(RoundedCornerShape(16.dp)).background(Color.White.copy(alpha = 0.12f)).padding(DSSpacing.md),
@@ -665,13 +681,21 @@ private fun ActionSheet(title: String, canSend: Boolean, isSending: Boolean, onD
 }
 
 @Composable
-private fun ProposeTimeSheet(onDismiss: () -> Unit, action: suspend (Instant, String?) -> ActionResult) {
+private fun ProposeTimeSheet(
+    priceFor: BookingSummary? = null,
+    onDismiss: () -> Unit,
+    action: suspend (Instant, String?, Double?) -> ActionResult,
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val zone = ZoneId.systemDefault()
     var date by remember { mutableStateOf(LocalDate.now(zone).plusDays(1)) }
     var time by remember { mutableStateOf(LocalTime.of(16, 0)) }
     var note by remember { mutableStateOf("") }
+    // When the price isn't final yet, she sets it with the new time; "from" starts at the advertised price.
+    var priceText by remember {
+        mutableStateOf(priceFor?.takeIf { it.pricing == PriceMode.From }?.price?.let(::priceInputText).orEmpty())
+    }
     var isSending by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf<String?>(null) }
     var pickingDate by remember { mutableStateOf(false) }
@@ -681,10 +705,15 @@ private fun ProposeTimeSheet(onDismiss: () -> Unit, action: suspend (Instant, St
     val valid = instant.isAfter(Instant.now().plusSeconds(7200))
 
     ActionSheet(stringResource(R.string.booking_action_propose), valid, isSending, onDismiss, onSend = {
+        val price = priceFor?.let { validFinalPrice(it, priceText) }
+        if (priceFor != null && price == null) {
+            message = refusal(context, if (parsePriceInput(priceText) == null) "price_required" else "price_below_start")
+            return@ActionSheet
+        }
         isSending = true
         scope.launch {
             try {
-                when (val result = action(instant, note.ifEmpty { null })) {
+                when (val result = action(instant, note.ifEmpty { null }, price)) {
                     is ActionResult.Ok -> onDismiss()
                     is ActionResult.Refused -> message = refusal(context, result.code)
                 }
@@ -705,6 +734,7 @@ private fun ProposeTimeSheet(onDismiss: () -> Unit, action: suspend (Instant, St
         DSFormSection {
             DSTextFieldRow(note, { note = it }, stringResource(R.string.booking_proposal_note), minLines = 2)
         }
+        if (priceFor != null) FinalPriceSection(priceFor, priceText) { priceText = it }
     }
     if (pickingDate) {
         val today = LocalDate.now(zone).atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
@@ -720,6 +750,59 @@ private fun ProposeTimeSheet(onDismiss: () -> Unit, action: suspend (Instant, St
         }) { DatePicker(state) }
     }
     if (pickingTime) TimeDialog(time, onDismiss = { pickingTime = false }) { time = it }
+    MessageDialog(message) { message = null }
+}
+
+/** The final-price field for from / on-request bookings, with the hint under it. */
+@Composable
+private fun FinalPriceSection(summary: BookingSummary, text: String, onChange: (String) -> Unit) {
+    val start = summary.price
+    val footer = start?.let {
+        stringResource(
+            if (summary.pricing == PriceMode.From) R.string.booking_finalPrice_footer_from else R.string.booking_finalPrice_footer_on_request,
+            formatSar(it),
+        )
+    }
+    DSFormSection(stringResource(R.string.booking_finalPrice_title), footer = footer) {
+        DSTextFieldRow(text, onChange, stringResource(R.string.booking_finalPrice_field), keyboardType = KeyboardType.Decimal)
+    }
+}
+
+/** Approve a from / on-request booking: the provider enters the final price the bride will pay. */
+@Composable
+private fun FinalPriceSheet(summary: BookingSummary, onDismiss: () -> Unit, action: suspend (Double) -> ActionResult) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var text by remember {
+        mutableStateOf(summary.takeIf { it.pricing == PriceMode.From }?.price?.let(::priceInputText).orEmpty())
+    }
+    var isSending by remember { mutableStateOf(false) }
+    var message by remember { mutableStateOf<String?>(null) }
+
+    ActionSheet(stringResource(R.string.booking_finalPrice_title), text.isNotEmpty(), isSending, onDismiss, onSend = {
+        val price = validFinalPrice(summary, text)
+        if (price == null) {
+            message = refusal(context, if (parsePriceInput(text) == null) "price_required" else "price_below_start")
+            return@ActionSheet
+        }
+        isSending = true
+        scope.launch {
+            try {
+                when (val result = action(price)) {
+                    is ActionResult.Ok -> onDismiss()
+                    is ActionResult.Refused -> message = refusal(context, result.code)
+                }
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                message = context.getString(R.string.booking_error_generic)
+            } finally {
+                isSending = false
+            }
+        }
+    }) {
+        FinalPriceSection(summary, text) { text = it }
+    }
     MessageDialog(message) { message = null }
 }
 

@@ -42,8 +42,10 @@ struct PreparationsScreen: View {
                     }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
             .padding(DSSpacing.lg)
         }
+        .scrollBounceBehavior(.basedOnSize)
         .scrollDismissesKeyboard(.interactively)
         .dsScreenBackground()
         .navigationTitle(CatalogL10n.string("preparations.title"))

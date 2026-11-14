@@ -6,7 +6,7 @@
 -- * Every write returns the whole list, so the apps simply show what comes back.
 -- * Deleting the account (or the profile) removes the items.
 
-create table public.bride_preparations (
+create table if not exists public.bride_preparations (
   id uuid primary key default gen_random_uuid(),
   profile_id uuid not null references public.profiles(id) on delete cascade,
   title text not null check (char_length(trim(title)) between 1 and 120),
@@ -16,17 +16,19 @@ create table public.bride_preparations (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
-create index bride_preparations_profile_idx on public.bride_preparations (profile_id, created_at);
+create index if not exists bride_preparations_profile_idx on public.bride_preparations (profile_id, created_at);
+drop trigger if exists bride_preparations_touch on public.bride_preparations;
 create trigger bride_preparations_touch before update on public.bride_preparations
   for each row execute function public.touch_updated_at();
 
 alter table public.bride_preparations enable row level security;
+drop policy if exists bride_preparations_read on public.bride_preparations;
 create policy bride_preparations_read on public.bride_preparations for select to authenticated
   using (profile_id = auth.uid());
 revoke insert, update, delete on public.bride_preparations from anon, authenticated;
 
 -- The caller, who must be a bride with a live account.
-create function public.require_bride() returns uuid
+create or replace function public.require_bride() returns uuid
 language plpgsql stable security definer set search_path = public as $$
 declare
   v_uid uuid := auth.uid();
@@ -39,7 +41,7 @@ end;
 $$;
 
 -- Open items first (oldest first, the order she added them), then the done ones (latest first).
-create function public.get_my_preparations() returns jsonb
+create or replace function public.get_my_preparations() returns jsonb
 language sql stable security definer set search_path = public as $$
   select coalesce(jsonb_agg(jsonb_build_object(
            'id', p.id, 'title', p.title, 'note', p.note, 'is_done', p.is_done,
@@ -50,7 +52,7 @@ language sql stable security definer set search_path = public as $$
 $$;
 
 -- Adds an item (no p_id) or edits one of hers.
-create function public.save_my_preparation(p_title text, p_note text default null, p_id uuid default null) returns jsonb
+create or replace function public.save_my_preparation(p_title text, p_note text default null, p_id uuid default null) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare
   v_uid uuid := require_bride();
@@ -72,7 +74,7 @@ begin
 end;
 $$;
 
-create function public.set_my_preparation_done(p_id uuid, p_done boolean) returns jsonb
+create or replace function public.set_my_preparation_done(p_id uuid, p_done boolean) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare
   v_uid uuid := require_bride();
@@ -84,7 +86,7 @@ begin
 end;
 $$;
 
-create function public.delete_my_preparation(p_id uuid) returns jsonb
+create or replace function public.delete_my_preparation(p_id uuid) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare
   v_uid uuid := require_bride();
@@ -96,13 +98,14 @@ $$;
 
 -- In-app account deletion keeps the profile row (anonymised), so the cascade doesn't fire;
 -- remove her checklist when the profile is marked deleted.
-create function public.bride_preparations_on_profile_deleted() returns trigger
+create or replace function public.bride_preparations_on_profile_deleted() returns trigger
 language plpgsql security definer set search_path = public as $$
 begin
   delete from bride_preparations where profile_id = new.id;
   return new;
 end;
 $$;
+drop trigger if exists profiles_delete_preparations on public.profiles;
 create trigger profiles_delete_preparations after update of deleted_at on public.profiles
   for each row when (new.deleted_at is not null and old.deleted_at is null)
   execute function public.bride_preparations_on_profile_deleted();

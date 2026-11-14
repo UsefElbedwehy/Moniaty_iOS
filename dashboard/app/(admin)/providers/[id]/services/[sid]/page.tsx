@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { priceMode } from "@/lib/labels";
 import { notFound } from "next/navigation";
 import { supabaseServer } from "@/lib/supabase/server";
 import { Flash } from "@/components/ui";
@@ -14,10 +15,10 @@ export default async function ServiceMedia({ params, searchParams }: {
 }) {
   const { id, sid } = await params;
   const sp = await searchParams;
-  const { t, lang, sar } = await i18n();
+  const { t, lang, sar, label } = await i18n();
   const supabase = await supabaseServer();
   const { data: s } = await supabase.from("services")
-    .select("id, provider_id, title, price, status, image_urls, videos").eq("id", sid).eq("provider_id", id).maybeSingle();
+    .select("id, provider_id, title, price, price_mode, status, image_urls, videos").eq("id", sid).eq("provider_id", id).maybeSingle();
   if (!s) notFound();
   const photos: string[] = s.image_urls ?? [];
   const videos: ServiceVideo[] = s.videos ?? [];
@@ -27,7 +28,7 @@ export default async function ServiceMedia({ params, searchParams }: {
       <div className="topbar">
         <div>
           <h1>{s.title}</h1>
-          <span className="muted">{sar(s.price)} · {t("الصور والفيديوهات", "Photos and videos")}</span>
+          <span className="muted">{sar(s.price)}{s.price_mode && s.price_mode !== "fixed" ? ` (${label(priceMode, s.price_mode)})` : ""} · {t("الصور والفيديوهات", "Photos and videos")}</span>
         </div>
         <Link className="button secondary" href={`/providers/${id}`}>{t("رجوع", "Back")}</Link>
       </div>

@@ -54,12 +54,14 @@ export const ENTITIES: Record<Entity, Config> = {
   },
   service: {
     label: ["خدمة", "Service"], table: "services",
-    select: "id, provider_id, title, description, price, duration_minutes, category_id, female_staff_only, at_customer_location, status",
+    select: "id, provider_id, title, description, price, price_mode, duration_minutes, category_id, female_staff_only, at_customer_location, status",
     title: (r) => s(r.title), href: (r) => `/providers/${r.provider_id}/services/${r.id}`,
     fields: [
       { name: "title", label: ["اسم الخدمة", "Title"], type: "text" },
       { name: "description", label: ["الوصف", "Description"], type: "textarea" },
-      { name: "price", label: ["السعر (ر.س)", "Price (SAR)"], type: "number" },
+      { name: "price", label: ["السعر (ر.س): الثابت، أو الأدنى، أو المتوقع", "Price (SAR): fixed, starting or expected"], type: "number" },
+      { name: "price_mode", label: ["طريقة عرض السعر", "How the price is shown"], type: "select", options: [
+        ["fixed", "سعر ثابت", "Fixed"], ["from", "يبدأ من", "Starts from"], ["on_request", "عند الطلب", "On request"]] },
       { name: "duration_minutes", label: ["المدة (دقيقة)", "Duration (minutes)"], type: "number" },
       { name: "category_id", label: ["القسم (المعرّف)", "Category (id)"], type: "text" },
       { name: "female_staff_only", label: ["طاقم نسائي فقط", "Female staff only"], type: "bool" },

@@ -12,9 +12,10 @@ public protocol BookingRepository: Sendable {
     func submitReceipt(bookingId: String, storagePath: String, amount: Decimal, transferredAt: Date,
                        senderBank: String?, sha256: String) async throws -> ActionResult
     // Provider
-    func approve(bookingId: String) async throws -> ActionResult
+    /// `price`: the final price, required when the booking's price isn't final (from / on request).
+    func approve(bookingId: String, price: Decimal?) async throws -> ActionResult
     func decline(bookingId: String, reason: String?) async throws -> ActionResult
-    func proposeReschedule(bookingId: String, startsAt: Date, note: String?) async throws -> ActionResult
+    func proposeReschedule(bookingId: String, startsAt: Date, note: String?, price: Decimal?) async throws -> ActionResult
     func confirmPayment(bookingId: String) async throws -> ActionResult
     func rejectPayment(bookingId: String, reason: String) async throws -> ActionResult
     func complete(bookingId: String) async throws -> ActionResult
@@ -69,16 +70,16 @@ public struct RemoteBookingRepository: BookingRepository {
                                                     pTransferredAt: transferredAt, pSenderBank: senderBank, pSha256: sha256))
     }
 
-    public func approve(bookingId: String) async throws -> ActionResult {
-        try await act("approve_booking", BookingArgs(pBooking: bookingId))
+    public func approve(bookingId: String, price: Decimal?) async throws -> ActionResult {
+        try await act("approve_booking", ApproveArgs(pBooking: bookingId, pPrice: price))
     }
 
     public func decline(bookingId: String, reason: String?) async throws -> ActionResult {
         try await act("decline_booking", ReasonArgs(pBooking: bookingId, pReason: reason))
     }
 
-    public func proposeReschedule(bookingId: String, startsAt: Date, note: String?) async throws -> ActionResult {
-        try await act("propose_reschedule", ProposeArgs(pBooking: bookingId, pStartsAt: startsAt, pNote: note))
+    public func proposeReschedule(bookingId: String, startsAt: Date, note: String?, price: Decimal?) async throws -> ActionResult {
+        try await act("propose_reschedule", ProposeArgs(pBooking: bookingId, pStartsAt: startsAt, pNote: note, pPrice: price))
     }
 
     public func confirmPayment(bookingId: String) async throws -> ActionResult {
@@ -157,7 +158,8 @@ private struct SlotsArgs: Encodable, Sendable { let pServiceId: String; let pDay
 private struct CreateArgs: Encodable, Sendable { let pServiceId: String; let pStartsAt: Date; let pNote: String? }
 private struct RespondArgs: Encodable, Sendable { let pBooking: String; let pAccept: Bool }
 private struct ReasonArgs: Encodable, Sendable { let pBooking: String; let pReason: String? }
-private struct ProposeArgs: Encodable, Sendable { let pBooking: String; let pStartsAt: Date; let pNote: String? }
+private struct ApproveArgs: Encodable, Sendable { let pBooking: String; let pPrice: Decimal? }
+private struct ProposeArgs: Encodable, Sendable { let pBooking: String; let pStartsAt: Date; let pNote: String?; let pPrice: Decimal? }
 private struct DisputeArgs: Encodable, Sendable { let pBooking: String; let pReason: String; let pDetails: String? }
 private struct ReceiptArgs: Encodable, Sendable {
     let pBooking: String

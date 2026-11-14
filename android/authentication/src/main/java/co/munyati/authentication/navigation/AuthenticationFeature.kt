@@ -1,7 +1,12 @@
 package co.munyati.authentication.navigation
 
+import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -19,6 +24,7 @@ import co.munyati.authentication.presentation.AuthCoordinator
 import co.munyati.authentication.presentation.AuthLandingScreen
 import co.munyati.authentication.presentation.NameEntryScreen
 import co.munyati.authentication.presentation.NameEntryViewModel
+import co.munyati.authentication.presentation.OnboardingSlidesScreen
 import co.munyati.authentication.presentation.OnboardingViewModel
 import co.munyati.authentication.presentation.OtpScreen
 import co.munyati.authentication.presentation.OtpViewModel
@@ -46,7 +52,17 @@ class AuthenticationFeature(repository: AuthRepository, private val onFinished: 
         val coordinator = remember(navController) { NavAuthCoordinator(navController, onFinished) }
         NavHost(navController, startDestination = LandingRoute) {
             composable<LandingRoute> {
-                AuthLandingScreen(viewModel { OnboardingViewModel(useCases.continueAsGuest) }, coordinator)
+                // The intro slides show once (first launch); after that, straight to the role choice.
+                val prefs = LocalContext.current.getSharedPreferences("settings", Context.MODE_PRIVATE)
+                var seen by remember { mutableStateOf(prefs.getBoolean("auth_onboarding_seen", false)) }
+                if (seen) {
+                    AuthLandingScreen(viewModel { OnboardingViewModel(useCases.continueAsGuest) }, coordinator)
+                } else {
+                    OnboardingSlidesScreen {
+                        prefs.edit().putBoolean("auth_onboarding_seen", true).apply()
+                        seen = true
+                    }
+                }
             }
             composable<PhoneEntryRoute> {
                 PhoneEntryScreen(viewModel { PhoneEntryViewModel(useCases.sendOtp) }, coordinator)

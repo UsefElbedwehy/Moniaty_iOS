@@ -12,6 +12,10 @@ import co.munyati.booking.R
 import co.munyati.booking.data.BookingRepository
 import co.munyati.booking.data.ReceiptStorage
 import co.munyati.booking.domain.BookableService
+import co.munyati.catalog.domain.PriceMode
+import co.munyati.catalog.domain.parsePriceInput
+import co.munyati.catalog.presentation.formatServicePrice
+import co.munyati.booking.domain.BookingSummary
 import co.munyati.booking.domain.BookingRole
 import co.munyati.catalog.domain.formatAmount
 import co.munyati.core.dates.DisplayDates
@@ -21,7 +25,13 @@ import java.time.Instant
 // Destinations inside the booking feature, registered on the App's NavHosts (iOS `BookingRoute`
 // plus the screens iOS presents as sheets).
 @Serializable data class BookingDetailRoute(val id: String, val role: String)
-@Serializable data class BookingRequestRoute(val serviceId: String, val title: String, val price: Double, val providerName: String? = null)
+@Serializable data class BookingRequestRoute(
+    val serviceId: String,
+    val title: String,
+    val price: Double? = null,
+    val providerName: String? = null,
+    val priceMode: String = "fixed",
+)
 @Serializable data class BookingPaymentRoute(val id: String)
 @Serializable data object AvailabilityRoute
 @Serializable data object PaymentMethodsRoute
@@ -67,7 +77,8 @@ class BookingFeature(
     @Composable
     fun BookingsScreen(role: BookingRole) = BookingsListScreen(this, role)
 
-    fun requestRoute(service: BookableService) = BookingRequestRoute(service.id, service.title, service.price, service.providerName)
+    fun requestRoute(service: BookableService) =
+        BookingRequestRoute(service.id, service.title, service.price, service.providerName, service.priceMode.raw)
 
     fun detailRoute(id: String, role: BookingRole) = BookingDetailRoute(id, role.rawValue)
 
@@ -79,7 +90,8 @@ class BookingFeature(
         }
         composable<BookingRequestRoute> {
             val r = it.toRoute<BookingRequestRoute>()
-            BookingRequestScreen(this@BookingFeature, BookableService(r.serviceId, r.title, r.price, r.providerName))
+            BookingRequestScreen(this@BookingFeature, BookableService(r.serviceId, r.title, r.price, r.providerName,
+                PriceMode.entries.firstOrNull { m -> m.raw == r.priceMode } ?: PriceMode.Fixed))
         }
         composable<BookingPaymentRoute> { PaymentLoaderScreen(this@BookingFeature, it.toRoute<BookingPaymentRoute>().id) }
         composable<AvailabilityRoute> { AvailabilityScreen(this@BookingFeature) }
@@ -102,6 +114,29 @@ internal fun refusal(context: Context, code: String): String =
 /** "SAR 2,800" with the catalog's price format. */
 @Composable
 internal fun formatSar(amount: Double) = stringResource(co.munyati.catalog.R.string.catalog_price_sar, formatAmount(amount))
+
+/** "٥٠٠ ر.س" once final; before that "يبدأ من ٥٠٠ ر.س" or «يُحدَّد عند الموافقة» (iOS `priceText`). */
+@Composable
+internal fun BookingSummary.priceText(): String {
+    val price = price
+    return when {
+        price != null && priceIsFinal != false -> formatSar(price)
+        price != null && pricing == PriceMode.From -> formatServicePrice(price, PriceMode.From)
+        else -> stringResource(R.string.booking_price_pending)
+    }
+}
+
+/** The typed final price when it passes the server's checks (> 0, at most 1,000,000, not below "from"). */
+internal fun validFinalPrice(summary: BookingSummary, text: String): Double? {
+    val value = parsePriceInput(text) ?: return null
+    if (value <= 0 || value > 1_000_000) return null
+    val start = summary.price
+    if (summary.pricing == PriceMode.From && start != null && value < start) return null
+    return value
+}
+
+/** A price as the provider typed it: "2800", "1500.5". */
+internal fun priceInputText(price: Double): String = if (price % 1.0 == 0.0) price.toLong().toString() else price.toString()
 
 /** "الثلاثاء ١١ نوفمبر · ٤:٠٠ م" in the user's language and the display calendar. */
 internal fun bookingDateText(instant: Instant): String =

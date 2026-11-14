@@ -156,6 +156,8 @@
     <string name="catalog_preparations_section_done">Done</string>
     <string name="catalog_preparations_section_todo">To do</string>
     <string name="catalog_preparations_title">My preparations</string>
+    <string name="catalog_price_from">From %s</string>
+    <string name="catalog_price_onRequest">Price on request</string>
     <string name="catalog_price_sar">SAR %s</string>
     <string name="catalog_rating_a11y">Rated %s out of 5</string>
     <string name="catalog_search_placeholder">Search services or providers</string>

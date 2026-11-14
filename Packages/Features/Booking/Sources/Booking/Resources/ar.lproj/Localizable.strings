@@ -15,6 +15,17 @@
 "request.note" = "ملاحظة لمقدّمة الخدمة (اختياري)";
 "request.budgetAfter" = "المتبقي من ميزانيتك بعد هذا الحجز: %@";
 "request.paymentInfo" = "لن تدفعي الآن. بعد موافقة مقدّمة الخدمة تحوّلين المبلغ كاملاً لحسابها وترفعين الإيصال.";
+"request.finalPriceLater" = "تحدّد مقدّمة الخدمة السعر النهائي عند قبول طلبك، وترينه قبل الدفع. يمكنك الإلغاء مجاناً إن لم يناسبك.";
+"price.pending" = "يُحدَّد عند الموافقة";
+"price.setOnApprove" = "ستكتبين السعر النهائي عند الموافقة.";
+"finalPrice.title" = "السعر النهائي";
+"finalPrice.field" = "السعر النهائي (ر.س)";
+"finalPrice.footer.from" = "تراه العروس قبل الدفع، ولا يقل عن %@.";
+"finalPrice.footer.on_request" = "تراه العروس قبل الدفع. سعرك المتوقع: %@.";
+"finalPrice.approve" = "موافقة";
+"error.price_required" = "اكتبي السعر النهائي.";
+"error.invalid_price" = "السعر غير صحيح.";
+"error.price_below_start" = "السعر النهائي أقل من السعر المعلن «يبدأ من».";
 "request.send" = "إرسال طلب الحجز";
 
 "list.title.bride" = "حجوزاتي";

@@ -15,6 +15,7 @@ import co.munyati.booking.domain.DisputeReason
 import co.munyati.booking.domain.PaymentMethod
 import co.munyati.booking.domain.PaymentMethodDraft
 import co.munyati.booking.domain.PaymentMethodSnapshot
+import co.munyati.catalog.domain.PriceMode
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.time.Instant
@@ -111,7 +112,8 @@ class MockBookingRepository : BookingRepository {
         row.summary = row.summary.copy(paymentDueAtRaw = Instant.now().plus(48, ChronoUnit.HOURS).toString())
     }
 
-    override suspend fun approve(bookingId: String) = mutex.withLock {
+    override suspend fun approve(bookingId: String, price: Double?) = mutex.withLock {
+        setFinalPrice(bookingId, price)?.let { return@withLock it }
         move(bookingId, BookingStatus.AwaitingPayment, "provider")
         snapshotMethods(bookingId)
         ActionResult.Ok(bookingId)
@@ -122,11 +124,24 @@ class MockBookingRepository : BookingRepository {
         ActionResult.Ok(bookingId)
     }
 
-    override suspend fun proposeReschedule(bookingId: String, startsAt: Instant, note: String?) = mutex.withLock {
+    override suspend fun proposeReschedule(bookingId: String, startsAt: Instant, note: String?, price: Double?) = mutex.withLock {
+        setFinalPrice(bookingId, price)?.let { return@withLock it }
         rows[bookingId]?.proposal = BookingProposal(UUID.randomUUID().toString(), startsAt.toString(),
             startsAt.plus(3, ChronoUnit.HOURS).toString(), note.orEmpty(), Instant.now().plus(1, ChronoUnit.DAYS).toString())
         move(bookingId, BookingStatus.RescheduleProposed, "provider")
         ActionResult.Ok(bookingId)
+    }
+
+    /** Like `final_price_error` on the server: from / on-request bookings need the final price. */
+    private fun setFinalPrice(id: String, price: Double?): ActionResult? {
+        val row = rows[id] ?: return null
+        if (row.summary.priceIsFinal != false) return null
+        if (price == null) return ActionResult.Refused("price_required")
+        if (price <= 0) return ActionResult.Refused("invalid_price")
+        val start = row.summary.price
+        if (row.summary.pricing == PriceMode.From && start != null && price < start) return ActionResult.Refused("price_below_start")
+        row.summary = row.summary.copy(price = price, priceIsFinal = true)
+        return null
     }
 
     override suspend fun confirmPayment(bookingId: String) = mutex.withLock {
